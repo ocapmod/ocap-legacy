@@ -1,0 +1,57 @@
+Source for tutorial on generating .emf file: https://community.bistudio.com/wiki/ArmA:_Cheats#TOPOGRAPHY
+
+This guide assumes you have the program OSGeo4W installed.
+(https://trac.osgeo.org/osgeo4w/)
+
+1. 	Run Arma 3 as Administrator (right click on arma3.exe > Run as administrator).
+
+2. 	Open desired map in 2D editor (does not work in 3D editor).
+	Note: 2D editor can be accessed by pressing Shift + O on map selection screen.
+
+3. 	Press Left Shift + Numpad Minus (-).
+	Release both keys and then blindly type EXPORTNOGRID (or TOPOGRAPHY if map grid wanted).
+	An "Activated EXPORTNOGRID" message should (very briefly) appear.
+
+4.	Go to C:\ and check for <worldname>.emf. If no file is found, make sure you followed step 1.
+ 	Close Arma 3 (important).
+
+5. 	Download BI Tools (https://community.bistudio.com/wiki/BI_Tools_2.5)
+	and locate EmfToPng.exe  (in Visitor 3 folder).
+	Copy EmfToPng.exe to a place you have write access (without need to run as administrator).
+
+6. 	Copy <worldname>.emf (from step 4) to same folder as where we just copied EmfToPng.exe.
+	Create a shortcut of EmfToPng.exe that launches with arguments: <worldname>.emf N
+	
+	N is the zoom level. We want to find the N which results in an image with dimensions that adheres to
+	the tile size chart (see below). This may take some experimenting and will vary between maps.
+	N is usually somewhere between 0.1 and 2. The recommended target is 16384.
+	A good place to start is N=1. From there, calculate which zoom level is needed to adhere
+	to tile size chart.
+	e.g. If N=1 results in image size of 20480, and we want zoom level 6 (16384), then we'd do
+	16384/20480 = 0.8 = N
+
+	Note: The resulting image dimensions (both X and Y) must adhere *exactly* to the tile size chart.
+
+7. 	Run shortcut and wait until .emf is converted to a .png
+
+8. 	Drag and drop <worldname>.png into OSGeo4W64 directory.
+	Launch OSGeo4W64.bat and enter the followig command:
+	gdal2tiles_legacy_no-tms -p raster -z 0-6 -w all <worldname>.png
+	(assuming your image size is 16384 - zoom level 6)
+
+	Note: gdal2tiles_legacy_no-tms is a modified version of gdal2tiles.
+	To install, just drag the included gdal2tiles_legacy_no-tms .py and .bat
+	files into OSGeo4W64\bin\.
+
+
+// Tile size chart
+Zoom Level    Pixel size
+0             256
+1             512
+2             1024
+3             2048
+4             4096
+5             8192
+6             16384
+7             32768
+8             65536

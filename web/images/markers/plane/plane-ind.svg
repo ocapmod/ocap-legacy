@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="512" width="512" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xmlns:dc="http://purl.org/dc/elements/1.1/">
+	<g id="editable" fill-rule="evenodd" fill="#007f00">
+		<path d="m207.01 213.44h-207.01v47.982l145.56 38.921h61.955v-84.883"/>
+		<path d="m304.71 213.93h207.01v47.982l-145.56 38.921h-61.955v-84.883"/>
+		<path d="m215.11 77.068v282.34c3.5668 75.955 16.784 116.6 32.393 148.49h17.209c28.972-48.475 27.761-99.962 30.874-151.02v-286.38c-5.35-33.393-11.05-54.548-31.88-65.152l-15.69 0.5047c-24.7 17.357-29.46 44.619-32.9 71.215z"/>
+		<path d="m216.63 446.28 19.739 55.558h-100.72v-32.83z"/>
+		<path d="m295.37 446.28-19.739 55.558h100.72v-32.83z"/>
+	</g>
+	<g fill-rule="evenodd" fill="#ffffff">
+		<path d="m248.64 38.051v23.865c-6.8192-5.0811-11.245-2.5784-16.07 0z"/>
+		<path d="m264.65 38.114v23.865c6.8192-5.0811 11.245-2.5784 16.07 0z"/>
+	</g>
+</svg>

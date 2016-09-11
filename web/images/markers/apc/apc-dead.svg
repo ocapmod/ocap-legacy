@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="512" width="512" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512.00001 512.00001" xmlns:dc="http://purl.org/dc/elements/1.1/">
+	<g id="editable">
+		<path d="m136.12 635.67v415.93h240.16v-415.4l-48.603-95.802h-143.57z" fill-rule="evenodd" transform="translate(0 -540.36)" fill="#000000"/>
+	</g>
+	<g>
+		<g fill="#ffffff">
+			<rect height="72.165" width="56.569" y="415.59" x="176.27"/>
+			<rect height="72.165" width="56.569" y="415.6" x="279.66"/>
+			<rect height="80.022" width="23.711" y="143.9" x="336.06"/>
+			<circle cx="279.94" cy="303.53" r="23.612"/>
+		</g>
+		<g stroke="#ffffff" fill="none">
+			<circle cx="255.55" stroke-linecap="square" cy="303.98" r="79.565" stroke-width="7.8341"/>
+			<g>
+				<path d="m255.89 128.07v96.786" stroke-width="16"/>
+				<g stroke-width="8">
+					<path d="m176.79 107.71h158.93"/>
+					<path d="m183.57 83.964h144.82"/>
+					<path d="m192.14 59.768h127.86"/>
+					<path d="m200.54 36.107h110.89"/>
+				</g>
+			</g>
+		</g>
+	</g>
+</svg>
