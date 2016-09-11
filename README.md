@@ -19,7 +19,7 @@ Use it simply for fun or as a training tool to see how well your group performs 
 * Event log displays events as they happened in realtime.
 * Clicking on a unit lets you follow them.
 * Server based capture - no mods required for clients.
-* 
+
 ## Running OCAP
 Capture automatically begins when server becomes populated (see userconfig for settings).
 
