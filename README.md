@@ -24,15 +24,18 @@ Use it simply for fun or as a training tool to see how well your group performs 
 Capture automatically begins when server becomes populated (see userconfig for settings).
 
 To end and export capture data, call the following (server-side):
+
 `[] call ocap_fnc_exportData;`
 
 **Tip:** You can use the above function in a trigger.
 e.g. Create a trigger that activates once all objectives complete. Then on activiation:
-`if (isServer) then {
+```
+if (isServer) then {
     [] call ocap_fnc_exportData;
 };
 
-"end1" call BIS_fnc_endMission; // Ends mission for everyone`
+"end1" call BIS_fnc_endMission; // Ends mission for everyone
+```
 
  
 ##Credits
