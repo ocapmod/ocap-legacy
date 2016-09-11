@@ -178,12 +178,15 @@ function install() {
 				<div class="success">Install complete!</div>
 				You may now capture and playback operations.<br/></br>
 
+				Please delete, move, or rename the <span class="code inline">install/</span> directory.<br/><br/>
+
 				Please ensure you have tested OCAP before using it on official gaming nights with your group.
 				<ul>
 					<li>Capture a mission (using the OCAP server addon) and check that the capture .json file was correctly transferred to the <span class="code inline">data/</span> directory.</li>
 					<li>Playback the recently captured mission to ensure that all is working well</li>
 				</ul><br/>
-				Please delete, move, or rename the <span class="code inline">install/</span> directory.
+
+				<b>Note: </b>To download/install new maps or check for OCAP updates, head to <a href="../admin">/admin</a>.
 				`;
 			};
 
