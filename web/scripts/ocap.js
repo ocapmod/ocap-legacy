@@ -969,7 +969,7 @@ class UI {
 
 		setTimeout(() => {
 			this.hint.style.display = "none";
-		}, 3000);
+		}, 5000);
 	};
 	
 	addTickToTimeline(frameNum) {
@@ -1354,7 +1354,6 @@ function getWorldByName(worldName) {
 	
 	for (let i = 0; i < worlds.length; i++) {
 		var world = worlds[i];
-		console.log(world);
 		if (world.name.toLowerCase() == worldName) {
 			return world;
 		};
@@ -1388,6 +1387,12 @@ function initMap() {
 	});
 
 	var world = getWorldByName(worldName);
+	console.log("Got world: ");
+	console.log(world);
+	if (world == null) {
+		ui.showHint(`Error: Map "${worldName}" is not installed`);
+	};
+
 	imageSize = world.imageSize;
 	multiplier = world.multiplier;
 	map.setView(map.unproject([imageSize/2, imageSize/2]), mapMinZoom);
@@ -1715,6 +1720,8 @@ function processOp(filepath) {
 		startPlaybackLoop();
 		toggleHitEvents(false);
 		playPause();
+	}).fail(function() {
+		ui.showHint(`Error: "${filepath}" could not be found`);
 	});
 };
 
