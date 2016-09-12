@@ -74,7 +74,7 @@ $updateRequired = false;
 print_debug("Remote version: " . $remoteVersion);
 print_debug("Local version: " . VERSION);
 
-if (VERSION != floatval($remoteVersion)) {
+if (VERSION != ($remoteVersion)) {
 	$updateRequired = true;
 }
 ?>

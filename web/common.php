@@ -8,7 +8,7 @@ $debug = false;
 $appTitle = "OCAP";
 $appDesc = "Operation Capture And Playback";
 $appAuthor = "MisterGoodson (aka Goodson [3CB])";
-const VERSION = 0.5;
+const VERSION = "0.5.0.1-beta";
 
 // Please do not modify this as these stats help me get a job. Thank-you! :)
 $statServerUrl = "http://138.201.116.116/ocap/remote/";
