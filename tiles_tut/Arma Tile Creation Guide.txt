@@ -42,7 +42,15 @@ This guide assumes you have the program OSGeo4W installed.
 	Note: gdal2tiles_legacy_no-tms is a modified version of gdal2tiles.
 	To install, just drag the included gdal2tiles_legacy_no-tms .py and .bat
 	files into OSGeo4W64\bin\.
-
+	
+If you wish to submit your tileset to be added to the OCAP map repository, please archive the folder
+into a .tar file and then make a post in the following thread:
+https://forums.bistudio.com/topic/194164-ocap-operation-capture-and-playback/
+Please also include details on:
+	- World name (e.g. Stratis)
+	- Image size (size of image used to create tiles, e.g. 16384)
+	- World size (size of image when N=1, or value when calling worldSize in Arma)
+	- Multiplier (value of N)
 
 // Tile size chart
 Zoom Level    Pixel size
