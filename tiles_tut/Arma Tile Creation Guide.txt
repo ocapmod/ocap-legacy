@@ -44,7 +44,8 @@ This guide assumes you have the program OSGeo4W installed.
 	files into OSGeo4W64\bin\.
 	
 If you wish to submit your tileset to be added to the OCAP map repository, please archive the folder
-into a .tar file and then make a post in the following thread:
+into a .tar file and upload somewhere (e.g. Dropbox). Ensure the name of the folder matches the
+name of the terrian (e.g. Stratis). Then make a post in the following thread:
 https://forums.bistudio.com/topic/194164-ocap-operation-capture-and-playback/
 Please also include details on:
 	- World name (e.g. Stratis)
