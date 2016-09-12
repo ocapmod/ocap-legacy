@@ -66,6 +66,7 @@ if ($_POST['agree']) {
 				capture_count INTEGER
 			)
 		");
+		$db->exec("DELETE FROM servers"); // Delete any previously existing rows
 		$db->exec(sprintf("
 			INSERT INTO servers (remote_id, name, ip, host, root, view_count, capture_count)
 			VALUES (
