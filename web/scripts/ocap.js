@@ -1513,11 +1513,6 @@ function defineIcons() {
 		icons.staticWeapon[img] = L.icon({iconSize: [20, 20], iconUrl: `${imgPathStaticWeapon}${img}.svg`});
 		icons.unknown[img] = L.icon({iconSize: [28, 28], iconUrl: `${imgPathUnknown}${img}.svg`});
 	});
-
-	iconDuck = L.icon({
-		iconUrl: 'images/markers/duck.svg',
-		iconSize: [16,16]
-	});
 };
 
 function goFullscreen() {
@@ -1552,8 +1547,6 @@ function test() {
 		var marker = L.circleMarker(e.latlng).addTo(map);
 		marker.setRadius(5);
 	});
-
-	var marker = L.marker([0,0], {icon: iconDuck}).addTo(map);
 
 	var marker = L.circleMarker(armaToLatLng([2438.21,820])).addTo(map);
 	marker.setRadius(5);
