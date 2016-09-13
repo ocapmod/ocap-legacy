@@ -40,5 +40,6 @@ if (isServer) then {
  
 ##Credits
 
-* 3 Commando Brigade for testing and moral-boosting.
-* Leaflet - an awesome JS interactive map library.
+* [3 Commando Brigade](http://www.3commandobrigade.com/) for testing and moral-boosting.
+* [Leaflet](http://leafletjs.com/) - an awesome JS interactive map library.
+* Maca134 for his guide on [writing Arma extensions in C#](http://maca134.co.uk/tutorial/write-an-arma-extension-in-c-sharp-dot-net/).
