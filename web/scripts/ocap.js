@@ -1,6 +1,11 @@
 /*
 	OCAP - Operation Caputre And Playback
     Copyright (C) 2016 Jamie Goodson (aka MisterGoodson) (goodsonjamie@yahoo.co.uk)
+	
+	NOTE: This script is written in ES6 and not intended to be used in a live
+    environment. Instead, this script should be transpiled to ES5 for
+    browser compatibility (including Chrome).
+
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -1354,7 +1359,7 @@ function getWorldByName(worldName) {
 	
 	for (let i = 0; i < worlds.length; i++) {
 		var world = worlds[i];
-		if (world.name.toLowerCase() == worldName) {
+		if (world.worldName.toLowerCase() == worldName) {
 			return world;
 		};
 	};
