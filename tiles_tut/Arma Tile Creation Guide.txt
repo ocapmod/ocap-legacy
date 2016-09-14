@@ -25,9 +25,9 @@ This guide assumes you have the program OSGeo4W installed.
 	N is the zoom level. We want to find the N which results in an image with dimensions that adheres to
 	the tile size chart (see below). This may take some experimenting and will vary between maps.
 	N is usually somewhere between 0.1 and 2. The recommended target is 16384 - This leads to a png of 16384 by 16384 pixels.
-	If you can open the EMF file directly to get the pixels the dimensions are both the same size. You can calculate N by using the formula  N= 16384/<pixel_dimension>. Where 16384 is the target size of the PNG. and <pixel_dimension> is the length of a dimension in the EMF file.
+	If you can open the EMF file directly to get the pixels the dimensions should both be the same size. You can calculate N by using the formula  N= 16384/<pixel_dimension>. Where 16384 is the target size of the PNG. and <pixel_dimension> is the length of a dimension in the EMF file.
 	E.g. If the EMF is 20480 by 20480, 16384/20480 = 0.8 = N
-	If the EMF file is not the same length in both dimensions you will need to edit the EMF to make it even before doing the png conversion.
+	If the EMF file is not the same length in both dimensions you will need to edit the EMF to make it them the same before doing the png conversion. Alternatively you can edit the PNG post conversion to make the dimensions identical.
 	
 	Note: The resulting image dimensions (both X and Y) must adhere *exactly* to the tile size chart (at the end of this page).
 
