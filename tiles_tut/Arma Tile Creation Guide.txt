@@ -51,7 +51,7 @@ This guide assumes you have the program OSGeo4W installed.
 	
 If you wish to submit your tileset to be added to the OCAP map repository, please archive the folder
 into a .tar file and upload somewhere (e.g. Dropbox). Ensure the name of the folder matches the
-name of the terrian (e.g. Stratis). Then please file a ticket on the github tracker:
+name of the terrian, and is in lowercase (e.g. isladuala3). Then please file a ticket on the github tracker:
 https://github.com/mistergoodson/OCAP/issues
 Please also include details on:
 	- World name (e.g. Stratis)
