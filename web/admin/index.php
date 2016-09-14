@@ -176,6 +176,13 @@ function extractComplete(td) {
 	td.className = "status installed";
 }
 
+// Sort maps in order of name
+mapList.sort(function compare(a, b) {
+	if (a.name < b.name) return -1;
+	if (a.name > b.name) return 1;
+	return 0;
+});
+
 // Iterate through list of maps and display each one
 mapList.forEach(function(map) {
 	let filesizeMB = Math.round(map.filesize * Math.pow(2, -20));
