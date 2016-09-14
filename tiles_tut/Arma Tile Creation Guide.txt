@@ -60,7 +60,7 @@ Please also include details on:
 	- Multiplier (value of N)
 Ideally, please provide info in the following example format:
 {
-	"name": "Isla Duala 3n",
+	"name": "Isla Duala 3",
 	"worldName": "isladuala3",
 	"worldSize": 10240,
 	"imageSize": 16384,
