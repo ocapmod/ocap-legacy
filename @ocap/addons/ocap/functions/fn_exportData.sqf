@@ -16,6 +16,8 @@ if (!ocap_capture) exitWith {
 params [["_stopCapture", true]];
 ["fnc_exportData called. Exporting capture data..."] call ocap_fnc_log;
 
+_sT = diag_tickTime;
+
 // Same as isKindOf, but can be tested against multiple types
 _isKindOf = {
 	_testClass = _this select 0;
@@ -36,7 +38,7 @@ ocap_exportCapFilename = format["%1_%2.json", missionName, floor(random(1000))];
 
 _br = toString [13, 10];
 _tab = toString[9];
-_bufferSize = 8000; // Char limit before flushing to file (1 char = 1 byte). Actual extension buffer limit is 10KB.
+_bufferSize = 9000000; // Char limit before flushing to file (1 char = 1 byte).
 _apcClasses = [
 	"Wheeled_APC_F",
 	"Tracked_APC",
@@ -227,7 +229,8 @@ _jsonEvents = ',"events":[';
 [']}', true] call ocap_fnc_callExtension; // End of JSON file
 ['', false] call ocap_fnc_callExtension;
 
-["Exporting complete."] call ocap_fnc_log;
+_deltaT = diag_tickTime - _sT;
+[format["Exporting complete (%1ms).", _deltaT * 1000]] call ocap_fnc_log;
 
 if (!_stopCapture) then {
 	["Continuing capture."] call ocap_fnc_log;

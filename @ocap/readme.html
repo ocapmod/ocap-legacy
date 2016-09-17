@@ -65,12 +65,12 @@ e.g. <span class="code">-mod=@ocap;</span>
 <br/><br/>
 Capture automatically begins when server becomes populated (see userconfig for settings).<br/>
 To end and export capture data, call the following (<b>server-side</b>):<br/>
-<span class="code">[] call ocap_fnc_exportData;</span>
+<span class="code">[] spawn ocap_fnc_exportData;</span>
 <br/><br/>
 <b>Tip:</b> You can use the above function in a trigger.<br/>
 e.g. Create a trigger that activates once all objectives complete. Then on activiation:<br/>
 <div class="code">if (isServer) then {
-    [] call ocap_fnc_exportData;
+    _export = [] spawn ocap_fnc_exportData;
 };
 "end1" call BIS_fnc_endMission; // Ends mission for everyone</div>
 
