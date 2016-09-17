@@ -31,7 +31,7 @@
 		padding: 0;
 	}
 	a {
-		color: inherit;
+		color: #039BE5;
 		text-decoration: none;
 	}
 	a:hover {
@@ -44,7 +44,7 @@
 <div id="header-container">
 <img src="logo_ocap.gif" height="150px"><br/>
 Operation Capture And Playback<br/>
-<span style="color:#808080">Addon v0.5</span><br/><br/>
+<span style="color:#808080">Addon v0.5.1</span><br/><br/>
 </div>
 
 
@@ -74,12 +74,15 @@ e.g. Create a trigger that activates once all objectives complete. Then on activ
 };
 "end1" call BIS_fnc_endMission; // Ends mission for everyone</div>
 
+<br/><br/>
+<b>Note: </b>For every 10 'frames' captured, OCAP will print a line in the Arma RPT log file. When exporting, OCAP also creates its own log file (in the same location as the extension) called <span class="code">ocap_log.txt</span> - use this when debugging.
 <br/><br/><br/>
 <h1>Credits</h1>
 <ul>
 	<li>Created by MisterGoodson (aka Goodson [3CB]).</li>
 	<li><a href="http://www.3commandobrigade.com/" target="_blank">3 Commando Brigade</a> for testing and moral-boosting.</li>
 	<li><a href="http://www.leafletjs.com/" target="_blank">Leaflet</a> - an awesome JS interactive map library.</li>
+	<li>Maca134 for his tutorial on <a href="http://maca134.co.uk/tutorial/write-an-arma-extension-in-c-sharp-dot-net/">writing Arma extensions in C#</a>.</li>
 </ul>
 
 
