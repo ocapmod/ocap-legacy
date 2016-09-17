@@ -6,7 +6,7 @@ This guide assumes you have the program OSGeo4W installed.
 1. 	Run Arma 3 as Administrator (right click on arma3.exe > Run as administrator).
 
 2. 	Open desired map in 2D editor (does not work in 3D editor).
-	Note: 2D editor can be accessed by pressing Shift + O on map selection screen.
+	Note: 2D editor can be accessed by pressing Ctrl + O on map selection screen.
 
 3. 	Press Left Shift + Numpad Minus (-).
 	Release both keys and then blindly type EXPORTNOGRID.
