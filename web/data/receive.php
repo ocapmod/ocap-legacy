@@ -3,7 +3,7 @@
 include "../common.php";
 
 if (count($_POST) == 0) {
-	echo "No data.";
+	echo "No data received.";
 	exit;
 }
 
@@ -12,12 +12,12 @@ if (!file_exists("data.db")) {
 	exit;
 }
 
+echo "Raw data received: " . $_POST . "\n";
 $string = "";
 foreach($_POST as $key => $value) {
 	$string .= $key . ": " . $value . "\n";
 }
-
-echo $string;
+echo "Processed data: ". $string;
 
 $date = date("Y-m-d");
 $serverId = -1;
