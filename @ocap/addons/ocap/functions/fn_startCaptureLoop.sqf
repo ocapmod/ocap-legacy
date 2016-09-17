@@ -54,9 +54,9 @@ waitUntil{sleep 1; (time > 1) && (count(allPlayers) >= ocap_minPlayerCount) && (
 
 if (ocap_debug) then {
 	//player addAction ["Copy entitiesData to clipboard", {copyToClipboard str(ocap_entitiesData)}];
-	player addAction ["Write saved data", {[] call ocap_fnc_exportData}];
+	player addAction ["Write saved data", {[false] call ocap_fnc_exportData}];
 	player addEventHandler ["Respawn", {
-		player addAction ["Write saved data", {[] call ocap_fnc_exportData}];
+		player addAction ["Write saved data", {[false] call ocap_fnc_exportData}];
 	}];
 
 	//player addAction ["End mission", {endMission "end1"}];

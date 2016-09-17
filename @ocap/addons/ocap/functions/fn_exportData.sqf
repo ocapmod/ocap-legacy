@@ -2,11 +2,19 @@
 	Author: MisterGoodson
 
 	Description:
-	Converts all capture data (events + entities) into a JSON format and outputs this string
-	to the OCAP extension (which handles JSON file writing/moving).
+		Converts all capture data (events + entities) into a JSON format and outputs this string
+		to the OCAP extension (which handles JSON file writing/moving).
+
+	Params:
+		_this select 0: BOOLEAN - Stop capture (false will continue capture after export) (Default: true)
 */
 
-["Exporting capture data..."] call ocap_fnc_log;
+if (!ocap_capture) exitWith {
+	["fnc_exportData called. Export did not go ahead as capture is currently paused/stopped. Has export already been called?"] call ocap_fnc_log;
+};
+
+params [["_stopCapture", true]];
+["fnc_exportData called. Exporting capture data..."] call ocap_fnc_log;
 
 // Same as isKindOf, but can be tested against multiple types
 _isKindOf = {
@@ -22,7 +30,7 @@ _isKindOf = {
 	_bool
 };
 
-ocap_capture = false;
+ocap_capture = false; // Stop capture while we export
 ocap_endFrameNo = ocap_captureFrameNo;
 ocap_exportCapFilename = format["%1_%2.json", missionName, floor(random(1000))]; // Filename used for capture data file
 
@@ -219,6 +227,9 @@ _jsonEvents = ',"events":[';
 [']}', true] call ocap_fnc_callExtension; // End of JSON file
 ['', false] call ocap_fnc_callExtension;
 
-
-ocap_capture = true;
 ["Exporting complete."] call ocap_fnc_log;
+
+if (!_stopCapture) then {
+	["Continuing capture."] call ocap_fnc_log;
+	ocap_capture = true; // Continue capturing
+};
