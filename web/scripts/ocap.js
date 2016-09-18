@@ -1299,7 +1299,7 @@ var multiplier = null;
 var trim = 0; // Number of pixels that were trimmed when cropping image (used to correct unit placement)
 var mapMinZoom = 1;
 var mapMaxNativeZoom = 6;
-var mapMaxZoom = mapMaxNativeZoom+2;
+var mapMaxZoom = mapMaxNativeZoom+3;
 var map = null;
 var mapDiv = null;
 var mapPanes = null;
@@ -1772,9 +1772,11 @@ function startPlaybackLoop() {
 
 					if (entity instanceof Unit) {
 						// Draw fire line (if enabled)
-						var firedEvent = entity.firedOnFrame(playbackFrame);
-						if (firedEvent != null && ui.firelinesEnabled) {
-							var line = L.polyline([entity.getLatLng(), armaToLatLng(firedEvent)], {
+						var projectilePos = entity.firedOnFrame(playbackFrame);
+						if (projectilePos != null && ui.firelinesEnabled) {
+							console.log(entity);
+							console.log(`Shooter pos: ${entity.getLatLng()}\nFired event: ${projectilePos} (is null: ${projectilePos == null})`);
+							var line = L.polyline([entity.getLatLng(), armaToLatLng(projectilePos)], {
 								color: entity.getSideColour(),
 								weight: 2,
 								opacity: 0.4
