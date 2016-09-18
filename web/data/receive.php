@@ -14,12 +14,17 @@ if (!file_exists("data.db")) {
 
 $option = $_POST["option"];
 
-echo "Raw data received: " . implode(" ", $_POST) . "\n";
+//echo "Raw data received: " .implode(" ", $_POST) . "\n";
 $string = "";
 foreach($_POST as $key => $value) {
 	$string .= $key . ": " . $value . "\n";
 }
-echo "Processed data: ". $string;
+
+// Truncate string if too large
+if (strlen($string) > 1000) {
+	$string = substr($string, 0, 1000) . "...";
+}
+echo "Processed data: \n". $string . "\n";
 
 if ($option == "addFile") { // Add receieved file to this directory
 	$fileName = $_POST["fileName"];
@@ -31,7 +36,7 @@ if ($option == "addFile") { // Add receieved file to this directory
 	} catch (Exception $e) {
 		echo $e->getMessage();
 	}
-} elseif (option == "dbInsert") { // Insert values into SQLite database
+} elseif ($option == "dbInsert") { // Insert values into SQLite database
 	$date = date("Y-m-d");
 	$serverId = -1;
 	try {
