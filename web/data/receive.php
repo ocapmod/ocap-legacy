@@ -21,8 +21,8 @@ foreach($_POST as $key => $value) {
 }
 
 // Truncate string if too large
-if (strlen($string) > 1000) {
-	$string = substr($string, 0, 1000) . "...";
+if (strlen($string) > 500) {
+	$string = substr($string, 0, 500) . "...";
 }
 echo "Processed data: \n". $string . "\n";
 

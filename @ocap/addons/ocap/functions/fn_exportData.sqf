@@ -38,7 +38,6 @@ ocap_exportCapFilename = format["%1_%2.json", missionName, floor(random(1000))];
 
 _br = toString [13, 10];
 _tab = toString[9];
-_bufferSize = 9000000; // Char limit before flushing to file (1 char = 1 byte).
 _apcClasses = [
 	"Wheeled_APC_F",
 	"Tracked_APC",
@@ -152,12 +151,6 @@ _jsonUnits = ',"entities":[';
 		};
 
 		if (_forEachIndex != ((count _positions)-1)) then {_jsonUnitPosArr = _jsonUnitPosArr + ","};
-
-		// Flush data to file if buffer limit reached
-		if ((count _jsonUnitPosArr) >= _bufferSize) then {
-			[_jsonUnitPosArr, true] call ocap_fnc_callExtension;
-			_jsonUnitPosArr = "";
-		};
 	} forEach _positions;
 	[_jsonUnitPosArr, true] call ocap_fnc_callExtension;
 	["]", true] call ocap_fnc_callExtension; // Add cap
@@ -174,12 +167,6 @@ _jsonUnits = ',"entities":[';
 			[%1,%2]', _frameNum, _projectilePos];
 
 			if (_forEachIndex != ((count _framesFired)-1)) then {_jsonFramesFired = _jsonFramesFired + ","};
-
-			// Flush data to file if buffer limit reached
-			if ((count _jsonFramesFired) >= _bufferSize) then {
-				[_jsonFramesFired, true] call ocap_fnc_callExtension;
-				_jsonFramesFired = "";
-			};
 		} forEach _framesFired;
 		[_jsonFramesFired, true] call ocap_fnc_callExtension;
 		["]", true] call ocap_fnc_callExtension; // Add cap
@@ -218,15 +205,10 @@ _jsonEvents = ',"events":[';
 	};
 
 	if (_forEachIndex != ((count ocap_eventsData)-1)) then {_jsonEvents = _jsonEvents + ","};
-
-	if ((count _jsonEvents) >= _bufferSize) then {
-		[_jsonEvents, true] call ocap_fnc_callExtension;
-		_jsonEvents = "";
-	};
 } forEach ocap_eventsData;
-[_jsonEvents, true] call ocap_fnc_callExtension;
+[_jsonEvents + "]", true] call ocap_fnc_callExtension;
 
-[']}', true] call ocap_fnc_callExtension; // End of JSON file
+['}', true] call ocap_fnc_callExtension; // End of JSON file
 ['', false] call ocap_fnc_callExtension;
 
 _deltaT = diag_tickTime - _sT;
