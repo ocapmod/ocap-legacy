@@ -28,15 +28,12 @@ if (_write) then {
 
 	// Transfer file to different location (local or remote)
 	if (ocap_exportRemote) then {
-		"ocap_exporter" callExtension format["{transferRemote;%1;%2;%3;%4;%5;%6;%7;%8}",
+		"ocap_exporter" callExtension format["{transferRemote;%1;%2;%3;%4;%5}",
 			ocap_exportCapFilename,
 			_worldName,
 			_missionName,
 			_missionDuration,
-			ocap_exportURL,
-			ocap_exportHost,
-			ocap_exportUsername,
-			ocap_exportPassword
+			ocap_exportURL
 		];
 	} else {
 		"ocap_exporter" callExtension format["{transferLocal;%1;%2;%3;%4;%5;%6}",

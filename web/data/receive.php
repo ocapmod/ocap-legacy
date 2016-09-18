@@ -12,48 +12,63 @@ if (!file_exists("data.db")) {
 	exit;
 }
 
-echo "Raw data received: " . $_POST . "\n";
+$option = $_POST["option"];
+
+echo "Raw data received: " . implode(" ", $_POST) . "\n";
 $string = "";
 foreach($_POST as $key => $value) {
 	$string .= $key . ": " . $value . "\n";
 }
 echo "Processed data: ". $string;
 
-$date = date("Y-m-d");
-$serverId = -1;
-try {
-	$db = new PDO('sqlite:data.db');
-	
-	// Add operation to database
-	$db->exec(sprintf("
-		INSERT INTO operations (world_name, mission_name, mission_duration, filename, date) VALUES (
-			'%s',
-			'%s',
-			%d,
-			'%s',
-			'%s'
-		)
-	", $_POST["worldName"], $_POST["missionName"], $_POST["missionDuration"], $_POST["filename"], $date));
+if ($option == "addFile") { // Add receieved file to this directory
+	$fileName = $_POST["fileName"];
+	$fileContents = $_POST["fileContents"];
 
-	// TODO: Increment local capture count
+	try {
+		file_put_contents($fileName, $fileContents);
+		echo "Successfully created file.";
+	} catch (Exception $e) {
+		echo $e->getMessage();
+	}
+} elseif (option == "dbInsert") { // Insert values into SQLite database
+	$date = date("Y-m-d");
+	$serverId = -1;
+	try {
+		$db = new PDO('sqlite:data.db');
+		
+		// Add operation to database
+		$db->exec(sprintf("
+			INSERT INTO operations (world_name, mission_name, mission_duration, filename, date) VALUES (
+				'%s',
+				'%s',
+				%d,
+				'%s',
+				'%s'
+			)
+		", $_POST["worldName"], $_POST["missionName"], $_POST["missionDuration"], $_POST["filename"], $date));
 
-	// Get server ID
-	$results = $db->query("SELECT remote_id FROM servers");
-	$serverId = $results->fetch()["remote_id"];
-	$db = null;
-	print_debug($serverId);
+		// TODO: Increment local capture count
 
-} catch (PDOExecption $e) {
-	echo "Exception: ".$e->getMessage();
+		// Get server ID
+		$results = $db->query("SELECT remote_id FROM servers");
+		$serverId = $results->fetch()["remote_id"];
+		$db = null;
+		print_debug($serverId);
+
+	} catch (PDOExecption $e) {
+		echo "Exception: ".$e->getMessage();
+	}
+
+	// TODO: Increment capture count on remote database
+	$result = curlRemote("stats-manager.php", array(
+		"option" => "increment_capture_count",
+		"server_id" => $serverId
+	));
+
+	print_debug($result);
+} else {
+	echo "Invalid option";
 }
-
-// TODO: Increment capture count on remote database
-$result = curlRemote("stats-manager.php", array(
-	"option" => "increment_capture_count",
-	"server_id" => $serverId
-));
-
-print_debug($result);
-
 
 ?>
