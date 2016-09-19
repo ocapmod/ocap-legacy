@@ -51,9 +51,9 @@ This guide assumes you have the program OSGeo4W installed.
 	
 If you wish to submit your tileset to be added to the OCAP map repository, please archive the folder
 into a .tar file and upload somewhere (e.g. Dropbox). Ensure the name of the folder matches the
-name of the terrian, and is in lowercase (e.g. isladuala3). Then please file a ticket on the github tracker:
-https://github.com/mistergoodson/OCAP/issues
-Please also include details on:
+name of the terrian, and is in lowercase (e.g. isladuala3). Then please submit it via this GitHub ticket:
+https://github.com/mistergoodson/OCAP/issues/34
+You must include details on:
 	- World name (e.g. Stratis)
 	- Image size (size of image used to create tiles, e.g. 16384)
 	- World size (size of image when N=1). Note: Please do not rely on the 'worldSize' value in Arma.
