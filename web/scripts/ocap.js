@@ -870,9 +870,8 @@ class UI {
 			});
 
 			row.addEventListener("click", () => {
-				this.modalHeader.textContent = "Processing...";
+				this.modalBody.textContent = "Loading...";
 				processOp("data/" + op.filename);
-				this.hideModal();
 			});
 			table.insertBefore(row, table.childNodes[1]);
 		});
@@ -1718,8 +1717,9 @@ function processOp(filepath) {
 		startPlaybackLoop();
 		toggleHitEvents(false);
 		playPause();
-	}).fail(function() {
-		ui.showHint(`Error: "${filepath}" could not be found`);
+		ui.hideModal();
+	}).fail(function(xhr, textStatus, error) {
+		ui.modalBody.innerHTML = `Error: "${filepath}" failed to load.<br/>${error}.`;
 	});
 };
 
