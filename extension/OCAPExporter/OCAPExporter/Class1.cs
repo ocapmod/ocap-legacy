@@ -75,7 +75,7 @@ namespace OCAPExporter
 
             // Very crude parser
             // TODO: Use better parser that doesn't break when a '{' or '}' char exists in one of the args
-            Log("Arguments supplied: " + function);
+            //Log("Arguments supplied: " + function);
             Log("Parsing arguments...");
             while (c != '}')
             {
@@ -207,8 +207,6 @@ namespace OCAPExporter
                     Log(e.ToString());
                 }
             }
-
-            Log("Tasks complete.");
 
             // Send output to Arma
             output.Append("Success");
