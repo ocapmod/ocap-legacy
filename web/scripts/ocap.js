@@ -899,8 +899,8 @@ class UI {
 			Originally made for <a href="http://www.3commandobrigade.com" target="_blank">3 Commando Brigade</a>
 			<br/>
 			<br/>
-			<a href="https://forums.bistudio.com/topic/194164-ocap-operation-capture-and-playback-aar-system" target="_blank">BI Forum Post</a><br/>
-			<a href="https://github.com/mistergoodson/OCAP" target="_blank">GitHub Link</a>
+			<a href="" target="_blank">BI Forum Post</a><br/>
+			<a href="" target="_blank">GitHub Link</a>
 			<br/>
 			<br/>
 			Press space to play/pause<br/>
