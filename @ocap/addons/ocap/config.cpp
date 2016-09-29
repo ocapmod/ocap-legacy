@@ -4,7 +4,7 @@ class CfgPatches
 	{
 		name = "OCAP";
 		author = "MisterGoodson";
-		requiredAddons[] = {"A3_Functions_F"};
+		requiredAddons[] = {"A3_Functions_F", "cba_main"};
 		units[] = {};
 		weapons[] = {};
 	};
