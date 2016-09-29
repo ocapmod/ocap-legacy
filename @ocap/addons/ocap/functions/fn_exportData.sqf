@@ -73,6 +73,7 @@ _jsonUnits = ',"entities":[';
 	// Write entity header
 	if (_isUnit) then {
 		_name = _properties select 3;
+		_name = [_name, """", "'"] call CBA_fnc_replace; // Escape quotes
 		_group = _properties select 4;
 		_side = _properties select 5;
 
@@ -86,6 +87,7 @@ _jsonUnits = ',"entities":[';
 	} else {
 		_class = _properties select 3;
 		_name = _properties select 4;
+		_name = [_name, """", "'"] call CBA_fnc_replace; // Escape quotes
 
 		// Identify vehicle category.
 		// Order of cases are important. With each super class (Ship, Air, LandVehicle),
@@ -191,6 +193,7 @@ _jsonEvents = ',"events":[';
 		case (_type == "killed" || _type == "hit"): {
 			_victimId = _x select 2;
 			_causedByInfo = _x select 3;
+			_causedByInfo set [1, [_causedByInfo select 1, """", "'"] call CBA_fnc_replace]; // Escape quotes
 			_distance = _x select 4;
 
 			_jsonEvents = _jsonEvents + format['
@@ -198,6 +201,7 @@ _jsonEvents = ',"events":[';
 		};
 		case (_type == "connected" || _type == "disconnected"): {
 			_name = _x select 2;
+			_name = [_name, """", "'"] call CBA_fnc_replace; // Escape quotes
 
 			_jsonEvents = _jsonEvents + format['
 			[%1,"%2","%3"]', _frameNum, _type, _name];
