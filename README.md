@@ -4,14 +4,14 @@
 
 ![OCAP Screenshot](https://i.imgur.com/67L12wKl.jpg)
 
-##[Live Web Demo](http://www.3commandobrigade.com:8080/ocap-demo/)
+## [Live Web Demo](http://www.3commandobrigade.com:8080/ocap-demo/)
 
-##What is it?
+## What is it?
 OCAP is a **game-changing** tool that allows the recording and playback of operations on an interactive (web-based) map.
 Reveal where the enemy were located, discover how each group carried out their assaults, and find out who engaged who, when, and what with.
 Use it simply for fun or as a training tool to see how well your group performs on ops.
 
-##Overview
+## Overview
 
 * Interactive web-based playback. All you need is a browser.
 * Captures positions of all units and vehicles throughout an operation.
@@ -38,7 +38,7 @@ if (isServer) then {
 ```
 
  
-##Credits
+## Credits
 
 * [3 Commando Brigade](http://www.3commandobrigade.com/) for testing and moral-boosting.
 * [Leaflet](http://leafletjs.com/) - an awesome JS interactive map library.
