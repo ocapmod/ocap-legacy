@@ -61,7 +61,7 @@ namespace OCAPExporter
 
         // This 2 line are IMPORTANT and if changed will stop everything working
         // To send a string back to ARMA append to the output StringBuilder, ARMA outputSize limit applies!
-        [DllExport("_RVExtension@12", CallingConvention = System.Runtime.InteropServices.CallingConvention.Winapi)]
+        [DllExport("RVExtension", CallingConvention = System.Runtime.InteropServices.CallingConvention.Winapi)]
         public static void RVExtension(StringBuilder output, int outputSize, [MarshalAs(UnmanagedType.LPStr)] string function)
         {
             outputSize--;
