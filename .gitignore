@@ -1,22 +1,24 @@
-## VISUAL STUDIO ##
+### GAMESERVER ###
+## Extension ##
 # NuGet Packages
 *.nupkg
 # The packages folder can be ignored because of Package Restore
-/extension/*/packages/*
+gameserver/extension/*/packages/*
 # except build/, which is used as an MSBuild target.
-!/extension/*/packages/build/
+!gameserver/extension/*/packages/build/
 # Build files can rebuilt in VS, so no need to track them
-/extension/**/bin/*
-/extension/**/obj/*
-/extension/*/.vs/*
+gameserver/extension/**/bin/*
+gameserver/extension/**/obj/*
+gameserver/extension/*/.vs/*
 
-## WEB FILES ##
-/web/data/*
-!/web/data/*.php
-!/web/data/README
-/web/images/maps/*
-!/web/images/maps/README
-/web/info.php
+## Addon ##
+gameserver/@ocap/addons/*.pbo
 
-## ADDON ##
-@ocap/addons/*.pbo
+
+## WEBSERVER ##
+webserver/data/*
+!webserver/data/*.php
+!webserver/data/README
+webserver/images/maps/*
+!webserver/images/maps/README
+webserver/info.php

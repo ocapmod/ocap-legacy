@@ -1,9 +1,0 @@
-version: '2'
-services:
-  ocap:
-    build: . # TODO: replace by docker image name. For now, build because we dont have an image on docker hub (yet)
-    ports: # Expose ports
-      - "8080:80"
-    volumes: # volumes for persistents
-      - "/var/www/html/data/" # database
-      - "/var/www/html/images/maps/" # maps
