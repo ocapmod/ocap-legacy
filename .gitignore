@@ -10,6 +10,7 @@ gameserver/extension/*/packages/*
 gameserver/extension/**/bin/*
 gameserver/extension/**/obj/*
 gameserver/extension/*/.vs/*
+gameserver/capture-manager/config.py
 
 ## Addon ##
 gameserver/@ocap/addons/*.pbo
