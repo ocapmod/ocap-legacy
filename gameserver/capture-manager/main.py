@@ -45,9 +45,9 @@ def gameserver_init():
 @app.route('/import', methods=['POST'])
 def import_data():
   data = request.get_json(force=True)
-  server_id = data['server_id'] # Defined in userconfig, included in export to dll
+  server_id = data['serverId'] # Defined in userconfig, included in export to dll
 
-  logger.debug('Received data from gameserver: {}'.format(server_id))
+  logger.debug('Received import request from gameserver: {}'.format(server_id))
 
   # Abort if server not initialised
   if server_id not in gameservers:
@@ -55,7 +55,7 @@ def import_data():
     logger.error(err)
     return err
 
-  gameservers[server_id].append(data['capture_data'])
+  gameservers[server_id].import_data(data['captureData'])
   return 'Success'
 
 if __name__ == '__main__':

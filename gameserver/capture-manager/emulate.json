@@ -1,0 +1,22 @@
+{
+  "serverId": "my-server",
+  "captureData": {
+    "entities": {
+      "0": {
+        "startFrameNum": "0",
+        "positions": [
+          [12, 5],
+          [14, 6]
+        ]
+      },
+      "1": {
+        "startFrameNum": "42",
+        "positions": [
+          [36, 98],
+          [40, 100]
+        ]
+      }
+    },
+    "events": []
+  }
+}

@@ -1,3 +1,5 @@
+.vscode
+
 ### GAMESERVER ###
 ## Extension ##
 # NuGet Packages
@@ -10,13 +12,16 @@ gameserver/extension/*/packages/*
 gameserver/extension/**/bin/*
 gameserver/extension/**/obj/*
 gameserver/extension/*/.vs/*
-gameserver/capture-manager/config.py
 
 ## Addon ##
 gameserver/@ocap/addons/*.pbo
 
+## Capture manager
+gameserver/capture-manager/config.py
+gameserver/capture-manager/__pycache__
 
-## WEBSERVER ##
+
+### WEBSERVER ###
 webserver/data/*
 !webserver/data/*.php
 !webserver/data/README

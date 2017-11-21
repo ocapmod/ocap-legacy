@@ -26,12 +26,14 @@ class Watcher(Thread):
       time_now = time.time()
 
       for server_id, server in self.gameservers.items():
+        logger.debug('Checking: {}'.format(server_id))
+
         if not server.is_capturing:
+          logger.debug('  Skipping (not capturing)')
           continue
 
-        time_delta = time_now - server.last_append_time
-        logger.debug('  {} seconds since last append: {}'.format(
-          server, time_delta))
+        time_delta = time_now - server.last_import_time
+        logger.debug('  Seconds since last import: {}'.format(round(time_delta, 1)))
         if time_delta > config.CAPTURE_TIMEOUT:
-          logger.debug('  {} timed out. Publishing...'.format(server_id))
+          logger.debug('  Timed out. Publishing...'.format(server_id))
           server.publish()
