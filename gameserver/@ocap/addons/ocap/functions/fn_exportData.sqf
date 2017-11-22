@@ -60,7 +60,7 @@ _header = format['{"worldName":"%1","missionName":"%2","missionAuthor":"%3","cap
 [_header, true] call ocap_fnc_callExtension;
 
 // Write entities
-_jsonUnits = ',"entities":[';
+_jsonUnits = ',"entities":{';
 {
 	_properties = _x select 0;
 	_positions = _x select 1;
@@ -69,6 +69,8 @@ _jsonUnits = ',"entities":[';
 	_type = _properties select 1;
 	_id = _properties select 2;
 	_isUnit = (_type == "unit");
+
+	_jsonUnits = _jsonUnits + format['%1:', _id];
 
 	// Write entity header
 	if (_isUnit) then {
@@ -179,7 +181,7 @@ _jsonUnits = ',"entities":[';
 	if (_forEachIndex != ((count ocap_entitiesData)-1)) then {_jsonUnitFooter = _jsonUnitFooter + ","};
 	[_jsonUnitFooter, true] call ocap_fnc_callExtension;
 } forEach ocap_entitiesData;
-[']', true] call ocap_fnc_callExtension; // Add cap to entities array
+['}', true] call ocap_fnc_callExtension; // Add cap to entities array
 
 
 // Write events
