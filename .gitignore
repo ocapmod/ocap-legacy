@@ -17,7 +17,7 @@ gameserver/extension/*/.vs/*
 gameserver/@ocap/addons/*.pbo
 
 ## Capture manager
-gameserver/capture-manager/config.py
+gameserver/capture-manager/debug.txt
 gameserver/capture-manager/__pycache__
 
 

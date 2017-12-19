@@ -66,7 +66,7 @@ if (ocap_debug) then {
 _id = 0; // ID assigned to each entity (auto increments). Also acts as an index for each entity in entitiesData.
 while {true} do {
 	if (!ocap_capture) then {waitUntil {sleep 1; ocap_capture}};
-	
+
 	_sT = diag_tickTime;
 	{
 		if (!(_x getVariable ["ocap_exclude", false])) then {
@@ -129,7 +129,7 @@ while {true} do {
 	if (ocap_debug) then {
 		systemChat _string;
 	};
-	
+
 	// Write to log file every 10 frames
 	if ((ocap_captureFrameNo % 10) == 0) then {
 		[_string, false] call ocap_fnc_log;

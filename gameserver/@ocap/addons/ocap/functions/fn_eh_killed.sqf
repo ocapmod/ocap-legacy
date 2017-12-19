@@ -27,7 +27,6 @@ _victimId = _victim getVariable "ocap_id";
 // If killer is null, then unit likely killed by fire/collision/exploding vehicle
 _eventData = [ocap_captureFrameNo, "killed", _victimId, ["null"], -1];
 if (!isNull _killer) then {
-	
 	_killerInfo = [];
 	if (_killer isKindOf "CAManBase") then {
 		_killerInfo = [

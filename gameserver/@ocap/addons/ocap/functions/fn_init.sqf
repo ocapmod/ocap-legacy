@@ -10,10 +10,11 @@
 
 // Define global vars
 #include "\userconfig\ocap\config.hpp";
-ocap_entitiesData = [];  // Data on all units + vehicles that appear throughout the mission.
-ocap_eventsData = []; // Data on all events (involving 2+ units) that occur throughout the mission.
 ocap_captureFrameNo = 0; // Frame number for current capture
 ocap_endFrameNo = 0; // Frame number at end of mission
+ocap_entitiesData = [];  // Data on all units + vehicles that appear throughout the mission.
+ocap_eventsData = []; // Data on all events (involving 2+ units) that occur throughout the mission.
+ocap_serverId = format["%1 %2", serverName, serverTime];
 
 // Add mission EHs
 addMissionEventHandler ["EntityKilled", {

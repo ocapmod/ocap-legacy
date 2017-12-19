@@ -2,7 +2,7 @@
 
     ==========================================================================================
 
-    Copyright (C) 2016 Jamie Goodson (aka MisterGoodson) (goodsonjamie@yahoo.co.uk)
+    Copyright (C) 2018 Jamie Goodson (aka MisterGoodson) (goodsonjamie@yahoo.co.uk)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,29 +19,9 @@
 
     ==========================================================================================
 
- * Exports supplied capture JSON string into a JSON file.
- * JSON string can (and should) be supplied in multiple separate calls to this extension (as to avoid the Arma buffer limit).
- * This extension also handles transferring of JSON file to either a local or remote (via FTP) location.
- * 
- * Extension argument string can be 1 of 3 forms.
- * f1:
- *     {write;arg1}json_string_part
- *     "write" = Tells the extension to write json_string_part to a file (in /tmp)
- *     arg1 = Json filename to write/append to /tmp (e.g. "myfile.json")
- *     json_string_part = Partial json string to be written to a file.
- * f2:
- *     {transferLocal;arg1;arg2;arg3;arg4;arg5;arg6}
- *     "transferLocal" = Tells the extension we wish to transfer the json file to a local directory
- *     arg1 = Json filename to move from /tmp (e.g. "myfile.json")
- *     arg2 = World name
- *     arg3 = Mission name
- *     arg4 = Mission duration (seconds)
- *     arg5 = URL to web directory where OCAP is hosted
- *     arg6 = Absolute path to directory where JSON file should be moved to
- * f3:
- *     {transferRemote;arg1;arg2;arg3;arg4;arg5}
- *     "transferRemote" = Tells the extension we wish to transfer the json file to a remote server (via POST)
- *     arg1 to arg5 = Same as f2
+ * Sends supplied JSON string to Capture Manager.
+ * JSON string can (and should) be supplied in multiple separate calls to this extension
+ * (as to avoid the Arma buffer limit).
  */
 
 using RGiesecke.DllExport;
@@ -58,29 +38,70 @@ namespace OCAPExporter
     public class Main
     {
         static string logfile = "ocap_log.txt";
+        static List<string> argKeys = new List<string> { "capManagerHost" };
 
-        // This 2 line are IMPORTANT and if changed will stop everything working
-        // To send a string back to ARMA append to the output StringBuilder, ARMA outputSize limit applies!
+
+        // To send a string back to Arma, append to the output StringBuilder. Arma outputSize limit applies!
         [DllExport("RVExtension", CallingConvention = System.Runtime.InteropServices.CallingConvention.Winapi)]
-        public static void RVExtension(StringBuilder output, int outputSize, [MarshalAs(UnmanagedType.LPStr)] string function)
+        public static void RVExtension(StringBuilder output, int outputSize, string input)
         {
             outputSize--;
+            Log("==========");
 
-            // Grab arguments from function string (arguments are wrapped in curly brackets).
-            // e.g. {arg1;arg2;arg3}restOfFunctionString
-            char c = new char();
-            int index = 0;
-            List<String> args = new List<String>();
-            String arg = "";
+            Dictionary<string, object> parsedInput = ParseInput(input);
+            Dictionary<string, string> args = (Dictionary<string, string>) parsedInput["args"];
+            string json = (string) parsedInput["json"];
+
+            string capManagerHost = FormatUrl(args["capManagerHost"], true);
+            string postUrl = capManagerHost + "/import";
+
+            // POST capture data to Capture Manager
+            try
+            {
+                Log("Sending POST request to " + postUrl);
+                using (var http = new HttpClient())
+                {
+                    http.Timeout = TimeSpan.FromSeconds(10);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    var result = http.PostAsync(postUrl, content).Result;
+                    string resultContent = result.Content.ReadAsStringAsync().Result;
+                    Log("Web server responded with: " + resultContent);
+                }
+            } catch (Exception e) {
+                Log("An error occurred. Possibly due to request timeout.");
+                Log(e.ToString());
+            }
+
+            // Send output to Arma
+            output.Append("Success");
+        }
+
+
+        /* Parses the given input string.
+         *
+         * Returns:
+         *   A dictionary containing two elements - "args" and "json".
+         *   "args" is a dictionary containing special arguments supplied by the user
+         *   when calling this exentsion.
+         *   "json" is a string containing OCAP capture data.
+         */
+        public static Dictionary<string, object> ParseInput(string input)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
 
             // Very crude parser
-            // TODO: Use better parser that doesn't break when a '{' or '}' char exists in one of the args
-            //Log("Arguments supplied: " + function);
-            Log("Parsing arguments...");
+            // Split arguments (inside {...}) into a list
+            Dictionary<string, string> argDict = new Dictionary<string, string>();
+            char c = new char();
+            int argCount = 0;
+            int index = 0;
+            String arg = "";
+
+            Log("Parsing input...");
             while (c != '}')
             {
                 index++;
-                c = function[index];
+                c = input[index];
 
                 if (c != ';' && c != '}')
                 {
@@ -88,144 +109,52 @@ namespace OCAPExporter
                 }
                 else
                 {
-                    args.Add(arg);
+                    argDict.Add(argKeys[argCount], arg);
+                    argCount++;
                     arg = "";
                 }
             }
+            string json = input.Remove(0, index + 1);
+
             Log("Done.");
-
-            // Define variables (from args)
-            string option = args[0];
-            string captureFilename = args[1];
-            string tempDir = @"Temp\";
-            string captureFilepath = tempDir + captureFilename; // Relative path where capture file will be written to
-            //string captureFilepath = System.AppDomain.CurrentDomain.BaseDirectory + @"tmp\" + captureFilename;
-
-            // Remove arguments from function string
-            function = function.Remove(0, index + 1);
-
-            // Write string to JSON file
-            if (option.Equals("write"))
+            Log("Args: " + string.Join(";", argDict));
+            if (json.Length > 100)
             {
-                // Create temp directory if not already exists
-                if (!Directory.Exists(tempDir))
-                {
-                    Log("Temp directory not found, creating...");
-                    Directory.CreateDirectory(tempDir);
-                    Log("Done.");
-                }
-
-                // Create file to write to (if not exists)
-                if (!File.Exists(captureFilepath))
-                {
-                    Log("Capture file not found, creating at " + captureFilepath + "...");
-                    File.Create(captureFilepath).Close();
-                    Log("Done.");
-                }
-
-                // Append to file
-                File.AppendAllText(captureFilepath, function);
-                Log("Appended capture data to capture file.");
-
-            } else {
-                string worldName = args[2];
-                string missionName = args[3];
-                string missionDuration = args[4];
-                string ocapUrl = args[5];
-                if (!ocapUrl.StartsWith("http://"))
-                {
-                    ocapUrl += "http://";
-                }
-                ocapUrl = AddMissingSlash(ocapUrl);
-                string postUrl = ocapUrl + "data/receive.php";
-
-                // Transfer JSON file to a local location
-                if (option.Equals("transferLocal"))
-                {
-                    string webRoot = args[6];
-                    webRoot = AddMissingSlash(webRoot);
-                    string transferFilepath = webRoot + "data/" + captureFilename;
-
-                    try
-                    {
-                        // Move JSON file from /tmp to transferPath
-                        Log("Moving " + captureFilename + " to " + transferFilepath + "...");
-                        File.Move(captureFilepath, transferFilepath);
-                        Log("Done");
-                    } catch (Exception e)
-                    {
-                        Log(e.ToString());
-                    }
-
-                }
-
-                // Transfer JSON file to a remote location
-                else if (option.Equals("transferRemote"))
-                {
-                    // POST file
-                    try
-                    {
-                        Log("Sending " + captureFilename + " to " + postUrl + "...");
-                        using (var http = new HttpClient()) using (var formData = new MultipartFormDataContent())
-                        {
-                            HttpContent fileBytes = new ByteArrayContent(File.ReadAllBytes(captureFilepath));
-                            formData.Add(new StringContent("addFile"), "option");
-                            formData.Add(new StringContent(captureFilename), "fileName");
-                            formData.Add(fileBytes, "fileContents");
-                            var result = http.PostAsync(postUrl, formData).Result;
-                            string resultContent = result.Content.ReadAsStringAsync().Result;
-                            Log("Web server responded with: " + resultContent);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Log(e.ToString());
-                    }
-                }
-
-                // POST worldName/missionName/missionDuration 
-                try
-                {
-                    Log("Sending POST data to " + postUrl);
-                    using (var http = new HttpClient())
-                    {
-                        var postValues = new Dictionary<string, string>
-                        {
-                            {"option", "dbInsert"},
-                            {"worldName", worldName },
-                            {"missionName", missionName },
-                            {"missionDuration", missionDuration },
-                            {"filename", captureFilename }
-                        };
-                        var content = new FormUrlEncodedContent(postValues);
-                        var result = http.PostAsync(postUrl, content).Result;
-                        string resultContent = result.Content.ReadAsStringAsync().Result;
-                        Log("Web server responded with: " + resultContent);
-                    }
-                } catch (Exception e)
-                {
-                    Log(e.ToString());
-                }
+                Log("JSON: " + json.Substring(0, 100) + "...");
+            } else
+            {
+                Log("JSON: " + json);
             }
 
-            // Send output to Arma
-            output.Append("Success");
+            dict.Add("args", argDict);
+            dict.Add("json", json);
+
+            return dict;
         }
 
+
+        // Format a URL if malformed
+        public static string FormatUrl(string url, bool removeTrailingSlash = true)
+        {
+            if (!(url.StartsWith("http://") || url.StartsWith("https://")))
+            {
+                url = "http://" + url;
+            }
+
+            if (url.EndsWith("/") && removeTrailingSlash)
+            {
+                url = url.Remove(url.Length - 1);
+            }
+
+            return url;
+        }
+
+
+        // Write string to log file and console.
         public static void Log(string str)
         {
-            File.AppendAllText(logfile, DateTime.Now.ToString("dd/MM/yyyy H:mm | ") + str + Environment.NewLine);
+            File.AppendAllText(logfile, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss | ") + str + Environment.NewLine);
             Console.WriteLine(str);
-        }
-
-        public static string AddMissingSlash(string str)
-        {
-            if (!str.EndsWith("/"))
-            {
-                str += "/";
-            }
-
-            return str;
         }
     }
 }

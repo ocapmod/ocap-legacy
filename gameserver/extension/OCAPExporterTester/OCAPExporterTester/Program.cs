@@ -10,9 +10,7 @@ namespace OCAPExporterTester
     {
         static void Main(string[] args)
         {
-            //string input = "{write;test.json}Some dummy data";
-            //string input = "{transferLocal;test.json;x;x;x;http://localhost;F:/xampp/htdocs;}";
-            string input = "{transferRemote;test.json;x;x;x;http://localhost;}";
+            string input = "{localhost:5000}{\"myKey\": \"myValue\"}";
             OCAPExporter.Main.RVExtension(new StringBuilder(), 1024, input);
 
             //AARExporter.Main.Test();

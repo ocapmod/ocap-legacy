@@ -1,6 +1,13 @@
 {
-  "serverId": "my-server",
+  "serverId": "My Server 123",
   "captureData": {
+    "header": {
+      "worldName": "Altis",
+      "missionName": "My Amazing Mission",
+      "missionAuthor": "Bob",
+      "captureDelay": 3,
+      "frameCount": 2
+    },
     "entities": {
       "0": {
         "startFrameNum": "0",

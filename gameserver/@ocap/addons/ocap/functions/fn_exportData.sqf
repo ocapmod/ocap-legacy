@@ -2,11 +2,11 @@
 	Author: MisterGoodson
 
 	Description:
-		Converts all capture data (events + entities) into a JSON format and outputs this string
-		to the OCAP extension (which handles JSON file writing/moving).
+		Converts all capture data (events + entities) into JSON format and outputs this string
+		to the OCAP extension.
 
 	Params:
-		_this select 0: BOOLEAN - Stop capture (false will continue capture after export) (Default: true)
+		_this select 0: BOOLEAN - Stop capture after export (Default: true)
 */
 
 if (!ocap_capture) exitWith {
@@ -17,6 +17,28 @@ params [["_stopCapture", true]];
 ["fnc_exportData called. Exporting capture data..."] call ocap_fnc_log;
 
 _sT = diag_tickTime;
+
+ocap_capture = false; // Stop capture while we export
+ocap_endFrameNo = ocap_captureFrameNo;
+ocap_exportCapFilename = format["%1_%2.json", missionName, floor(random(1000))]; // Filename used for capture data file
+
+_br = toString[13, 10];
+_tab = toString[9];
+_APC_CLASSES = [
+	"Wheeled_APC_F",
+	"Tracked_APC",
+	"APC_Wheeled_01_base_F",
+	"APC_Wheeled_02_base_F",
+	"APC_Wheeled_03_base_F",
+	"APC_Tracked_01_base_F",
+	"APC_Tracked_02_base_F",
+	"APC_Tracked_03_base_F"
+];
+_TANK_CLASSES = [
+	"MBT_01_base_F",
+	"MBT_02_base_F",
+	"MBT_03_base_F"
+];
 
 // Same as isKindOf, but can be tested against multiple types
 _isKindOf = {
@@ -32,195 +54,226 @@ _isKindOf = {
 	_bool
 };
 
-ocap_capture = false; // Stop capture while we export
-ocap_endFrameNo = ocap_captureFrameNo;
-ocap_exportCapFilename = format["%1_%2.json", missionName, floor(random(1000))]; // Filename used for capture data file
+_atEndOfArray = {
+	_index = _this select 0;
+	_array = _this select 1;
 
-_br = toString [13, 10];
-_tab = toString[9];
-_apcClasses = [
-	"Wheeled_APC_F",
-	"Tracked_APC",
-	"APC_Wheeled_01_base_F",
-	"APC_Wheeled_02_base_F",
-	"APC_Wheeled_03_base_F",
-	"APC_Tracked_01_base_F",
-	"APC_Tracked_02_base_F",
-	"APC_Tracked_03_base_F"
-];
-_tankClasses = [
-	"MBT_01_base_F",
-	"MBT_02_base_F",
-	"MBT_03_base_F"
-];
+	_index + 1 >= count _array
+};
 
-// Write main header
-_header = format['{"worldName":"%1","missionName":"%2","missionAuthor":"%3","captureDelay":%4,"endFrame":%5
-',worldName, briefingName, getMissionConfigValue ["author", ""], ocap_frameCaptureDelay, ocap_endFrameNo];
-[_header, true] call ocap_fnc_callExtension;
-
-// Write entities
-_jsonUnits = ',"entities":{';
-{
-	_properties = _x select 0;
-	_positions = _x select 1;
-
-	_startFrameNo = _properties select 0;
-	_type = _properties select 1;
-	_id = _properties select 2;
-	_isUnit = (_type == "unit");
-
-	_jsonUnits = _jsonUnits + format['%1:', _id];
-
-	// Write entity header
-	if (_isUnit) then {
-		_name = _properties select 3;
-		_name = [_name, """", "'"] call CBA_fnc_replace; // Escape quotes
-		_group = _properties select 4;
-		_side = _properties select 5;
-
-		_isPlayer = 0;
-		if (_properties select 6) then {
-			_isPlayer = 1;
-		};
-
-		_jsonUnits = _jsonUnits + format['
-		{"startFrameNum":%1,"type":"unit","id":%2,"name":"%3","group":"%4","side":"%5","isPlayer":%6', _startFrameNo, _id, _name, _group, _side, _isPlayer];
-	} else {
-		_class = _properties select 3;
-		_name = _properties select 4;
-		_name = [_name, """", "'"] call CBA_fnc_replace; // Escape quotes
-
-		// Identify vehicle category.
-		// Order of cases are important. With each super class (Ship, Air, LandVehicle),
-		// more specific classes should be placed highest, and less specific classes placed lowest.
-		_class = switch (true) do {
-			/*
-				Command for listing parent classes of a vehicle:
-				_parents = [(configFile >> "CfgVehicles" >> typeOf (vehicle player)), true] call BIS_fnc_returnParents;
-				hint str(_parents);
-				
-				Command for getting vehicle icon used by Arma:
-				hint getText (configFile >> "CfgVehicles" >> typeOf (vehicle player) >> "icon");
-			*/
-
-			// Sea
-			case (_class isKindOf "Ship"): {"sea"};
-
-			// Air
-			case (_class isKindOf "ParachuteBase"): {"parachute"};
-			case (_class isKindOf "Helicopter"): {"heli"};
-			case (_class isKindOf "Plane"): {"plane"};
-			case (_class isKindOf "Air"): {"plane"};
-
-			// Land
-			//case (_class isKindOf "UK3CB_BAF_Jackal_Base_D"): {"jackal"};
-			case ([_class, _apcClasses] call _isKindOf): {"apc"};
-			case (_class isKindOf "Truck_F"): {"truck"}; // Should be higher than Car
-			case (_class isKindOf "Car"): {"car"};
-			//case ([_class, _tankClasses] call _isKindOf): {"tank"};
-			case (_class isKindOf "Tank"): {"tank"};
-			case (_class isKindOf "StaticMortar"): {"static-mortar"};
-			case (_class isKindOf "StaticWeapon"): {"static-weapon"};
-			case (_class isKindOf "LandVehicle"): {"unknown"};
-			default {"unknown"};
-		};
-
-		_jsonUnits = _jsonUnits + format['
-		{"startFrameNum":%1,"type":"vehicle","id":%2,"class":"%3","name":"%4"', _startFrameNo, _id, _class, _name];
-	};
-	[_jsonUnits, true] call ocap_fnc_callExtension;
-	_jsonUnits = "";
-
-
-	// Write entity positions
-	_jsonUnitPosArr = ',"positions":[';
+_entitiesToJson = {
+	/*
+	Return json format:
 	{
-		_alive = 1;
-		if (!(_x select 2)) then {
-			_alive = 0;
-		};
+		0: {
+			startFrameNum: 22,
+			type: "unit",
+			...
+			positions: [
+          		[36, 98],
+          		[40, 100]
+        	]
+		},
+		1: {
+			startFrameNum: 32,
+			type: "unit",
+			...
+			positions: [
+				[12, 5],
+				[14, 6]
+        	]
+		},
+		...
+	}
+	*/
 
+	_entities = _this;
+	_json = "{";
+	{
+		_properties = _x select 0;
+		_positions = _x select 1;
+
+		_startFrameNo = _properties select 0;
+		_type = _properties select 1;
+		_id = _properties select 2;
+		_isUnit = (_type == "unit");
+
+		_json = _json + format['"%1":', _id];
+
+		// Write entity header
+		_jsonHeader = "";
 		if (_isUnit) then {
-			_isInVehicle = 0;
-			if (_x select 3) then {
-				_isInVehicle = 1;
+			_name = _properties select 3;
+			_name = [_name, """", "'"] call CBA_fnc_replace; // Escape quotes
+			_group = _properties select 4;
+			_side = _properties select 5;
+
+			_isPlayer = 0;
+			if (_properties select 6) then {
+				_isPlayer = 1;
 			};
 
-			_jsonUnitPosArr = _jsonUnitPosArr + format['
-			[%1,%2,%3,%4]', _x select 0, round(_x select 1), _alive, _isInVehicle]; // position, direction, alive, in vehicle
+			_jsonHeader = format['
+				"startFrameNum":%1,"type":"unit","id":%2, "name":"%3","group":"%4","side":"%5","isPlayer":%6',
+				_startFrameNo, _id, _name, _group, _side, _isPlayer];
+			systemChat _jsonHeader;
 		} else {
-			_jsonUnitPosArr = _jsonUnitPosArr + format['
-			[%1,%2,%3,%4]', _x select 0, round(_x select 1), _alive, _x select 3]; // position, direction, alive, crew
-		};
-
-		if (_forEachIndex != ((count _positions)-1)) then {_jsonUnitPosArr = _jsonUnitPosArr + ","};
-	} forEach _positions;
-	[_jsonUnitPosArr, true] call ocap_fnc_callExtension;
-	["]", true] call ocap_fnc_callExtension; // Add cap
-
-
-	// Write frames unit fired
-	if (_isUnit) then {
-		_framesFired = _x select 2;
-		_jsonFramesFired = ',"framesFired":[';
-		{
-			_frameNum = _x select 0;
-			_projectilePos = _x select 1;
-			_jsonFramesFired = _jsonFramesFired + format['
-			[%1,%2]', _frameNum, _projectilePos];
-
-			if (_forEachIndex != ((count _framesFired)-1)) then {_jsonFramesFired = _jsonFramesFired + ","};
-		} forEach _framesFired;
-		[_jsonFramesFired, true] call ocap_fnc_callExtension;
-		["]", true] call ocap_fnc_callExtension; // Add cap
-	};
-
-	_jsonUnitFooter = '}'; // End of this unit's JSON object
-	
-	if (_forEachIndex != ((count ocap_entitiesData)-1)) then {_jsonUnitFooter = _jsonUnitFooter + ","};
-	[_jsonUnitFooter, true] call ocap_fnc_callExtension;
-} forEach ocap_entitiesData;
-['}', true] call ocap_fnc_callExtension; // Add cap to entities array
-
-
-// Write events
-_jsonEvents = ',"events":[';
-{
-
-	_frameNum = _x select 0;
-	_type = _x select 1;
-
-	switch (true) do {
-		case (_type == "killed" || _type == "hit"): {
-			_victimId = _x select 2;
-			_causedByInfo = _x select 3;
-			_causedByInfo set [1, [_causedByInfo select 1, """", "'"] call CBA_fnc_replace]; // Escape quotes
-			_distance = _x select 4;
-
-			_jsonEvents = _jsonEvents + format['
-			[%1,"%2",%3,%4,"%5"]', _frameNum, _type, _victimId, _causedByInfo, round(_distance)];
-		};
-		case (_type == "connected" || _type == "disconnected"): {
-			_name = _x select 2;
+			_class = _properties select 3;
+			_name = _properties select 4;
 			_name = [_name, """", "'"] call CBA_fnc_replace; // Escape quotes
 
-			_jsonEvents = _jsonEvents + format['
-			[%1,"%2","%3"]', _frameNum, _type, _name];
+			// Identify vehicle category.
+			// Order of cases is important. With each super class (Ship, Air, LandVehicle),
+			// more specific classes should be placed highest, and less specific classes placed lowest.
+			_class = switch (true) do {
+				/*
+					Command for listing parent classes of a vehicle:
+					_parents = [(configFile >> "CfgVehicles" >> typeOf (vehicle player)), true] call BIS_fnc_returnParents;
+					hint str(_parents);
+
+					Command for getting vehicle icon used by Arma:
+					hint getText (configFile >> "CfgVehicles" >> typeOf (vehicle player) >> "icon");
+				*/
+
+				// Sea
+				case (_class isKindOf "Ship"): {"sea"};
+
+				// Air
+				case (_class isKindOf "ParachuteBase"): {"parachute"};
+				case (_class isKindOf "Helicopter"): {"heli"};
+				case (_class isKindOf "Plane"): {"plane"};
+				case (_class isKindOf "Air"): {"plane"};
+
+				// Land
+				//case (_class isKindOf "UK3CB_BAF_Jackal_Base_D"): {"jackal"};
+				case ([_class, _APC_CLASSES] call _isKindOf): {"apc"};
+				case (_class isKindOf "Truck_F"): {"truck"}; // Should be higher than Car
+				case (_class isKindOf "Car"): {"car"};
+				//case ([_class, _TANK_CLASSES] call _isKindOf): {"tank"};
+				case (_class isKindOf "Tank"): {"tank"};
+				case (_class isKindOf "StaticMortar"): {"static-mortar"};
+				case (_class isKindOf "StaticWeapon"): {"static-weapon"};
+				case (_class isKindOf "LandVehicle"): {"unknown"};
+				default {"unknown"};
+			};
+
+			_jsonHeader = format['
+				"startFrameNum":%1,"type":"vehicle","id":%2,"class":"%3", "name":"%4"',
+				_startFrameNo, _id, _class, _name];
 		};
-	};
 
-	if (_forEachIndex != ((count ocap_eventsData)-1)) then {_jsonEvents = _jsonEvents + ","};
-} forEach ocap_eventsData;
-[_jsonEvents + "]", true] call ocap_fnc_callExtension;
 
-['}', true] call ocap_fnc_callExtension; // End of JSON file
-['', false] call ocap_fnc_callExtension;
+		// Write entity positions
+		_jsonPositions = ',"positions":[';
+		{
+			_alive = 1;
+			if (!(_x select 2)) then {
+				_alive = 0;
+			};
+
+			if (_isUnit) then {
+				_isInVehicle = 0;
+				if (_x select 3) then {
+					_isInVehicle = 1;
+				};
+
+				_jsonPositions = _jsonPositions + format['
+				[%1,%2,%3,%4]', _x select 0, round(_x select 1), _alive, _isInVehicle]; // position, direction, alive, in vehicle
+			} else {
+				_jsonPositions = _jsonPositions + format['
+				[%1,%2,%3,%4]', _x select 0, round(_x select 1), _alive, _x select 3]; // position, direction, alive, crew
+			};
+
+			if !([_forEachIndex, _positions] call _atEndOfArray) then {_jsonPositions = _jsonPositions + ","};
+		} forEach _positions;
+		_jsonPositions = _jsonPositions + "]";
+
+
+		// Write frames unit fired
+		_jsonFramesFired = "";
+		if (_isUnit) then {
+			_framesFired = _x select 2;
+			_jsonFramesFired = format[',"framesFired":%1', str(_framesFired)];
+		};
+
+		//_json = _json + "{" + _jsonHeader + _jsonPositions + _jsonFramesFired + "}"; // Save this unit
+		_json = format["%1 {%2 %3 %4}", _json, _jsonHeader, _jsonPositions, _jsonFramesFired];
+
+		//_json = "{}";
+		if (!([_forEachIndex, _entities] call _atEndOfArray)) then {
+			_json = _json + ",";
+		};
+	} forEach _entities;
+
+	_json = _json + "}";
+	_json
+};
+
+_eventsToJson = {
+	_events = _this;
+	_json = "[";
+	{
+
+		_frameNum = _x select 0;
+		_type = _x select 1;
+
+		switch (true) do {
+			case (_type == "killed" || _type == "hit"): {
+				_victimId = _x select 2;
+				_causedByInfo = _x select 3;
+				_causedByInfo set [1, [_causedByInfo select 1, """", "'"] call CBA_fnc_replace]; // Escape quotes
+				_distance = _x select 4;
+
+				_json = _json + format['
+				[%1,"%2",%3,%4,"%5"]', _frameNum, _type, _victimId, _causedByInfo, round(_distance)];
+			};
+			case (_type == "connected" || _type == "disconnected"): {
+				_name = _x select 2;
+				_name = [_name, """", "'"] call CBA_fnc_replace; // Escape quotes
+
+				_json = _json + format['
+				[%1,"%2","%3"]', _frameNum, _type, _name];
+			};
+		};
+
+		if !([_forEachIndex, _events] call _atEndOfArray) then {_json = _json + ","};
+	} forEach _events;
+
+	_json = _json + "]";
+	_json
+};
+
+// Export
+(format['
+	{
+		"serverId": "%1",
+		"captureData": {
+			"header": {
+				"worldName": "%2",
+				"missionName": "%3",
+				"missionAuthor": "%4",
+				"captureDelay": %5,
+				"frameCount": %6
+			},
+			"entities": %7,
+			"events": %8
+		}
+	}',
+	ocap_serverId, worldName, briefingName, getMissionConfigValue ["author", ""], ocap_frameCaptureDelay,
+	ocap_captureFrameNo, ocap_entitiesData call _entitiesToJson, ocap_eventsData call _eventsToJson]
+) call ocap_fnc_callExtension;
+
+
+{
+	_x set [1, []]; // Reset positions
+	_x set [2, []]; // Reset frames fired
+} forEach ocap_entitiesData;
+ocap_eventsData = [];
 
 _deltaT = diag_tickTime - _sT;
 [format["Exporting complete (%1ms).", _deltaT * 1000]] call ocap_fnc_log;
 
 if (!_stopCapture) then {
-	["Continuing capture."] call ocap_fnc_log;
+	["Resuming capture."] call ocap_fnc_log;
 	ocap_capture = true; // Continue capturing
 };
