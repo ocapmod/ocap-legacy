@@ -1,17 +1,10 @@
 import logging
 import time
-from enum import Enum
+
+from constants import CaptureData
 
 
 logger = logging.getLogger(__name__)
-
-
-class CaptureData():
-	ENTITIES = 'entities'
-	EVENTS = 'events'
-	FRAMES_FIRED = 'framesFired'
-	HEADER = 'header'
-	POSITIONS = 'positions'
 
 
 class GameServer():
@@ -65,9 +58,3 @@ class GameServer():
 
 		# logger.debug('Data after import: {}'.format(self.data))
 		logger.debug('Import complete')
-
-	def publish(self):
-		"""Send capture to webserver."""
-		self.is_capturing = False
-
-		# TODO: Publish data to webserver

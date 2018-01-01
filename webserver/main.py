@@ -1,9 +1,11 @@
 import json
 import logging
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 
 import config
+import models
+from models import db
 from gameserver import GameServer
 from watcher import Watcher
 
@@ -11,12 +13,19 @@ from watcher import Watcher
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 gameservers = {} # e.g. {'server1': GameServer, 'server2', GameServer, ...}
 
+# Init db
+db.app = app
+db.init_app(app)
+db.create_all()
+db.session.commit()
 
-@app.route('/', methods=['GET', 'POST'])
-def hello_world():
-	return jsonify([g.to_dict() for g in gameservers.values()])
+
+@app.route('/')
+def index():
+	return render_template('index.html')
 
 
 @app.route('/import', methods=['POST'])
@@ -38,6 +47,11 @@ def import_data():
 	return 'Success'
 
 
+@app.route('/import/view', methods=['GET', 'POST'])
+def import_data_view():
+	return jsonify([g.to_dict() for g in gameservers.values()])
+
+
 if __name__ == '__main__':
-	# Watcher(gameservers).start()
+	Watcher(gameservers, db).start()
 	app.run(debug=True, port=config.PORT, threaded=True)

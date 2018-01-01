@@ -16,15 +16,13 @@ gameserver/extension/*/.vs/*
 ## Addon ##
 gameserver/@ocap/addons/*.pbo
 
-## Capture manager
-gameserver/capture-manager/debug.txt
-gameserver/capture-manager/__pycache__
-
 
 ### WEBSERVER ###
-webserver/data/*
-!webserver/data/*.php
-!webserver/data/README
-webserver/images/maps/*
-!webserver/images/maps/README
-webserver/info.php
+webserver/__pycache__
+webserver/debug.txt
+webserver/captures/*
+!webserver/captures/README.md
+webserver/static/images/maps/*
+!webserver/images/maps/README.md
+webserver/*.db
+webserver/*.db-journal
