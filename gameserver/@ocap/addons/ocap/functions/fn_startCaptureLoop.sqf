@@ -88,14 +88,14 @@ while {true} do {
 					if (_isUnit) then {
 							ocap_entitiesData pushBack [
 								[ocap_captureFrameNo, "unit", _id, name _x, groupID (group _x), str(side _x), isPlayer _x], // Properties
-								[[_pos, _dir, _alive, (vehicle _x) != _x]], // Positions
+								[[_pos, _dir, _alive, (vehicle _x) != _x]], // States
 								[] // Frames fired
 							];
 					} else { // Else vehicle
 						_vehType = typeOf _x;
 						ocap_entitiesData pushBack [
 							[ocap_captureFrameNo, "vehicle", _id, _vehType, getText (configFile >> "CfgVehicles" >> _vehType >> "displayName")], // Properties
-							[[_pos, _dir,_alive, []]] // Positions
+							[[_pos, _dir,_alive, []]] // States
 						];
 					};
 
@@ -105,9 +105,9 @@ while {true} do {
 					_x setVariable ["ocap_isInitialised", true];
 					if (ocap_debug) then {systemChat format["Initialised %1.", str(_x)]};
 				};
-			} else { // Update position data for this entity
+			} else { // Update states data for this entity
 				if (_isUnit) then {
-					// Get entity data from entitiesData array, select positions entry, push new data to it
+					// Get entity data from entitiesData array, select states entry, push new data to it
 					((ocap_entitiesData select (_x getVariable "ocap_id")) select 1) pushBack [_pos, _dir, _alive, (vehicle _x) != _x];
 				} else {
 					// Get ID for each crew member
@@ -118,7 +118,7 @@ while {true} do {
 						};
 					} forEach (crew _x);
 
-					// Get entity data from entitiesData array, select positions entry, push new data to it
+					// Get entity data from entitiesData array, select states entry, push new data to it
 					((ocap_entitiesData select (_x getVariable "ocap_id")) select 1) pushBack [_pos, _dir, _alive, _crew];
 				};
 			};
@@ -133,6 +133,11 @@ while {true} do {
 	// Write to log file every 10 frames
 	if ((ocap_captureFrameNo % 10) == 0) then {
 		[_string, false] call ocap_fnc_log;
+	};
+
+	// Export data if reached frame limit
+	if ((ocap_captureFrameNo % ocap_captureFrameLimit) == 0) then {
+		[false] call ocap_fnc_exportData;
 	};
 
 	ocap_captureFrameNo = ocap_captureFrameNo + 1;

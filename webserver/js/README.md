@@ -1,0 +1,1 @@
+This is where uncompiled ES6 JS is stored. It is *not* used by the website. Prior to distribution, the scripts here are compiled into `static/scripts/ocap.js`.

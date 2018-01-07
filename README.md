@@ -7,9 +7,15 @@
 **[Live Web Demo](http://www.3commandobrigade.com:8080/ocap-demo/)**
 
 ## What is it?
-OCAP is a **game-changing** tool that allows the recording and playback of operations on an interactive (web-based) map.
-Reveal where the enemy were located, discover how each group carried out their assaults, and find out who engaged who, when, and what with.
+OCAP lets you **record and replay** operations on an interactive (web-based) map.
+Reveal where the enemy were located.
+
+Discover how each group carried out their assaults.
+
+See who engaged who, when, and what with.
+
 Use it simply for fun or as a training tool to see how well your group performs on ops.
+
 
 ## Overview
 
@@ -23,7 +29,7 @@ Use it simply for fun or as a training tool to see how well your group performs 
 ## Running OCAP
 Capture automatically begins when server becomes populated (see userconfig for settings).
 
-To end and export capture data, call the following (server-side):
+To stop capture, call the following (server-side):
 
 `[] call ocap_fnc_exportData;`
 
@@ -37,7 +43,7 @@ if (isServer) then {
 "end1" call BIS_fnc_endMission; // Ends mission for everyone
 ```
 
- 
+
 ## Credits
 
 * [3 Commando Brigade](http://www.3commandobrigade.com/) for testing and moral-boosting.

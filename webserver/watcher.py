@@ -27,7 +27,7 @@ class Watcher(Thread):
 		logger.debug('Running')
 
 		while True:
-			time.sleep(30)
+			time.sleep(5)
 			logger.debug('Checking gameservers...')
 			time_now = time.time()
 
@@ -51,22 +51,22 @@ class Watcher(Thread):
 			for server_id in timed_out_servers:
 				self.gameservers.pop(server_id)
 		
-		def publish(server):
-			"""Publishes the server's capture data."""
-			server.is_capturing = False
+	def publish(self, server):
+		"""Publishes the server's capture data."""
+		server.is_capturing = False
 
-			# Create row in db
-			header = server.data[CaptureData.HEADER]
-			capture_length = header[CaptureHeader.CAPTURE_DELAY] * header[CaptureHeader.FRAME_COUNT]
-			operation = models.Operation(
-				world=header[CaptureHeader.WORLD],
-				mission=header[CaptureHeader.MISSION],
-				author=header[CaptureHeader.AUTHOR],
-				date=time.time(),
-				length=capture_length)
-			self.db.session.add(operation)
-			self.db.session.commit()
+		# Create row in db
+		header = server.data[CaptureData.HEADER]
+		capture_length = header[CaptureHeader.CAPTURE_DELAY] * header[CaptureHeader.FRAME_COUNT]
+		operation = models.Operation(
+			world=header[CaptureHeader.WORLD],
+			mission=header[CaptureHeader.MISSION],
+			author=header[CaptureHeader.AUTHOR],
+			timestamp=time.time(),
+			length=capture_length)
+		self.db.session.add(operation)
+		self.db.session.commit()
 
-			# Store capture as json file
-			with open('captures/{}.json'.format(operation.id), 'w') as f:
-				f.write(json.dumps(server.data))
+		# Store capture as json file
+		with open('static/captures/{}.json'.format(operation.id), 'w') as f:
+			f.write(json.dumps(server.data))

@@ -37,7 +37,10 @@ namespace OCAPExporter
 {
     public class Main
     {
-        static string logfile = "ocap_log.txt";
+        static string LOGDIR = "ocap_logs";
+        static string LOGFILE = string.Format("{0}/log.txt", LOGDIR);
+        static string LOGRAWFILE = string.Format("{0}/export_raw.txt", LOGDIR);
+        static string LOGJSONFILE = string.Format("{0}/export.json", LOGDIR);
         static List<string> argKeys = new List<string> { "capManagerHost" };
 
 
@@ -46,11 +49,14 @@ namespace OCAPExporter
         public static void RVExtension(StringBuilder output, int outputSize, string input)
         {
             outputSize--;
+            Directory.CreateDirectory(LOGDIR);
             Log("==========");
 
+            File.WriteAllText(LOGRAWFILE, input);
             Dictionary<string, object> parsedInput = ParseInput(input);
             Dictionary<string, string> args = (Dictionary<string, string>) parsedInput["args"];
             string json = (string) parsedInput["json"];
+            File.WriteAllText(LOGJSONFILE, json);
 
             string capManagerHost = FormatUrl(args["capManagerHost"], true);
             string postUrl = capManagerHost + "/import";
@@ -125,6 +131,7 @@ namespace OCAPExporter
             {
                 Log("JSON: " + json);
             }
+            Log();
 
             dict.Add("args", argDict);
             dict.Add("json", json);
@@ -151,9 +158,9 @@ namespace OCAPExporter
 
 
         // Write string to log file and console.
-        public static void Log(string str)
+        public static void Log(string str = "")
         {
-            File.AppendAllText(logfile, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss | ") + str + Environment.NewLine);
+            File.AppendAllText(LOGFILE, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss | ") + str + Environment.NewLine);
             Console.WriteLine(str);
         }
     }

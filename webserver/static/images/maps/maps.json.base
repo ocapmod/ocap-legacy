@@ -1,0 +1,16 @@
+[
+	{
+		"name": "Altis",
+		"worldName": "Altis",
+		"worldSize": 30721,
+		"imageSize": 16384,
+		"multiplier": 0.53331597
+	},
+	{
+		"name": "Stratis",
+		"worldName": "stratis",
+		"worldSize": 8192,
+		"imageSize": 16384,
+		"multiplier": 2
+	}
+]

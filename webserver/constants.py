@@ -3,7 +3,7 @@ class CaptureData():
 	EVENTS = 'events'
 	FRAMES_FIRED = 'framesFired'
 	HEADER = 'header'
-	POSITIONS = 'positions'
+	STATES = 'states'
 
 class CaptureHeader():
   WORLD = 'worldName'

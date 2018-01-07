@@ -8,14 +8,8 @@
 	<link rel="stylesheet" href="{{ url_for('static', filename='style/common.css') }}" />
 	<link rel="stylesheet" href="{{ url_for('static', filename='style/index.css') }}" />
 	<link rel="icon" type="img/png" href="{{ url_for('static', filename='images/favicon.png') }}">
-	<script src="{{ url_for('static', filename='scripts/leaflet-1.0.0-rc1.js') }}"></script>
-	<script src="{{ url_for('static', filename='scripts/leaflet.rotatedMarker.js') }}"></script>
-	<script src="{{ url_for('static', filename='scripts/leaflet.svgIcon.js') }}"></script>
-	<script src="{{ url_for('static', filename='scripts/jquery.min.js') }}"></script>
-	<script src="{{ url_for('static', filename='scripts/ocap.js') }}"></script>
 </head>
 <body>
-
 
 <div id="container">
 	<a href="http://www.3commandobrigade.com/" target="_blank">
@@ -56,7 +50,7 @@
 	</div>
 	<div id="bottomPanel">
 		<div class="panelContent">
-			<div id="playPauseButton" onclick="playPause()">
+			<div id="playPauseButton">
 			</div>
 			<div id="timecodeContainer" class="medium">
 				<span id="missionCurTime">0:00:00</span>
@@ -79,7 +73,7 @@
 
 <div id="modal" class="modal">
 	<div class="modalContent">
-		<div id="modalHeader" class="modalHeader medium">Header</div>
+		<div id="modalHeader" class="modalHeader medium">[[ header ]]</div>
 		<div id="modalBody" class="modalBody">Body</div>
 		<div id="modalButtons" class="modalButtons"></div>
 	</div>
@@ -87,14 +81,10 @@
 
 <div id="hint" class="hint">Test popup</div>
 
-<script>
-let opList = <?php echo json_encode($ops); ?>;
-let appVersion = <?php echo json_encode(VERSION); ?>;
-let appTitle = <?php echo json_encode($appTitle); ?>;
-let appDesc = <?php echo json_encode($appDesc); ?>;
-let appAuthor = <?php echo json_encode($appAuthor); ?>;
-
-initOCAP();
-</script>
+<script src="{{ url_for('static', filename='scripts/leaflet-1.0.0-rc1.js') }}"></script>
+<script src="{{ url_for('static', filename='scripts/leaflet.rotatedMarker.js') }}"></script>
+<script src="{{ url_for('static', filename='scripts/leaflet.svgIcon.js') }}"></script>
+<script src="{{ url_for('static', filename='scripts/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='scripts/ocap.js') }}"></script>
 </body>
 </html>

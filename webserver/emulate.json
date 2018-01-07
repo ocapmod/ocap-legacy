@@ -1,5 +1,5 @@
 {
-  "serverId": "My Server 123",
+  "serverId": "My Test Server",
   "captureData": {
     "header": {
       "worldName": "Altis",
@@ -10,18 +10,46 @@
     },
     "entities": {
       "0": {
+        "type": "unit",
         "startFrameNum": "0",
-        "positions": [
-          [12, 5],
-          [14, 6]
-        ]
+        "name": "Sgt. Baldrick",
+        "side": "WEST",
+        "states": [
+          [
+            [12, 5],
+            5,
+            1,
+            0
+          ],
+          [
+            [18, 7],
+            9,
+            1,
+            0
+          ]
+        ],
+        "framesFired": []
       },
       "1": {
+        "type": "unit",
+        "name": "Cpt. Adder",
+        "side": "WEST",
         "startFrameNum": "42",
-        "positions": [
-          [36, 98],
-          [40, 100]
-        ]
+        "states": [
+          [
+            [12, 5],
+            5,
+            1,
+            0
+          ],
+          [
+            [18, 7],
+            9,
+            1,
+            0
+          ]
+        ],
+        "framesFired": []
       }
     },
     "events": []

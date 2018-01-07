@@ -19,7 +19,8 @@ try:
 	setup_ran = False
 	while True:
 		if not setup_ran:
-			server_id = input('Enter name of server you wish to emulate: ')
+			server_id = input('Enter name of server you wish to '
+					'emulate (leave blank for default): ')
 			setup_ran = True
 			print('Options:')
 			print('  0: Start again')
@@ -29,6 +30,8 @@ try:
 		if opt == '0':
 			setup_ran = False
 		elif opt == '1':
+			if not server_id:
+				server_id = 'Test Server'
 			send_import(server_id)
 		else:
 			print('Invalid option')

@@ -43,8 +43,8 @@ class GameServer():
 			if entity_id in entities:
 				entity = entities[entity_id]
 
-				# Add new positions
-				entity[CaptureData.POSITIONS].extend(new_entity[CaptureData.POSITIONS])
+				# Add new states
+				entity[CaptureData.STATES].extend(new_entity[CaptureData.STATES])
 
 				# Add new frames fired
 				entity[CaptureData.FRAMES_FIRED].extend(new_entity[CaptureData.FRAMES_FIRED])

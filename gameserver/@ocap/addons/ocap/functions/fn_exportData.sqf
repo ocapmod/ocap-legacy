@@ -6,21 +6,21 @@
 		to the OCAP extension.
 
 	Params:
-		_this select 0: BOOLEAN - Stop capture after export (Default: true)
+		_this select 0: BOOLEAN - Stop capture after export (Default: false)
 */
 
 if (!ocap_capture) exitWith {
 	["fnc_exportData called. Export did not go ahead as capture is currently paused/stopped. Has export already been called?"] call ocap_fnc_log;
 };
 
-params [["_stopCapture", true]];
+params [["_stopCapture", false]];
 ["fnc_exportData called. Exporting capture data..."] call ocap_fnc_log;
 
 _sT = diag_tickTime;
 
 ocap_capture = false; // Stop capture while we export
 ocap_endFrameNo = ocap_captureFrameNo;
-ocap_exportCapFilename = format["%1_%2.json", missionName, floor(random(1000))]; // Filename used for capture data file
+ocap_exportCapFilename = formatText["%1_%2.json", missionName, floor(random(1000))]; // Filename used for capture data file
 
 _br = toString[13, 10];
 _tab = toString[9];
@@ -62,43 +62,18 @@ _atEndOfArray = {
 };
 
 _entitiesToJson = {
-	/*
-	Return json format:
-	{
-		0: {
-			startFrameNum: 22,
-			type: "unit",
-			...
-			positions: [
-          		[36, 98],
-          		[40, 100]
-        	]
-		},
-		1: {
-			startFrameNum: 32,
-			type: "unit",
-			...
-			positions: [
-				[12, 5],
-				[14, 6]
-        	]
-		},
-		...
-	}
-	*/
-
 	_entities = _this;
 	_json = "{";
 	{
 		_properties = _x select 0;
-		_positions = _x select 1;
+		_states = _x select 1;
 
 		_startFrameNo = _properties select 0;
 		_type = _properties select 1;
 		_id = _properties select 2;
 		_isUnit = (_type == "unit");
 
-		_json = _json + format['"%1":', _id];
+		_json = formatText['%1"%2":', _json, _id];
 
 		// Write entity header
 		_jsonHeader = "";
@@ -113,10 +88,9 @@ _entitiesToJson = {
 				_isPlayer = 1;
 			};
 
-			_jsonHeader = format['
+			_jsonHeader = formatText['
 				"startFrameNum":%1,"type":"unit","id":%2, "name":"%3","group":"%4","side":"%5","isPlayer":%6',
 				_startFrameNo, _id, _name, _group, _side, _isPlayer];
-			systemChat _jsonHeader;
 		} else {
 			_class = _properties select 3;
 			_name = _properties select 4;
@@ -157,14 +131,14 @@ _entitiesToJson = {
 				default {"unknown"};
 			};
 
-			_jsonHeader = format['
+			_jsonHeader = formatText['
 				"startFrameNum":%1,"type":"vehicle","id":%2,"class":"%3", "name":"%4"',
 				_startFrameNo, _id, _class, _name];
 		};
 
 
-		// Write entity positions
-		_jsonPositions = ',"positions":[';
+		// Write entity states
+		_jsonStates = ',"states":[';
 		{
 			_alive = 1;
 			if (!(_x select 2)) then {
@@ -177,35 +151,33 @@ _entitiesToJson = {
 					_isInVehicle = 1;
 				};
 
-				_jsonPositions = _jsonPositions + format['
-				[%1,%2,%3,%4]', _x select 0, round(_x select 1), _alive, _isInVehicle]; // position, direction, alive, in vehicle
+				_jsonStates = formatText['
+				%1[%2,%3,%4,%5]', _jsonStates, _x select 0, round(_x select 1), _alive, _isInVehicle]; // position, direction, alive, in vehicle
 			} else {
-				_jsonPositions = _jsonPositions + format['
-				[%1,%2,%3,%4]', _x select 0, round(_x select 1), _alive, _x select 3]; // position, direction, alive, crew
+				_jsonStates = formatText['
+				%1[%2,%3,%4,%5]', _jsonStates, _x select 0, round(_x select 1), _alive, _x select 3]; // position, direction, alive, crew
 			};
 
-			if !([_forEachIndex, _positions] call _atEndOfArray) then {_jsonPositions = _jsonPositions + ","};
-		} forEach _positions;
-		_jsonPositions = _jsonPositions + "]";
+			if !([_forEachIndex, _states] call _atEndOfArray) then {_jsonStates = formatText["%1,", _jsonStates]};
+		} forEach _states;
+		_jsonStates = formatText["%1]", _jsonStates];
 
 
 		// Write frames unit fired
 		_jsonFramesFired = "";
 		if (_isUnit) then {
 			_framesFired = _x select 2;
-			_jsonFramesFired = format[',"framesFired":%1', str(_framesFired)];
+			_jsonFramesFired = formatText[',"framesFired":%1', str(_framesFired)];
 		};
 
-		//_json = _json + "{" + _jsonHeader + _jsonPositions + _jsonFramesFired + "}"; // Save this unit
-		_json = format["%1 {%2 %3 %4}", _json, _jsonHeader, _jsonPositions, _jsonFramesFired];
+		_json = formatText["%1 {%2 %3 %4}", _json, _jsonHeader, _jsonStates, _jsonFramesFired];
 
-		//_json = "{}";
 		if (!([_forEachIndex, _entities] call _atEndOfArray)) then {
-			_json = _json + ",";
+			_json = formatText["%1,", _json];
 		};
 	} forEach _entities;
 
-	_json = _json + "}";
+	_json = formatText["%1}", _json];
 	_json
 };
 
@@ -224,27 +196,27 @@ _eventsToJson = {
 				_causedByInfo set [1, [_causedByInfo select 1, """", "'"] call CBA_fnc_replace]; // Escape quotes
 				_distance = _x select 4;
 
-				_json = _json + format['
-				[%1,"%2",%3,%4,"%5"]', _frameNum, _type, _victimId, _causedByInfo, round(_distance)];
+				_json = formatText['
+				%1[%2,"%3",%4,%5,"%6"]', _json, _frameNum, _type, _victimId, _causedByInfo, round(_distance)];
 			};
 			case (_type == "connected" || _type == "disconnected"): {
 				_name = _x select 2;
 				_name = [_name, """", "'"] call CBA_fnc_replace; // Escape quotes
 
-				_json = _json + format['
-				[%1,"%2","%3"]', _frameNum, _type, _name];
+				_json = formatText['
+				%1[%2,"%3","%4"]', _json, _frameNum, _type, _name];
 			};
 		};
 
-		if !([_forEachIndex, _events] call _atEndOfArray) then {_json = _json + ","};
+		if !([_forEachIndex, _events] call _atEndOfArray) then {_json =  formatText["%1,", _json]};
 	} forEach _events;
 
-	_json = _json + "]";
+	_json = formatText["%1]", _json];
 	_json
 };
 
 // Export
-(format['
+(str(formatText['
 	{
 		"serverId": "%1",
 		"captureData": {
@@ -261,11 +233,11 @@ _eventsToJson = {
 	}',
 	ocap_serverId, worldName, briefingName, getMissionConfigValue ["author", ""], ocap_frameCaptureDelay,
 	ocap_captureFrameNo, ocap_entitiesData call _entitiesToJson, ocap_eventsData call _eventsToJson]
-) call ocap_fnc_callExtension;
+)) call ocap_fnc_callExtension;
 
 
 {
-	_x set [1, []]; // Reset positions
+	_x set [1, []]; // Reset states
 	_x set [2, []]; // Reset frames fired
 } forEach ocap_entitiesData;
 ocap_eventsData = [];

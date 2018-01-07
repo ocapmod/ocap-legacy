@@ -53,9 +53,8 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ocap_exporter, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\OCAPExporter\OCAPExporter\bin\x64\Debug\ocap_exporter.dll</HintPath>
+    <Reference Include="ocap_exporter_x64">
+      <HintPath>..\..\OCAPExporter\OCAPExporter\bin\x64\Debug\ocap_exporter_x64.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

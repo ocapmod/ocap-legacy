@@ -10,6 +10,7 @@
 
 // Define global vars
 #include "\userconfig\ocap\config.hpp";
+ocap_captureFrameLimit = 10; // Number of captured frames before auto-exporting
 ocap_captureFrameNo = 0; // Frame number for current capture
 ocap_endFrameNo = 0; // Frame number at end of mission
 ocap_entitiesData = [];  // Data on all units + vehicles that appear throughout the mission.
