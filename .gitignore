@@ -19,7 +19,7 @@ gameserver/@ocap/addons/*.pbo
 
 ### WEBSERVER ###
 webserver/__pycache__
-webserver/debug.txt
+webserver/import.json
 webserver/node_modules/*
 webserver/static/captures/*
 !webserver/static/captures/README.md

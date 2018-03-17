@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Net.Http;
 using System.Net;
 
@@ -49,13 +50,23 @@ namespace OCAPExporter
         public static void RVExtension(StringBuilder output, int outputSize, string input)
         {
             outputSize--;
+
+            Thread thread = new Thread(()=>ProcessInput(input));
+            thread.Start();
+
+            // Send output to Arma
+            output.Append("Success");
+        }
+
+        public static void ProcessInput(string input)
+        {
             Directory.CreateDirectory(LOGDIR);
             Log("==========");
 
             File.WriteAllText(LOGRAWFILE, input);
             Dictionary<string, object> parsedInput = ParseInput(input);
-            Dictionary<string, string> args = (Dictionary<string, string>) parsedInput["args"];
-            string json = (string) parsedInput["json"];
+            Dictionary<string, string> args = (Dictionary<string, string>)parsedInput["args"];
+            string json = (string)parsedInput["json"];
             File.WriteAllText(LOGJSONFILE, json);
 
             string capManagerHost = FormatUrl(args["capManagerHost"], true);
@@ -73,15 +84,13 @@ namespace OCAPExporter
                     string resultContent = result.Content.ReadAsStringAsync().Result;
                     Log("Web server responded with: " + resultContent);
                 }
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 Log("An error occurred. Possibly due to request timeout.");
                 Log(e.ToString());
             }
-
-            // Send output to Arma
-            output.Append("Success");
         }
-
 
         /* Parses the given input string.
          *
@@ -139,7 +148,6 @@ namespace OCAPExporter
             return dict;
         }
 
-
         // Format a URL if malformed
         public static string FormatUrl(string url, bool removeTrailingSlash = true)
         {
@@ -155,7 +163,6 @@ namespace OCAPExporter
 
             return url;
         }
-
 
         // Write string to log file and console.
         public static void Log(string str = "")

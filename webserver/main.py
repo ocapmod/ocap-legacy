@@ -32,6 +32,14 @@ def index():
 	return render_template('index.html')
 
 
+@app.route('/admin/resetdb')
+def admin_resetdb():
+	models.Operation.query.delete()
+	db.session.commit()
+
+	return 'Database reset'
+
+
 @app.route(API_PREFIX + '/operations')
 def api_operations():
 	operations = models.Operation.query.limit(50).all()

@@ -5,11 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "loglevel": "^1.6.0",
-    "vue": "^2.5.13",
     "watch": "^1.0.2"
-  },
-  "browser": {
-    "vue": "vue/dist/vue.common.js"
   },
   "scripts": {
     "build-js": "webpack",
