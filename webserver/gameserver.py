@@ -47,7 +47,8 @@ class GameServer():
 				entity[CaptureData.STATES].extend(new_entity[CaptureData.STATES])
 
 				# Add new frames fired
-				entity[CaptureData.FRAMES_FIRED].extend(new_entity[CaptureData.FRAMES_FIRED])
+				if CaptureData.FRAMES_FIRED in entity:
+					entity[CaptureData.FRAMES_FIRED].extend(new_entity[CaptureData.FRAMES_FIRED])
 			else:
 				# Add new entity
 				entities[entity_id] = new_entity

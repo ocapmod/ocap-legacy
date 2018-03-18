@@ -33,7 +33,7 @@ class Entities {
 }
 
 class Entity {
-	constructor(startFrameNum, id, name, positions) {
+	constructor(startFrameNum, id, name, states) {
     if (this.constructor === Entity) {
       throw new TypeError('Abstract class "Entity" cannot be instantiated directly.'); 
     }
@@ -41,7 +41,7 @@ class Entity {
 		this._startFrameNum = startFrameNum;
 		this._id = id;
 		this._name = name;
-		this._states = positions; // pos, dir, alive
+		this._states = states; // pos, dir, alive
 		this._marker = null;
 		this.iconType = icons.unknown;
 		this._realIcon = icons.unknown.dead;
@@ -292,8 +292,8 @@ class Entity {
 };
 
 class Unit extends Entity {
-	constructor(startFrameNum, id, name, group, side, isPlayer, positions, framesFired) {
-		super(startFrameNum, id, name, positions);
+	constructor(startFrameNum, id, name, group, side, isPlayer, states, framesFired) {
+		super(startFrameNum, id, name, states);
 		this._group = group;
 		this._side = side;
 		this.isPlayer = isPlayer;
@@ -331,8 +331,6 @@ class Unit extends Entity {
 		this._sideClass = sideClass;
 		this._sideColour = sideColour;
 		this._realIcon = this.iconType[sideClass];
-		console.log('Real icon:');
-		console.log(this._realIcon);
 		this._tempIcon = this.iconType[sideClass];
 		this._markerRotationOrigin = "50% 60%";
 	};
@@ -416,8 +414,8 @@ class Unit extends Entity {
 };
 
 class Vehicle extends Entity {
-	constructor(startFrameNum, id, type, name, positions) {
-		super(startFrameNum, id, name, positions);
+	constructor(startFrameNum, id, type, name, states) {
+		super(startFrameNum, id, name, states);
 		this._popupClassName = "leaflet-popup-vehicle";
 		this._type = type;
 		this._crew = []; // Crew in order: [driver,gunner,commander,turrets,cargo]

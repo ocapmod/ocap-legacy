@@ -16,15 +16,13 @@ if (!ocap_capture) exitWith {
 params [["_stopCapture", false]];
 ["fnc_exportData called. Exporting capture data..."] call ocap_fnc_log;
 
-_sT = diag_tickTime;
+private _sT = diag_tickTime;
 
 ocap_capture = false; // Stop capture while we export
 ocap_endFrameNo = ocap_captureFrameNo;
 ocap_exportCapFilename = formatText["%1_%2.json", missionName, floor(random(1000))]; // Filename used for capture data file
 
-_br = toString[13, 10];
-_tab = toString[9];
-_APC_CLASSES = [
+private _APC_CLASSES = [
 	"Wheeled_APC_F",
 	"Tracked_APC",
 	"APC_Wheeled_01_base_F",
@@ -34,7 +32,7 @@ _APC_CLASSES = [
 	"APC_Tracked_02_base_F",
 	"APC_Tracked_03_base_F"
 ];
-_TANK_CLASSES = [
+private _TANK_CLASSES = [
 	"MBT_01_base_F",
 	"MBT_02_base_F",
 	"MBT_03_base_F"
@@ -42,9 +40,9 @@ _TANK_CLASSES = [
 
 // Same as isKindOf, but can be tested against multiple types
 _isKindOf = {
-	_testClass = _this select 0;
-	_classes = _this select 1;
-	_bool = false;
+	private _testClass = _this select 0;
+	private _classes = _this select 1;
+	private _bool = false;
 	{
 		if (_testClass isKindOf _x) exitWith {
 			_bool = true;
@@ -55,35 +53,35 @@ _isKindOf = {
 };
 
 _atEndOfArray = {
-	_index = _this select 0;
-	_array = _this select 1;
+	private _index = _this select 0;
+	private _array = _this select 1;
 
 	_index + 1 >= count _array
 };
 
 _entitiesToJson = {
-	_entities = _this;
-	_json = "{";
+	private _entities = _this;
+	private _json = "{";
 	{
-		_properties = _x select 0;
-		_states = _x select 1;
+		private _properties = _x select 0;
+		private _states = _x select 1;
 
-		_startFrameNo = _properties select 0;
-		_type = _properties select 1;
-		_id = _properties select 2;
-		_isUnit = (_type == "unit");
+		private _startFrameNo = _properties select 0;
+		private _type = _properties select 1;
+		private _id = _properties select 2;
+		private _isUnit = (_type == "unit");
 
 		_json = formatText['%1"%2":', _json, _id];
 
 		// Write entity header
-		_jsonHeader = "";
+		private _jsonHeader = "";
 		if (_isUnit) then {
-			_name = _properties select 3;
-			_name = [_name, """", "'"] call CBA_fnc_replace; // Escape quotes
-			_group = _properties select 4;
-			_side = _properties select 5;
+			private _name = _properties select 3;
+			private _name = [_name, """", "'"] call CBA_fnc_replace; // Escape quotes
+			private _group = _properties select 4;
+			private _side = _properties select 5;
 
-			_isPlayer = 0;
+			private _isPlayer = 0;
 			if (_properties select 6) then {
 				_isPlayer = 1;
 			};
@@ -92,8 +90,8 @@ _entitiesToJson = {
 				"startFrameNum":%1,"type":"unit","id":%2, "name":"%3","group":"%4","side":"%5","isPlayer":%6',
 				_startFrameNo, _id, _name, _group, _side, _isPlayer];
 		} else {
-			_class = _properties select 3;
-			_name = _properties select 4;
+			private _class = _properties select 3;
+			private _name = _properties select 4;
 			_name = [_name, """", "'"] call CBA_fnc_replace; // Escape quotes
 
 			// Identify vehicle category.
@@ -138,15 +136,15 @@ _entitiesToJson = {
 
 
 		// Write entity states
-		_jsonStates = ',"states":[';
+		private _jsonStates = ',"states":[';
 		{
-			_alive = 1;
+			private _alive = 1;
 			if (!(_x select 2)) then {
 				_alive = 0;
 			};
 
 			if (_isUnit) then {
-				_isInVehicle = 0;
+				private _isInVehicle = 0;
 				if (_x select 3) then {
 					_isInVehicle = 1;
 				};
@@ -164,9 +162,9 @@ _entitiesToJson = {
 
 
 		// Write frames unit fired
-		_jsonFramesFired = "";
+		private _jsonFramesFired = "";
 		if (_isUnit) then {
-			_framesFired = _x select 2;
+			private _framesFired = _x select 2;
 			_jsonFramesFired = formatText[',"framesFired":%1', str(_framesFired)];
 		};
 
@@ -182,25 +180,25 @@ _entitiesToJson = {
 };
 
 _eventsToJson = {
-	_events = _this;
-	_json = "[";
+	private _events = _this;
+	private _json = "[";
 	{
 
-		_frameNum = _x select 0;
-		_type = _x select 1;
+		private _frameNum = _x select 0;
+		private _type = _x select 1;
 
 		switch (true) do {
 			case (_type == "killed" || _type == "hit"): {
-				_victimId = _x select 2;
-				_causedByInfo = _x select 3;
+				private _victimId = _x select 2;
+				private _causedByInfo = _x select 3;
 				_causedByInfo set [1, [_causedByInfo select 1, """", "'"] call CBA_fnc_replace]; // Escape quotes
-				_distance = _x select 4;
+				private _distance = _x select 4;
 
 				_json = formatText['
 				%1[%2,"%3",%4,%5,"%6"]', _json, _frameNum, _type, _victimId, _causedByInfo, round(_distance)];
 			};
 			case (_type == "connected" || _type == "disconnected"): {
-				_name = _x select 2;
+				private _name = _x select 2;
 				_name = [_name, """", "'"] call CBA_fnc_replace; // Escape quotes
 
 				_json = formatText['
@@ -242,7 +240,7 @@ _eventsToJson = {
 } forEach ocap_entitiesData;
 ocap_eventsData = [];
 
-_deltaT = diag_tickTime - _sT;
+private _deltaT = diag_tickTime - _sT;
 [format["Exporting complete (%1ms).", _deltaT * 1000]] call ocap_fnc_log;
 
 if (!_stopCapture) then {

@@ -63,7 +63,7 @@ if (ocap_debug) then {
 };
 
 // CAPTURE LOOP
-_id = 0; // ID assigned to each entity (auto increments). Also acts as an index for each entity in entitiesData.
+private _id = 0; // ID assigned to each entity (auto increments). Also acts as an index for each entity in entitiesData.
 while {true} do {
 	if (!ocap_capture) then {waitUntil {sleep 1; ocap_capture}};
 
@@ -136,7 +136,7 @@ while {true} do {
 	};
 
 	// Export data if reached frame limit
-	if ((ocap_captureFrameNo % ocap_captureFrameLimit) == 0) then {
+	if ((ocap_captureFrameNo % ocap_captureFrameLimit) == 0 && {ocap_captureFrameNo > 0}) then {
 		[false] call ocap_fnc_exportData;
 	};
 

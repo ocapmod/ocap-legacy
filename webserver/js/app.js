@@ -97,7 +97,7 @@ export function processOp(filepath) {
 
 			let type = entityJSON.type;
 			let startFrameNum = entityJSON.startFrameNum;
-			let id = entityJSON;
+			let id = entityJSON.id;
 			let name = entityJSON.name;
 
 			// Convert positions into array of objects
@@ -106,19 +106,15 @@ export function processOp(filepath) {
 				let pos = entry[0];
 				let dir = entry[1];
 				let alive = Boolean(entry[2]);
-				let isInVehicle = Boolean(entry[3]);
 
 				if (type == constants.EntityTypes.UNIT) {
-					states.push({position: pos, direction: dir, alive: alive, isInVehicle: isInVehicle});
+					states.push({position: pos, direction: dir, alive: alive, isInVehicle: Boolean(entry[3])});
 				} else if (type == constants.EntityTypes.VEHICLE) {
-					// TODO: Add some vehicle entries to dummy json, with a crew
-					//positions.push({position: pos, direction: dir, alive: alive, crew: entry[3]});
+					states.push({position: pos, direction: dir, alive: alive, crew: entry[3]});
 				};
 			});
 
 			if (type == constants.EntityTypes.UNIT) {
-				//if (entityJSON.name == "Error: No unit") {return}; // Temporary fix for old captures that initialised dead units
-
 				// Add group to global groups object (if new)
 				var group = groups.findGroup(entityJSON.group, entityJSON.side);
 				if (group == null) {
@@ -131,8 +127,10 @@ export function processOp(filepath) {
 				entities.add(unit);
 			} else if (type == constants.EntityTypes.VEHICLE) {
 				// Create vehicle and add to entities list
-				//var vehicle = new Vehicle(startFrameNum, id, entityJSON.class, name, positions);
-				//entities.add(vehicle);
+				var vehicle = new Vehicle(startFrameNum, id, entityJSON.class, name, states);
+				entities.add(vehicle);
+				console.log('Imported vehicle:');
+				console.log(vehicle);
 			};
 		};
 		
@@ -147,14 +145,12 @@ export function processOp(filepath) {
 			var gameEvent = null;
 			switch (true) {
 				case (type == "killed" || type == "hit"):
+					var victimId = eventJSON[2];
 					var causedByInfo = eventJSON[3];
-					var victim = entities.getById(eventJSON[2]);
+					var victim = entities.getById(victimId);
 					var causedBy = entities.getById(causedByInfo[0]);
 					var distance = eventJSON[4];
 
-					//console.log(eventJSON[2]);
-					//if (victim == null) {return}; // Temp fix until vehicles are handled (victim is null if reference is a vehicle)
-					
 					// Create event object
 					var weapon;
 					if (causedBy instanceof Unit) {
@@ -347,8 +343,8 @@ function startPlaybackLoop() {
 						// Draw fire line (if enabled)
 						var projectilePos = entity.firedOnFrame(globals.playbackFrame);
 						if (projectilePos != null && ui.firelinesEnabled) {
-							console.log(entity);
-							console.log(`Shooter pos: ${entity.getLatLng()}\nFired event: ${projectilePos} (is null: ${projectilePos == null})`);
+							//console.log(entity);
+							//console.log(`Shooter pos: ${entity.getLatLng()}\nFired event: ${projectilePos} (is null: ${projectilePos == null})`);
 							var line = L.polyline([entity.getLatLng(), services.armaToLatLng(projectilePos)], {
 								color: entity.getSideColour(),
 								weight: 2,
