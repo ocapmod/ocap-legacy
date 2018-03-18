@@ -1,0 +1,10 @@
+__pycache__
+import.json
+node_modules/*
+static/captures/*
+static/images/maps/*
+!static/images/maps/maps.json.base
+database/*
+package.json
+package-lock.json
+webpack.config.js

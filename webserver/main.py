@@ -14,7 +14,7 @@ from watcher import Watcher
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/data.db'
 app.json_encoder = services.CustomJSONEncoder
 gameservers = {} # e.g. {'server1': GameServer, 'server2', GameServer, ...}
 
@@ -69,6 +69,8 @@ def import_data_view():
 	return jsonify([g.to_dict() for g in gameservers.values()])
 
 
+Watcher(gameservers, db).start()
+logger.debug('Main called')
+
 if __name__ == '__main__':
-	Watcher(gameservers, db).start()
-	app.run(debug=True, port=config.PORT, threaded=True)
+	app.run(debug=config.DEBUG, port=config.PORT, threaded=config.DEBUG)
