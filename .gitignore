@@ -26,6 +26,6 @@ webserver/static/captures/*
 webserver/static/images/maps/*
 !webserver/static/images/maps/maps.json.base
 !webserver/images/maps/README.md
-webserver/*.db
-webserver/*.db-journal
+webserver/database/*
+!webserver/database/README.md
 webserver/static/scripts/ocap.js*

@@ -43,14 +43,14 @@ class Watcher(Thread):
 				logger.debug('  Seconds since last import: {}'.format(round(time_delta, 1)))
 				if time_delta > config.CAPTURE_TIMEOUT and server.is_capturing:
 					logger.debug('  Timed out. Publishing...'.format(server_id))
-				
+
 					self.publish(server)
 					timed_out_servers.append(server_id)
-				
+
 			# Remove timed-out servers from watchlist
 			for server_id in timed_out_servers:
 				self.gameservers.pop(server_id)
-		
+
 	def publish(self, server):
 		"""Publishes the server's capture data."""
 		server.is_capturing = False

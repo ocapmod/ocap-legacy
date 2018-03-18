@@ -7,7 +7,7 @@ ocap_capture = true;
 
 
 // URL to your OCAP site (e.g. http://your-website.com/ocap/)
-ocap_host = "http://localhost:5000";
+ocap_host = "http://localhost:8000";
 
 
 // Delay (seconds) between each frame capture. Default: 1
