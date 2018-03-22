@@ -328,7 +328,12 @@ class UI {
 
 			row.addEventListener("click", () => {
 				this.modalBody.textContent = "Loading...";
-				app.processOp(`${constants.CAPTURES_PATH}/${op.id}.json`);
+				services.getWorldByName(op.world).then((world) => {
+					console.log("Got world: ");
+					console.log(world);
+					globals.world = world;
+					app.processOp(`${constants.CAPTURES_PATH}/${op.id}.json`);
+				});
 			});
 			table.insertBefore(row, table.childNodes[1]);
 		});

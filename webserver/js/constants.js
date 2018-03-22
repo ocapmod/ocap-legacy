@@ -15,6 +15,7 @@ let constants = {
 	MAPS_PATH: '/static/images/maps',
 	CAPTURES_PATH: '/static/captures',
 	MARKERS_PATH: '/static/images/markers',
+	MAP_META_FILENAME: 'meta.json',
 }
 
 export {constants};

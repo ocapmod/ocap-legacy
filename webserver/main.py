@@ -11,7 +11,7 @@ from gameserver import GameServer
 from watcher import Watcher
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(filename='app.log', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/data.db'

@@ -19,6 +19,7 @@ gameserver/@ocap/addons/*.pbo
 
 ### WEBSERVER ###
 webserver/__pycache__
+webserver/app.log
 webserver/import.json
 webserver/node_modules/*
 webserver/static/captures/*

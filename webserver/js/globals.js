@@ -47,7 +47,6 @@ imgs.forEach((img) => {
 let mapMaxNativeZoom = 6;
 let globals = {
 	icons: icons,
-	multiplier: null,
 	imageSize: null,
 	trim: 0, // Number of pixels that were trimmed when cropping image (used to correct unit placement)
 	mapMinZoom: 1,
@@ -66,7 +65,7 @@ let globals = {
 	entityToFollow: null, // When set, camera will follow this unit
 
 	// Mission details
-	worldName: "",
+	world: null,
 	missionName: "",
 	endFrame: 0,
 	missionCurDate: new Date(0),

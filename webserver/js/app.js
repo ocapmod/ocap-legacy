@@ -29,8 +29,6 @@ import {groups, Group, Groups} from './groups';
 import {ui} from './ui';
 import * as services from './services';
 
-var worlds = null;
-
 function init() {
 	// Fetch operations and display op selection window
 	console.log('Fetching operations...')
@@ -44,37 +42,14 @@ function init() {
 		ui.setModalOpList(json);
 	});
 
-	// Fetch worlds
-	console.log('Fetching worlds...');
-	fetch(`${constants.MAPS_PATH}/maps.json`).then(res => {
-		return res.json()
-	}).then(json => {
-		console.group('Fetched worlds')
-		console.log('Response JSON:')
-		console.log(json);
-		console.groupEnd();
-		worlds = json;
-	});
-
 	// Prevent spacebar from scrolling page in some browsers
 	window.addEventListener('keypress', function(event) {
 		switch (event.charCode) {
 			case constants.CharCodes.SPACE:
-				event.preventDefault(); 
+				event.preventDefault();
 				break;
 		};
 	});
-};
-
-function getWorldByName(worldName) {
-	console.log("Getting world " + worldName);
-	
-	for (let i = 0; i < worlds.length; i++) {
-		var world = worlds[i];
-		if (world.worldName.toLowerCase() == worldName) {
-			return world;
-		};
-	};
 };
 
 // Read operation JSON data and create unit objects
@@ -84,7 +59,6 @@ export function processOp(filepath) {
 
 	$.getJSON(filepath, function(data) {
 		var header = data.header;
-		globals.worldName = header.worldName.toLowerCase();
 		globals.missionName = header.missionName;
 		ui.setMissionName(globals.missionName);
 
@@ -229,17 +203,10 @@ function initMap() {
 		};
 	});
 
-	var world = getWorldByName(globals.worldName);
-	console.log("Got world: ");
-	console.log(world);
-	if (world == null) {
-		ui.showHint(`Error: Map "${globals.worldName}" is not installed`);
-	};
-
+	let world = globals.world;
 	globals.imageSize = world.imageSize;
-	globals.multiplier = world.multiplier;
 	map.setView(map.unproject([globals.imageSize/2, globals.imageSize/2]), globals.mapMinZoom);
-	
+
 	var mapBounds = new L.LatLngBounds(
 		map.unproject([0, globals.imageSize], globals.mapMaxNativeZoom),
 		map.unproject([globals.imageSize, 0], globals.mapMaxNativeZoom)
@@ -247,7 +214,7 @@ function initMap() {
 	map.fitBounds(mapBounds);
 
 	// Setup tile layer
-	L.tileLayer(`${constants.MAPS_PATH}/${globals.worldName}/{z}/{x}/{y}.png`, {
+	L.tileLayer(`${constants.MAPS_PATH}/${world.worldName}/{z}/{x}/{y}.png`, {
 		maxNativeZoom: globals.mapMaxNativeZoom,
 		maxZoom: globals.mapMaxZoom,
 		minZoom: globals.mapMinZoom,
@@ -334,7 +301,7 @@ function startPlaybackLoop() {
 				firelines.forEach(function(line) {
 					globals.map.removeLayer(line);
 				});
-				
+
 				entities.getAll().forEach(function playbackEntity(entity) {
 					//console.log(entity);
 					entity.manageFrame(globals.playbackFrame);

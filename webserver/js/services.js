@@ -8,15 +8,16 @@ import {ui} from './ui';
 
 // Converts Arma coordinates [x,y] to LatLng
 export function armaToLatLng(coords) {
-	var pixelCoords = [
-		(coords[0] * globals.multiplier) + globals.trim,
-		(globals.imageSize - (coords[1] * globals.multiplier)) + globals.trim
+	const multiplier = globals.world.multiplier;
+	const pixelCoords = [
+		(coords[0] * multiplier) + globals.trim,
+		(globals.imageSize - (coords[1] * multiplier)) + globals.trim
 	];
 	return globals.map.unproject(pixelCoords, globals.mapMaxNativeZoom);
 };
 
 export function goFullscreen() {
-	var element = document.getElementById("container");
+	const element = document.getElementById("container");
 	if (element.requestFullscreen) {
 		element.requestFullscreen();
 	} else if(element.mozRequestFullScreen) {
@@ -28,20 +29,17 @@ export function goFullscreen() {
 	};
 };
 
-// Returns date object as little endian (day, month, year) string 
+// Returns date object as little endian (day, month, year) string
 export function dateToLittleEndianString(date) {
-	return (date.getDate() + "/" + (date.getMonth()+1) + "/" + date.getFullYear());
+	return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 };
 
 export function dateToTimeString(date) {
-	var hours = date.getUTCHours();
-	var minutes = date.getUTCMinutes();
-	var seconds = date.getUTCSeconds();
-	var string = "";
+	const hours = date.getUTCHours();
+	const minutes = date.getUTCMinutes();
+	const seconds = date.getUTCSeconds();
+	let string = "";
 
-/*	if (hours < 10) {
-		string += "0";
-	}*/
 	string += (hours + ":");
 
 	if (minutes < 10) {
@@ -61,18 +59,36 @@ export function dateToTimeString(date) {
 // e.g. 121 seconds -> 2 minutes
 // e.g. 4860 seconds -> 1 hour, 21 minutes
 export function secondsToTimeString(seconds) {
-	let mins =  Math.round(seconds / 60);
+	const mins =  Math.round(seconds / 60);
 
 	if (mins < 60) {
-		let minUnit = (mins > 1 ? "mins" : "min");
-		
+		const minUnit = (mins > 1 ? "mins" : "min");
+
 		return `${mins} ${minUnit}`;
 	} else {
-		let hours = Math.floor(mins / 60);
-		let remainingMins = mins % 60;
-		let hourUnit = (hours > 1 ? "hrs" : "hr");
-		let minUnit = (remainingMins > 1 ? "mins" : "min");
+		const hours = Math.floor(mins / 60);
+		const remainingMins = mins % 60;
+		const hourUnit = (hours > 1 ? "hrs" : "hr");
+		const minUnit = (remainingMins > 1 ? "mins" : "min");
 
 		return `${hours} ${hourUnit}, ${remainingMins} ${minUnit}`;
 	};
+};
+
+export function getWorldByName(worldName) {
+	console.log("Getting world " + worldName);
+
+	return new Promise((resolve, reject) => {
+		fetch(`${constants.MAPS_PATH}/${worldName}/${constants.MAP_META_FILENAME}`)
+			.then(response => {
+				if (response.ok) {
+					return response.json();
+				};
+				throw new Error();
+			}).then(json => {
+					resolve(json);
+			}).catch(error => {
+				reject(`Error fetching ${constants.MAP_META_FILENAME} for ${worldName}`)
+			});
+	});
 };

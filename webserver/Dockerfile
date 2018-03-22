@@ -11,6 +11,13 @@ RUN pip install -r /tmp/requirements.txt && pip install gunicorn
 ADD . /app
 WORKDIR /app
 
-RUN cd static/images/maps/ && ([ -e maps.json ] || mv maps.json.base maps.json)
-CMD ["/bin/bash", "-c", "gunicorn --bind=0.0.0.0:8000 main:app"]
-#CMD ["/bin/bash", "-c", "tail -f /dev/null"]
+RUN mkdir -p /var/log/gunicorn
+CMD [
+    "/bin/bash",
+    "-c",
+    "gunicorn \
+    --bind=0.0.0.0:8000 \
+    main:app \
+    --access-logfile /var/log/gunicorn/access.log \
+    --log-file /var/log/gunicorn/server.log"
+]
