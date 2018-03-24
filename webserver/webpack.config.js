@@ -1,7 +1,8 @@
 module.exports = {
 	entry: './js/app.js',
 	output: {
-		filename: './static/scripts/ocap.js'
+		path: __dirname + '/static/scripts',
+		filename: 'ocap.js'
 	},
 	devtool: 'source-map'
 };

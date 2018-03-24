@@ -6,7 +6,8 @@
 ocap_capture = true;
 
 
-// URL to your OCAP site (e.g. http://your-website.com/ocap/)
+// URL or IP to your OCAP site
+// e.g. http://your-website.com/ocap, http://172.217.4.206:8000, etc
 ocap_host = "http://localhost:8000";
 
 

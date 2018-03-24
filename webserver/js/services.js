@@ -79,16 +79,19 @@ export function getWorldByName(worldName) {
 	console.log("Getting world " + worldName);
 
 	return new Promise((resolve, reject) => {
-		fetch(`${constants.MAPS_PATH}/${worldName}/${constants.MAP_META_FILENAME}`)
-			.then(response => {
-				if (response.ok) {
-					return response.json();
-				};
-				throw new Error();
-			}).then(json => {
-					resolve(json);
-			}).catch(error => {
-				reject(`Error fetching ${constants.MAP_META_FILENAME} for ${worldName}`)
-			});
+		fetch(`
+				${constants.MAPS_PATH}/
+				${worldName.toLowerCase()}/
+				${constants.MAP_META_FILENAME}
+		`).then(response => {
+			if (response.ok) {
+				return response.json();
+			};
+			throw new Error();
+		}).then(json => {
+				resolve(json);
+		}).catch(error => {
+			reject(`Error fetching meta file for ${worldName}`)
+		});
 	});
 };

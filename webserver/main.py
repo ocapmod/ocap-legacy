@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/data.db'
 app.json_encoder = services.CustomJSONEncoder
-gameservers = {} # e.g. {'server1': GameServer, 'server2', GameServer, ...}
+gameservers = {} # type: Dict[str, GameServer]
 
 API_PREFIX = '/api/v1'
 
@@ -72,5 +72,8 @@ def import_data_view():
 Watcher(gameservers, db).start()
 logger.debug('Main called')
 
+
+# This block isn't called by Gunicorn. It is intended for use when running
+# the app directly during development
 if __name__ == '__main__':
 	app.run(debug=config.DEBUG, port=config.PORT, threaded=config.DEBUG)

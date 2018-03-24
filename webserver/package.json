@@ -2,10 +2,11 @@
   "name": "ocap",
   "version": "",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "dependencies": {
     "loglevel": "^1.6.0",
-    "watch": "^1.0.2"
+    "watch": "^1.0.2",
+    "webpack-cli": "^2.0.13"
   },
   "scripts": {
     "build-js": "webpack",

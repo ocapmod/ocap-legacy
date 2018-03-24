@@ -1,17 +1,17 @@
 version: '3'
 
 services:
-  web:
-    build: .
-    container_name: ocap-web
-    ports:
-      - "8000:8000"
-    volumes:
-      - C:\Users\Jamie\Documents\captures:/app/static/captures/
-      - database:/app/database/
-      - maps:/app/static/images/maps/
+	web:
+		build: .
+		container_name: ocap-web
+		ports:
+			- "8000:8000"
+		volumes:
+			- C:\Users\Jamie\Documents\captures:/app/static/captures/
+			- database:/app/database/
+			- maps:/app/static/images/maps/
 
 volumes:
-  captures:
-  database:
-  maps:
+	captures:
+	database:
+	maps:
