@@ -1,4 +1,4 @@
-import {constants} from './constants';
+import * as constants from './constants';
 import {entities, Entities, Unit, Vehicle} from './entities';
 import {gameEvents} from './events';
 import {globals} from './globals';

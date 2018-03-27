@@ -1,0 +1,139 @@
+#bottom-panel {
+	align-items: center;
+	background-color: rgba(0,0,0,0.8);
+	bottom: 0;
+	box-sizing: border-box;
+	display: flex;
+	font-size: 16px;
+	height: 40px;
+	left: 0;
+	padding: 5px 15px;
+	position: absolute;
+	width: 100%;
+
+	div {
+		margin-right: 15px;
+	}
+
+	.left, .middle, .right {
+		align-items: center;
+		display: flex;
+
+		div {
+			display: inline-block;
+		}
+	}
+
+	.left {
+		width: 200px;
+	}
+
+	.middle {
+		width: calc(100% - (200px + 100px));
+	}
+
+	.right {
+		width: 100px;
+	}
+
+	#play-pause-button {
+		background-image: url("../images/play-pause.png");
+		background-position: 15px 0;
+		background-size: auto 15px;
+		height: 15px;
+		position: relative;
+		width: 15px;
+
+		&.paused {
+			background-position: 0 0;
+		}
+	}
+
+	#fullscreen-button {
+		background-image: url("../images/fullscreen.png");
+		opacity: 0.95;
+		background-size: 15px 15px;
+		width: 15px;
+		height: 15px;
+		image-rendering: pixelated;
+	}
+
+	#timecode-container {
+	}
+
+	#frame-slider-container {
+		position: relative;
+		.slider-track;
+
+		#event-timeline {
+			height: 10px;
+			pointer-events: none;
+			position: absolute;
+			top: 0;
+			width: 100%;
+
+			.tick {
+				background-color: red;
+				display: inline-block;
+				height: 100%;
+				left: 0;
+				opacity: 0.4;
+				pointer-events: none;
+				position: absolute;
+			}
+		}
+
+		input[type="range"] {
+			-webkit-appearance: none; // Hides the default slider so that custom slider can be made
+			background: transparent;
+			width: 100%; // Required for firefox
+			z-index: 2;
+
+			&:focus {
+				outline: none;
+			}
+
+			&::-webkit-slider-runnable-track {
+				.slider-track;
+				background: transparent;
+			}
+
+			&::-webkit-slider-thumb {
+				.slider-thumb;
+			}
+		}
+	}
+
+	#playback-speed-slider-container {
+		position: relative;
+
+		#playback-speed-val {
+			height: 50px;
+		}
+
+		input[type="range"] {
+			-webkit-appearance: none;
+			background: transparent;
+			display: none;
+			left: 5px;
+			bottom: 20px;
+			position: absolute;
+			transform-origin: 0 0;
+			transform: rotate(270deg);
+			width: 80px;
+
+			&:focus {
+				outline: none;
+			}
+
+			&::-webkit-slider-runnable-track {
+				.slider-track;
+			}
+
+			&::-webkit-slider-thumb {
+        .slider-thumb;
+				background: #404040;
+			}
+		}
+	}
+}

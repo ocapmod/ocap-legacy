@@ -2,7 +2,7 @@
 	Singleton UI module
 */
 
-import {constants} from './constants';
+import * as constants from './constants';
 import {globals} from './globals';
 import * as app from './app';
 import * as services from './services';
@@ -10,64 +10,70 @@ import * as services from './services';
 
 class UI {
 	constructor() {
-		this.leftPanel = null;
-		this.rightPanel = null;
-		this.bottomPanel = null;
-		this.eventList = null;
-		this.listWest = null;
-		this.listEast = null;
-		this.listGuer = null;
-		this.listCiv = null;
-		this.missionCurTime = null;
-		this.missionEndTime = null;
-		this.frameSlider = null;
-		this.modal = null;
-		this.modalHeader = null;
-		this.modalBody = null;
-		this.modalButtons = null;
-		this.missionName = null;
-		this.loadOpButton = null;
-		this.playPauseButton = null;
-		this.playbackSpeedSliderContainer = null;
-		this.playbackSpeedSlider = null;
-		this.playbackSpeedVal = null;
 		this.aboutButton = null;
-		this.toggleFirelinesButton = null;
-		this.hint = null;
-		this.eventTimeline = null;
-		this.frameSliderWidthInPercent = -1;
-		this.filterHitEventsButton = null;
-		this.showHitEvents = true;
-		this.firelinesEnabled = true;
-		this.filterEventsInput = null;
-		this.hideMarkerPopups = false;
+		this.bottomPanel = null;
+		this.container = null;
 		this.cursorTargetBox = null;
 		this.cursorTooltip = null;
-		this.mapDiv = document.getElementById("map");;
+		this.eventList = null;
+		this.eventTimeline = null;
+		this.filterEventsInput = null;
+		this.filterHitEventsButton = null;
+		this.firelinesEnabled = true;
+		this.frameSlider = null;
+		this.frameSliderWidthInPercent = -1;
+		this.fullscreenButton = null;
+		this.hideMarkerPopups = false;
+		this.hint = null;
+		this.leftPanel = null;
+		this.listCiv = null;
+		this.listEast = null;
+		this.listGuer = null;
+		this.listWest = null;
+		this.loadOpButton = null;
+		this.mapDiv = document.getElementById("map");
+		this.missionCurTime = null;
+		this.missionEndTime = null;
+		this.missionName = null;
+		this.modal = null;
+		this.modalContainer = null;
+		this.modalBody = null;
+		this.modalButtons = null;
+		this.modalHeader = null;
+		this.playbackSpeedSlider = null;
+		this.playbackSpeedSliderContainer = null;
+		this.playbackSpeedVal = null;
+		this.playPauseButton = null;
+		this.rightPanel = null;
+		this.showHitEvents = true;
+		this.toggleFirelinesButton = null;
 
 		this._init();
 	};
 
 	_init() {
+		this.container = document.getElementById('container');
+
 		// Setup top panel
-		this.missionName = document.getElementById("missionName");
+		this.missionName = document.getElementById("mission-name");
 
 		// Load operation button
-		var loadOpButton = document.getElementById("loadOpButton");
+		var loadOpButton = document.getElementById("load-op-button");
 		loadOpButton.addEventListener("click", function() {
 			location.reload();
 		});
 		this.loadOpButton = loadOpButton;
 
 		// About button
-		var aboutButton = document.getElementById("aboutButton");
+		var aboutButton = document.getElementById("about-button");
 		aboutButton.addEventListener("click", () => {
 			this.showModalAbout();
 		});
 		this.aboutButton = aboutButton;
 
 		// Toggle firelines button
-		var toggleFirelinesButton = document.getElementById("toggleFirelines");
+		var toggleFirelinesButton = document.getElementById(
+				"toggle-firelines-button");
 		toggleFirelinesButton.addEventListener("click", () => {
 			this.firelinesEnabled = !this.firelinesEnabled;
 
@@ -86,25 +92,26 @@ class UI {
 
 
 		// Setup left panel
-		this.leftPanel = document.getElementById("leftPanel");
+		this.leftPanel = document.getElementById("left-panel");
 
 		// Define group side elements
-		this.listWest = document.getElementById("listWest");
-		this.listEast = document.getElementById("listEast");
-		this.listGuer = document.getElementById("listGuer");
-		this.listCiv = document.getElementById("listCiv");
+		this.listWest = document.getElementById("list-west");
+		this.listEast = document.getElementById("list-east");
+		this.listGuer = document.getElementById("list-ind");
+		this.listCiv = document.getElementById("list-civ");
 
 		// Setup right panel
-		this.rightPanel = document.getElementById("rightPanel");
-		this.eventList = document.getElementById("eventList");
-		this.filterHitEventsButton = document.getElementById("filterHitEventsButton");
+		this.rightPanel = document.getElementById("right-panel");
+		this.eventList = document.getElementById("event-list");
+		this.filterHitEventsButton = document.getElementById(
+				"filter-hit-events-button");
 		this.filterHitEventsButton.addEventListener("click", () => {
 			toggleHitEvents();
 		});
-		this.filterEventsInput = document.getElementById("filterEventsInput");
+		this.filterEventsInput = document.getElementById("filter-events-input");
 
 		// Cursor target box
-		this.cursorTargetBox = document.getElementById("cursorTargetBox");
+		this.cursorTargetBox = document.getElementById("cursor-target-box");
 
 		// Cursor tooltip
 		let cursorTooltip = document.createElement("div");
@@ -113,31 +120,31 @@ class UI {
 		this.cursorTooltip = cursorTooltip;
 
 		// Setup bottom panel
-		this.bottomPanel = document.getElementById("bottomPanel");
-		this.missionCurTime = document.getElementById("missionCurTime");
-		this.missionEndTime = document.getElementById("missionEndTime");
-		this.frameSlider = document.getElementById("frameSlider");
+		this.bottomPanel = document.getElementById("bottom-panel");
+		this.missionCurTime = document.getElementById("mission-cur-time");
+		this.missionEndTime = document.getElementById("mission-end-time");
+		this.frameSlider = document.getElementById("frame-slider");
 		this.frameSlider.addEventListener("input", (event) => {
 			var val = event.srcElement.value;
 			this.setMissionCurTime(val);
 		});
-		this.playPauseButton = document.getElementById("playPauseButton");
+		this.playPauseButton = document.getElementById("play-pause-button");
 		this.playPauseButton.addEventListener('click', () => {
 			console.log('Play/pause button clicked');
 			app.playPause();
 		});
 
 		// Events timeline
-		this.eventTimeline = document.getElementById("eventTimeline");
+		this.eventTimeline = document.getElementById("event-timeline");
 
 		// Hide/show ui on keypress
 		this.mapDiv.addEventListener("keypress", (event) => {
 
 			switch (event.charCode) {
-				case constants.CharCodes.E: // e
+				case constants.CharCode.E: // e
 					this.toggleLeftPanel();
 					break;
-				case constants.CharCodes.R: // r
+				case constants.CharCode.R: // r
 					this.toggleRightPanel();
 					break;
 			};
@@ -146,7 +153,7 @@ class UI {
 		// Add keypress event listener
 		this.mapDiv.addEventListener("keypress", function(event) {
 			switch (event.charCode) {
-				case constants.CharCodes.SPACE: // Spacebar
+				case constants.CharCode.SPACE: // Spacebar
 					app.playPause();
 					break;
 			};
@@ -162,10 +169,11 @@ class UI {
 
 		// Modal
 		this.setModal(
+			document.getElementById("modal-container"),
 			document.getElementById("modal"),
-			document.getElementById("modalHeader"),
-			document.getElementById("modalBody"),
-			document.getElementById("modalButtons")
+			document.getElementById("modal-header"),
+			document.getElementById("modal-body"),
+			document.getElementById("modal-buttons")
 		);
 		this.showModalOpSelection();
 
@@ -173,10 +181,11 @@ class UI {
 		this.hint = document.getElementById("hint");
 
 		// Playback speed slider
-		this.playbackSpeedSliderContainer = document.getElementById("playbackSpeedSliderContainer");
-		this.playbackSpeedSlider = document.getElementById("playbackSpeedSlider");
+		this.playbackSpeedSliderContainer = document.getElementById(
+				"playback-speed-slider-container");
+		this.playbackSpeedSlider = document.getElementById("playback-speed-slider");
 
-		this.playbackSpeedVal = document.getElementById("playbackSpeedVal");
+		this.playbackSpeedVal = document.getElementById("playback-speed-val");
 		this.playbackSpeedVal.textContent = globals.playbackMultiplier + "x";
 		this.playbackSpeedVal.addEventListener("mouseover", () => {
 			this.showPlaybackSpeedSlider();
@@ -195,18 +204,25 @@ class UI {
 			globals.playbackMultiplier = sliderVal;
 		});
 
-		this.frameSliderWidthInPercent = (this.frameSlider.offsetWidth / this.frameSlider.parentElement.offsetWidth) * 100;
+		this.frameSliderWidthInPercent = (
+			(this.frameSlider.offsetWidth /
+			this.frameSlider.parentElement.offsetWidth)
+			* 100
+		);
+
+		this.fullscreenButton = document.getElementById('fullscreen-button');
+		this.fullscreenButton.addEventListener('click', services.goFullscreen);
 	};
 
 	showCursorTooltip(text) {
 		let tooltip = this.cursorTooltip;
 		tooltip.textContent = text;
-		tooltip.className = "cursorTooltip";
+		tooltip.className = "cursor-tooltip";
 
 		// Attach text to cursor. Remove after timeout
 		this.mapDiv.addEventListener("mousemove", this._moveCursorTooltip);
 		setTimeout(() => {
-			tooltip.className = "cursorTooltip hidden";
+			tooltip.className = "cursor-tooltip hidden";
 
 			// Remove listener once opacity transition ended
 			tooltip.addEventListener("transitionend", () => {
@@ -217,24 +233,35 @@ class UI {
 	};
 
 	_moveCursorTooltip(event) {
-		ui.cursorTooltip.style.transform = `translate3d(${event.pageX}px, ${event.pageY}px, 0px)`;
+		ui.cursorTooltip.style.transform = `
+				translate3d(${event.pageX}px, ${event.pageY}px, 0px)`;
 	};
 
 	setMissionName(name) {
 		this.missionName.textContent = name;
 	};
 
+	updatePlayPauseButton(playbackPaused) {
+		if (playbackPaused) {
+			this.playPauseButton.classList.add(constants.ClassName.PAUSE);
+		} else {
+			this.playPauseButton.classList.remove(constants.ClassName.PAUSE)
+		};
+	}
+
 	// Set mission time based on given frame
 	// Move playback + slider to given frame in time
 	setMissionCurTime(f) {
 		globals.missionCurDate.setTime(f*globals.frameCaptureDelay);
-		this.missionCurTime.textContent = services.dateToTimeString(globals.missionCurDate);
+		this.missionCurTime.textContent = services.dateToTimeString(
+				globals.missionCurDate);
 		this.setFrameSliderVal(f);
 		globals.playbackFrame = f;
 	};
 
 	setMissionEndTime(f) {
-		this.missionEndTime.textContent = services.dateToTimeString(new Date(f*globals.frameCaptureDelay));
+		this.missionEndTime.textContent = services.dateToTimeString(
+				new Date(f*globals.frameCaptureDelay));
 		this.setFrameSliderMax(f);
 	};
 
@@ -262,7 +289,8 @@ class UI {
 		};
 	};
 
-	setModal(modal, modalHeader, modalBody, modalButtons) {
+	setModal(modalContainer, modal, modalHeader, modalBody, modalButtons) {
+		this.modalContainer = modalContainer;
 		this.modal = modal;
 		this.modalHeader = modalHeader;
 		this.modalBody = modalBody;
@@ -271,23 +299,7 @@ class UI {
 
 	showModalOpSelection() {
 		// Set header/body
-		//this.modalHeader.textContent = "Operation selection";
 		this.modalBody.textContent = "Retrieving list...";
-
-		// Add buttons
-/*		var playButton = document.createElement("div");
-		playButton.className = "modalButton";
-		playButton.textContent = "Play";
-		var cancelButton = document.createElement("div");
-		cancelButton.className = "modalButton";
-		cancelButton.textContent = "Cancel";
-		var hideModal = this.hideModal;
-		cancelButton.addEventListener("click", function() {
-			this.hideModal();
-		});
-
-		this.modalButtons.appendChild(cancelButton);
-		this.modalButtons.appendChild(playButton);*/
 
 		// Show modal
 		this.showModal();
@@ -300,7 +312,7 @@ class UI {
 		var table = document.createElement("table");
 		var headerRow = document.createElement("tr");
 
-		var columnNames = ["Mission", "Terrain", "Date", "Time", "Duration"];
+		var columnNames = ["Mission", "Location", "Date", "Time", "Duration"];
 		columnNames.forEach(function(name) {
 			var th = document.createElement("th");
 			th.textContent = name;
@@ -315,7 +327,7 @@ class UI {
 			var cell = document.createElement("td");
 
 			if (op.in_progress) {
-				row.classList.add('in-progress');
+				row.classList.add(constants.ClassName.IN_PROGRESS);
 			};
 
 			var date = new Date(op.timestamp * 1000);
@@ -354,7 +366,7 @@ class UI {
 
 	makeModalButton(text, func) {
 		var button = document.createElement("div");
-		button.className = "modalButton";
+		button.className = "modal-button";
 		button.textContent = text;
 		button.addEventListener("click", func);
 
@@ -365,15 +377,15 @@ class UI {
 		this.modalHeader.textContent = "About";
 
 		this.modalBody.innerHTML = `
-			<img src="images/ocap-logo.png" height="60px" alt="OCAP">
-			<h4 style=line-height:0>${appDesc} (BETA)</h4>
-			<h5 style=line-height:0>v${appVersion}</h5>
-			Created by ${appAuthor}<br/>
-			Originally made for <a href="http://www.3commandobrigade.com" target="_blank">3 Commando Brigade</a>
+			<img src="../static/images/ocap-logo.png" height="60px" alt="${constants.App.TITLE}">
+			<h4 style=line-height:0>${constants.App.TITLE_FULL}</h4>
+			<h5 style=line-height:0>v${constants.App.VERSION}</h5>
+			Created by ${constants.App.AUTHOR}<br/>
+			Originally made for <a href=" ${constants.App.COMMUNITY_URL}" target="_blank"> ${constants.App.COMMUNITY_TITLE}</a>
 			<br/>
 			<br/>
-			<a href="" target="_blank">BI Forum Post</a><br/>
-			<a href="" target="_blank">GitHub Link</a>
+			<a href="${constants.App.BI_THREAD_URL}" target="_blank">BI Forum Post</a><br/>
+			<a href="${constants.App.GITHUB_URL}" target="_blank">GitHub Page</a>
 			<br/>
 			<br/>
 			Press space to play/pause<br/>
@@ -387,11 +399,13 @@ class UI {
 	};
 
 	showModal() {
-		this.modal.style.display = "inherit";
+		this.modalContainer.classList.add(constants.ClassName.SHOW);
+		this.modal.classList.add(constants.ClassName.SHOW);
 	};
 
 	hideModal() {
-		this.modal.style.display = "none";
+		this.modalContainer.classList.remove(constants.ClassName.SHOW);
+		this.modal.classList.remove(constants.ClassName.SHOW);
 	};
 
 	showPlaybackSpeedSlider() {
@@ -420,11 +434,11 @@ class UI {
 
 			// Fade element in if occured on current frame
 			if (event.frameNum != globals.playbackFrame) {
-				el.className = "liEvent reveal";
+				el.className = `${constants.ClassName.EVENT} ${constants.ClassName.REVEAL}`;
 			} else {
-				el.className = "liEvent";
+				el.className = `${constants.ClassName.EVENT}`;
 				setTimeout(() => {
-					el.className = "liEvent reveal";
+					el.className = `${constants.ClassName.EVENT} ${constants.ClassName.REVEAL}`;
 				}, 100);
 			};
 		};
@@ -442,10 +456,10 @@ class UI {
 
 	showHint(text) {
 		this.hint.textContent = text;
-		this.hint.style.display = "inherit";
+		this.hint.classList.add(constants.ClassName.SHOW);
 
 		setTimeout(() => {
-			this.hint.style.display = "none";
+			this.hint.classList.remove(constants.ClassName.SHOW);
 		}, 5000);
 	};
 
@@ -453,7 +467,7 @@ class UI {
 		var frameWidth = this.frameSliderWidthInPercent / globals.endFrame;
 		var tick = document.createElement("div");
 
-		tick.className = "eventTimelineTick";
+		tick.className = constants.ClassName.EVENT_TIMELINE_TICK;
 		tick.style.left = (frameNum * frameWidth) + "%"; // We use percent so position of tick maintains even on window resize
 		tick.style.width = frameWidth + "%";
 		this.eventTimeline.appendChild(tick);

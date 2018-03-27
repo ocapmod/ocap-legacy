@@ -1,0 +1,125 @@
+#left-panel, #right-panel {
+  background-color: @side-panel-bg-color;
+	position: absolute;
+	top: @panel-height;
+
+	.title {
+		align-items: center;
+		background-color: rgba(0,0,0,0.5);
+		display: flex;
+		font-size: 16px;
+		height: 30px;
+		justify-content: center;
+		padding: 5px 0;
+		width: 100%;
+	}
+
+	.filter-box {
+		background-color: rgba(0,0,0,0.25);
+		box-sizing: border-box;
+		height: 35px;
+		padding: 4px 5px;
+		width: 100%;
+		display: flex;
+		align-items: center;
+
+		input[type="text"] {
+			background: none;
+			border: 0;
+			color: #F2F2F2;
+			display: inline-block;
+			height: 18px;
+			padding: 0 10px;
+
+			&:focus {
+				outline: none;
+			}
+		}
+
+		#filter-hit-events-button {
+			background-image: url("../images/crosshairs.png");
+			background-repeat: no-repeat;
+			background-size: 18px 18px;
+			cursor: pointer;
+			display: inline-block;
+			height: 18px;
+			margin: 0 5px;
+			width: 18px;
+		}
+  }
+}
+
+#left-panel {
+  display: flex;
+  flex-direction: column;
+	height: calc(100% - (@panel-height * 2));
+	left: 0;
+  width: 200px;
+
+	.entity-list {
+    flex: 1;
+    overflow-y: scroll;
+    padding: 0 10px;
+
+		.side-title {
+			text-shadow: 1px 1px #000000;
+      font-weight: bold;
+      opacity: .8;
+		}
+
+		ul {
+			list-style-type: none;
+			padding: 0;
+
+			.group {
+        padding-top: 10px;
+
+        .group-title {
+          color: rgba(255, 255, 255, 0.6);
+        }
+			}
+
+			.unit {
+        padding: 5px 16px;
+
+				&:hover {
+					background-color: @highlight-color;
+				}
+			}
+		}
+	}
+}
+
+#right-panel {
+	display: flex;
+	flex-direction: column;
+	height: 50%;
+	right: 0;
+	width: 300px;
+
+	#event-list-container {
+		height: 100%;
+		overflow-y: scroll;
+
+		ul {
+			list-style-type: none;
+			padding: 0 20px;
+		}
+
+		.event {
+			border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+			margin-top: 10px;
+			opacity: 0;
+			padding-bottom: 10px;
+
+			&.reveal {
+				opacity: 1;
+				transition: opacity @transition-duration;
+			}
+
+			.event-details {
+				color: @gray;
+			}
+		}
+	}
+}

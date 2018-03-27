@@ -2,6 +2,7 @@ import {Unit} from './entities';
 import {globals} from './globals';
 import * as services from './services';
 import {ui} from './ui';
+import * as constants from './constants';
 
 class GameEvents {
 	constructor() {
@@ -72,7 +73,7 @@ class HitOrKilledEvent {
 		};
 
 		var detailsDiv = document.createElement("div");
-		detailsDiv.className = "eventDetails";
+		detailsDiv.className = constants.ClassName.EVENT_DETAILS;
 		detailsDiv.textContent = this.timecode + " - " + this.distance + "m - " + this.weapon;
 
 		var li = document.createElement("li");
@@ -120,7 +121,7 @@ class ConnectEvent {
 		span.textContent = this.unitName + " " + this.type;
 
 		var detailsDiv = document.createElement("div");
-		detailsDiv.className = "eventDetails";
+		detailsDiv.className = constants.EVENT_DETAILS;
 		detailsDiv.textContent = this.timecode;
 
 		var li = document.createElement("li");

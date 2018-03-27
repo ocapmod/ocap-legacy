@@ -145,10 +145,12 @@ class Group {
 
 		// Create DOM element
 		var liGroup = document.createElement("li");
-		liGroup.className = "liGroup";
-		liGroup.textContent = this.getName();
-		var group = this;
-		//liGroup.addEventListener("click", function() {console.log(group.getUnits())});
+		liGroup.className = "group";
+		var elGroupTitle = document.createElement("div");
+		elGroupTitle.className = "group-title";
+		elGroupTitle.textContent = this.getName();
+		liGroup.appendChild(elGroupTitle);
+
 		this.setElement(liGroup);
 		targetList.appendChild(liGroup);
 	};

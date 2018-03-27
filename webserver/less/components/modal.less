@@ -1,0 +1,126 @@
+#modal-container {
+	height: 100%;
+	left: 0;
+	overflow: auto;
+	position: fixed;
+	top: 0;
+	width: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform @transition-duration, opacity @transition-duration;
+
+  &.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  #modal {
+    background: none;
+    margin: 10% auto auto;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-20px);
+    transition: transform @transition-duration, opacity @transition-duration;
+    width: 40%;
+
+    &.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+  }
+
+  #modal-header {
+    box-sizing: border-box;
+    font-size: 16px;
+    background-color: @highlight-color;
+    width: 100%;
+    margin-bottom: 3px;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-weight: 500;
+  }
+
+  #modal-body {
+    box-sizing: border-box;
+    background-color: rgba(0,0,0,0.7);
+    width: 100%;
+    min-height: 200px;
+    max-height: 400px;
+    height: auto;
+    padding: 10px;
+    overflow-y: auto;
+    overflow-x: auto;
+
+    a {
+      color: #fff;
+      text-decoration: underline;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+
+    table {
+      border-collapse: collapse;
+      border: none;
+      width: 100%;
+
+      th {
+        background-color: rgba(0,0,0,0.7);
+        padding: 6px 3px;
+        font-weight: 500;
+      }
+
+      td {
+        padding: 3px;
+        padding-right: 20px;
+      }
+
+      tr {
+        text-align: left;
+
+        &:not(:first-child):hover {
+          background-color: @highlight-color;
+        }
+      }
+
+      .in-progress {
+        color: @gray;
+        font-style: italic;
+      }
+    }
+  }
+
+  #modal-buttons {
+    box-sizing: border-box;
+    width: 100%;
+    text-align: right;
+    background: none;
+    margin-top: 3px;
+    height: 15px;
+
+    .modal-button {
+      display: inline-block;
+      background-color: none;
+      height: 100%;
+      min-width: 100px;
+      background-color: rgba(0,0,0,0.7);
+      margin-right: 10px;
+      padding: 5px;
+      text-transform: uppercase;
+      text-align: left;
+
+      &:last-child {
+        margin-right: 0;
+      }
+
+      &:hover {
+        background-color: #fff;
+        color: #000;
+      }
+    }
+  }
+}

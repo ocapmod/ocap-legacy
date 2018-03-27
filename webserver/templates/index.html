@@ -4,82 +4,80 @@
 	<title>OCAP</title>
 	<meta charset="utf-8"/>
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
-	<link rel="stylesheet" href="{{ url_for('static', filename='style/leaflet-1.0.0-rc1.css') }}" />
-	<link rel="stylesheet" href="{{ url_for('static', filename='style/common.css') }}" />
-	<link rel="stylesheet" href="{{ url_for('static', filename='style/index.css') }}" />
-	<link rel="icon" type="img/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+	<link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
+	<link href="{{ url_for('static', filename='style/leaflet-1.0.0-rc1.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='style/main.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='images/favicon.png') }}" rel="icon" type="img/png">
 </head>
 <body>
 
 <div id="container">
-	<a href="http://www.3commandobrigade.com/" target="_blank">
-		<div id="uk3cbLogoWatermark"></div>
-	</a>
 	<div id="map"></div>
-	<div id="topPanel">
-		<div id="ocapLogoButton"></div>
-		<div id="loadOpButton" class="button"></div>
-		<div id="aboutButton" class="bold button">i</div>
-		<span id="toggleFirelines" class="button"></span>
-		<span id="missionName" class="medium"></span>
+	<div id="top-panel">
+		<div id="ocap-logo-button" class="button"></div>
+		<div id="load-op-button" class="button"></div>
+		<div id="about-button" class="bold button">i</div>
+		<span id="toggle-firelines-button" class="button"></span>
+		<span id="mission-name" class="medium"></span>
 	</div>
-	<div id="leftPanel">
+	<div id="left-panel">
 		<div class="title bold"><span>Units</span></div>
-		<div class="filterBox"></div>
-		<div class="panelContent">
-			<ul id="listWest"><span class="blufor sideTitle">BLUFOR</span></ul>
-			<ul id="listEast"><span class="opfor sideTitle">OPFOR</span></ul>
-			<ul id="listGuer"><span class="ind sideTitle">INDEPENDENT</span></ul>
-			<ul id="listCiv"><span class="civ sideTitle">CIVILIAN</span></ul>
+		<div class="filter-box"></div>
+		<div class="entity-list">
+			<ul id="list-west"><span class="blufor side-title">BLUFOR</span></ul>
+			<ul id="list-east"><span class="opfor side-title">OPFOR</span></ul>
+			<ul id="list-ind"><span class="ind side-title">INDEPENDENT</span></ul>
+			<ul id="list-civ"><span class="civ side-title">CIVILIAN</span></ul>
 		</div>
 	</div>
-	<div id="rightPanel">
+	<div id="right-panel">
 		<div class="title bold">Events</div>
-		<div class="filterBox">
-			<div id="filterHitEventsButton" class="filterHit"></div>
-			<input type="text" id="filterEventsInput" placeholder="Filter" />
+		<div class="filter-box">
+			<div id="filter-hit-events-button"></div>
+			<input type="text" id="filter-events-input" placeholder="Filter" />
 		</div>
-		<div class="panelContent">
-			<ul id="eventList"></ul>
-		</div>
-	</div>
-	<div class="extraInfoBox">
-		<div class="extraInfoBoxContent">
-			<span class="bold">Cursor target: </span><span id="cursorTargetBox">None</span>
+		<div id="event-list-container">
+			<ul id="event-list"></ul>
 		</div>
 	</div>
-	<div id="bottomPanel">
-		<div class="panelContent">
-			<div id="playPauseButton">
-			</div>
-			<div id="timecodeContainer" class="medium">
-				<span id="missionCurTime">0:00:00</span>
+	<div class="extra-info-box">
+		<div class="extra-info-box-content">
+			<span class="bold">Cursor target: </span><span id="cursor-target-box">None</span>
+		</div>
+	</div>
+	<div id="bottom-panel">
+		<div class="left">
+			<div id="play-pause-button" class="paused"></div>
+			<div id="timecode-container" class="medium">
+				<span id="mission-cur-time">0:00:00</span>
 				<span>/</span>
-				<span id="missionEndTime">0:00:00</span>
+				<span id="mission-end-time">0:00:00</span>
 			</div>
-			<div id="frameSliderContainer">
-				<input type="range" id="frameSlider" min="0" value="0">
-					<div id="eventTimeline"></div>
-				</input>
+		</div>
+		<div id="frame-slider-container" class="middle">
+			<input type="range" id="frame-slider" min="0" value="0">
+				<div id="event-timeline"></div>
+			</input>
+		</div>
+		<div class="right">
+			<div id="playback-speed-slider-container">
+				<span id="playback-speed-val"></span>
+				<input type="range" id="playback-speed-slider" />
 			</div>
-			<div id="playbackSpeedSliderContainer">
-				<span id="playbackSpeedVal"></span>
-				<input type="range" id="playbackSpeedSlider" />
-			</div>
-			<div class="fullscreenButton" onclick="goFullscreen()"></div>
+			<div id="fullscreen-button"></div>
 		</div>
 	</div>
 </div>
 
-<div id="modal" class="modal">
-	<div class="modalContent">
-		<div id="modalHeader" class="modalHeader medium">[[ header ]]</div>
-		<div id="modalBody" class="modalBody">Body</div>
-		<div id="modalButtons" class="modalButtons"></div>
+<div id="modal-container">
+	<div id="modal">
+		<div id="modal-header" class="medium">&nbsp;</div>
+		<div id="modal-body"></div>
+		<div id="modal-buttons"></div>
 	</div>
 </div>
 
-<div id="hint" class="hint">Test popup</div>
+<div id="hint"></div>
 
 <script src="{{ url_for('static', filename='scripts/leaflet-1.0.0-rc1.js') }}"></script>
 <script src="{{ url_for('static', filename='scripts/leaflet.rotatedMarker.js') }}"></script>

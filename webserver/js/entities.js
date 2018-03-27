@@ -16,7 +16,7 @@ class Entities {
 	getAll() {
 		return this._entities;
 	};
-	
+
 	getById(id) {
 		return this._entities[id]; // Assumes entity IDs are always equal to their index in _entities
 	};
@@ -37,7 +37,7 @@ class Entity {
     if (this.constructor === Entity) {
       throw new TypeError('Abstract class "Entity" cannot be instantiated directly.'); 
     }
-		
+
 		this._startFrameNum = startFrameNum;
 		this._id = id;
 		this._name = name;
@@ -391,7 +391,7 @@ class Unit extends Entity {
 
 	makeElement(liTarget) { // Make and add element to UI target list
 		let liUnit = document.createElement("li");
-		liUnit.className = "liUnit";
+		liUnit.className = "unit";
 		liUnit.textContent = this._name;
 		liUnit.addEventListener("click", () => {
 			let marker = this.getMarker();
@@ -480,13 +480,6 @@ class Vehicle extends Entity {
 				clearInterval(checkPopupLoad);
 			};
 		}, 100);
-
-		// Add vehicle name tooltip on marker hover
-/*		let markerEl = this._marker.getElement();
-		markerEl.addEventListener("mouseover", (event) => {
-			ui.cursorTargetBox.textContent = this._name;
-			ui.showCursorTooltip(this._name);
-		});*/
 	};
 
 	_updateAtFrame(relativeFrameIndex) {

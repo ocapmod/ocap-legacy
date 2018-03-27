@@ -3,13 +3,18 @@
   "version": "",
   "description": "",
   "main": "app.js",
-  "dependencies": {
+  "dependencies": {},
+  "scripts": {
+    "js": "webpack",
+    "less": "lessc ./less/base.less ./static/style/main.css --autoprefix=\"browsers\"",
+    "watch": "concurrently \"watch \"\"npm run js\"\" ./js/ --interval=1\" \"watch \"\"npm run less\"\" ./less/ --interval=1\""
+  },
+  "devDependencies": {
+    "concurrently": "^3.5.1",
+    "less-plugin-autoprefix": "^1.5.1",
+    "less": "^3.0.1",
     "loglevel": "^1.6.0",
     "watch": "^1.0.2",
     "webpack-cli": "^2.0.13"
-  },
-  "scripts": {
-    "build-js": "webpack",
-    "watch": "watch \"npm run build-js\" ./js/ --interval=1"
   }
 }

@@ -1,21 +1,39 @@
-const CharCodes = {
+export const App = {
+	AUTHOR: 'MisterGoodson',
+	BI_THREAD_URL: 'https://forums.bohemia.net/forums/topic/194164-ocap-op-capture-and-playback-aarreplay/',
+	COMMUNITY_TITLE: '3 Commando Brigade',
+	COMMUNITY_URL: 'https://www.3commandobrigade.com',
+	GITHUB_URL: 'https://github.com/mistergoodson/OCAP',
+	TITLE_FULL: 'Operation Capture And Playback',
+	TITLE: 'OCAP',
+	VERSION: '1.0',
+}
+
+export const CharCode = {
 	SPACE: 32,
 	E: 101,
 	R: 114,
 };
 
-const EntityTypes = {
+export const EntityType = {
 	UNIT: 'unit',
 	VEHICLE: 'vehicle',
-}
+};
 
-let constants = {
-	CharCodes: CharCodes,
-	EntityTypes: EntityTypes,
-	MAPS_PATH: '/static/images/maps',
-	CAPTURES_PATH: '/static/captures',
-	MARKERS_PATH: '/static/images/markers',
-	MAP_META_FILENAME: 'meta.json',
-}
+export const ElementId = {
+};
 
-export {constants};
+export const ClassName = {
+	EVENT_DETAILS: 'event-details',
+	EVENT_TIMELINE_TICK: 'tick',
+	EVENT: 'event',
+	IN_PROGRESS: 'in-progress',
+	PAUSE: 'paused',
+	REVEAL: 'reveal',
+	SHOW: 'show',
+};
+
+export const CAPTURES_PATH = '/static/captures';
+export const MAP_META_FILENAME = 'meta.json';
+export const MAPS_PATH = '/static/images/maps';
+export const MARKERS_PATH = '/static/images/markers';

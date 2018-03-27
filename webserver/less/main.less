@@ -1,0 +1,81 @@
+* {
+	&::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
+
+	&::-webkit-scrollbar-track, ::-webkit-scrollbar-corner {
+			background: transparent;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: #6E6E6E;
+	}
+}
+
+html, body, #map {
+	color: #F2F2F2;
+	cursor: default;
+	font-family: "Roboto", Arial, sans-serif;
+	font-size: 13px;
+	height: 100%;
+	margin: 0;
+	overflow: hidden;
+	padding: 0;
+	width: 100%;
+}
+
+#map {
+	left: 0;
+	position: absolute;
+	top: 0;
+	z-index: 0;
+}
+
+#hint {
+	align-items: center;
+	background-color: rgba(0,0,0,0.7);
+	bottom: 100px;
+	box-sizing: border-box;
+	display: flex;
+	justify-content: center;
+	left: 0;
+	line-height: 1.5;
+	margin: auto;
+	padding: 15px;
+	position: absolute;
+	right: 0;
+	width: 350px;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity @transition-duration;
+
+	&.show {
+		opacity: 1;
+		pointer-events: auto;
+	}
+}
+
+.blufor {
+	color: @blufor-color;
+}
+
+.opfor {
+	color: @opfor-color;
+}
+
+.ind {
+	color: @ind-color;
+}
+
+.civ {
+	color: @civ-color;
+}
+
+.bold {
+	font-weight: 700;
+}
+
+.medium {
+	font-weight: 500;
+}

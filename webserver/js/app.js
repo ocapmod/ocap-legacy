@@ -21,7 +21,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import {constants} from './constants';
+import * as constants from './constants';
 import {entities, Entities, Unit, Vehicle} from './entities';
 import {gameEvents, ConnectEvent, GameEvents, HitOrKilledEvent} from './events';
 import {globals} from './globals';
@@ -30,6 +30,7 @@ import {ui} from './ui';
 import * as services from './services';
 
 window.globals = globals;
+window.constants = constants;
 window.gameEvents = gameEvents;
 
 function init() {
@@ -48,7 +49,7 @@ function init() {
 	// Prevent spacebar from scrolling page in some browsers
 	window.addEventListener('keypress', function(event) {
 		switch (event.charCode) {
-			case constants.CharCodes.SPACE:
+			case constants.CharCode.SPACE:
 				event.preventDefault();
 				break;
 		};
@@ -84,14 +85,14 @@ export function processOp(filepath) {
 				let dir = entry[1];
 				let alive = Boolean(entry[2]);
 
-				if (type == constants.EntityTypes.UNIT) {
+				if (type == constants.EntityType.UNIT) {
 					states.push({position: pos, direction: dir, alive: alive, isInVehicle: Boolean(entry[3])});
-				} else if (type == constants.EntityTypes.VEHICLE) {
+				} else if (type == constants.EntityType.VEHICLE) {
 					states.push({position: pos, direction: dir, alive: alive, crew: entry[3]});
 				};
 			});
 
-			if (type == constants.EntityTypes.UNIT) {
+			if (type == constants.EntityType.UNIT) {
 				// Add group to global groups object (if new)
 				var group = groups.findGroup(entityJSON.group, entityJSON.side);
 				if (group == null) {
@@ -102,7 +103,7 @@ export function processOp(filepath) {
 				// Create unit and add to entities list
 				var unit = new Unit(startFrameNum, id, name, group, entityJSON.side, (entityJSON.isPlayer == 1), states, entityJSON.framesFired);
 				entities.add(unit);
-			} else if (type == constants.EntityTypes.VEHICLE) {
+			} else if (type == constants.EntityType.VEHICLE) {
 				// Create vehicle and add to entities list
 				var vehicle = new Vehicle(startFrameNum, id, entityJSON.class, name, states);
 				entities.add(vehicle);
@@ -110,7 +111,7 @@ export function processOp(filepath) {
 				console.log(vehicle);
 			};
 		};
-		
+
 		console.log('Entities extracted from capture data:')
 		console.log(entities);
 
@@ -264,12 +265,7 @@ function test() {
 
 export function playPause() {
 	globals.playbackPaused = !globals.playbackPaused;
-
-	if (globals.playbackPaused) {
-		playPauseButton.style.backgroundPosition = "0 0";
-	} else {
-		playPauseButton.style.backgroundPosition = `-${playPauseButton.offsetWidth}px 0`;
-	};
+	ui.updatePlayPauseButton(globals.playbackPaused);
 };
 
 function toggleHitEvents(showHint = true) {

@@ -1,0 +1,53 @@
+#top-panel {
+	align-items: center;
+	background-color: @panel-bg-color;
+	display: flex;
+	height: @panel-height;
+	left: 0;
+	position: absolute;
+	top: 0;
+	width: 100%;
+
+	.button {
+		box-sizing: border-box;
+		cursor: pointer;
+		display: inline-block;
+		height: 25px;
+		margin: 8px;
+		width: 25px;
+	}
+
+	#ocap-logo-button {
+		background-image: url("../images/ocap-logo.png");
+		background-repeat: no-repeat;
+		background-size: 70px 25px;
+		margin: 8px;
+		width: 70px;
+	}
+
+	#load-op-button {
+		background-image: url("../images/folder.png");
+		background-repeat: no-repeat;
+		background-size: 25px 25px;
+	}
+
+	#about-button {
+		font-size: 30px;
+		height: initial;
+		text-align: center;
+	}
+
+	#toggle-firelines-button {
+		background-image: url("../images/bullets.svg");
+		background-repeat: no-repeat;
+		background-size: 25px 25px;
+	}
+
+	#mission-name {
+		color: #A4A4A4;
+		font-size: 24px;
+		padding-right: 15px;
+		position: absolute;
+		right: 0;
+	}
+}
