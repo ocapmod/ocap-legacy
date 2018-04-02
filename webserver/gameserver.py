@@ -15,6 +15,7 @@ class GameServer():
 			CaptureData.EVENTS: [],
 			CaptureData.HEADER: {},
 		}
+		self.first_import_time = None
 		self.last_import_time = None
 		self.is_capturing = False
 
@@ -31,9 +32,13 @@ class GameServer():
 
 	def import_data(self, new_data):
 		logger.debug('Importing data for server: {}'.format(self.id))
+		time_now = time.time()
 		self.is_capturing = True
-		self.last_import_time = time.time()
+		self.last_import_time = time_now
 		self.data[CaptureData.HEADER] = new_data[CaptureData.HEADER]
+
+		if not self.first_import_time:
+			self.first_import_time = time_now
 
 		# Add entity data
 		logger.debug('Importing entities')

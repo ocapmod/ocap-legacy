@@ -62,7 +62,7 @@ class Watcher(Thread):
 			world=header[CaptureHeader.WORLD],
 			mission=header[CaptureHeader.MISSION],
 			author=header[CaptureHeader.AUTHOR],
-			timestamp=time.time(),
+			timestamp=server.first_import_time,
 			length=capture_length)
 		self.db.session.add(operation)
 		self.db.session.commit()

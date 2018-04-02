@@ -49,4 +49,4 @@ if (!isNull _killer) then {
 // Add event to eventsData
 ocap_eventsData pushBack _eventData;
 
-if (ocap_debug) then {systemChat format["%1 was killed by %2", name _victim, name _killer]};
+//if (ocap_debug) then {systemChat format["%1 was killed by %2", name _victim, name _killer]};

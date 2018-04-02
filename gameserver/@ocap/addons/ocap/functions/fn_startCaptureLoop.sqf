@@ -54,9 +54,9 @@ waitUntil{sleep 1; (time > 1) && (count(allPlayers) >= ocap_minPlayerCount) && (
 
 if (ocap_debug) then {
 	//player addAction ["Copy entitiesData to clipboard", {copyToClipboard str(ocap_entitiesData)}];
-	player addAction ["Write saved data", {[false] call ocap_fnc_exportData}];
+	player addAction ["Write saved data", {[] call ocap_fnc_exportData}];
 	player addEventHandler ["Respawn", {
-		player addAction ["Write saved data", {[false] call ocap_fnc_exportData}];
+		player addAction ["Write saved data", {[] call ocap_fnc_exportData}];
 	}];
 
 	//player addAction ["End mission", {endMission "end1"}];
@@ -65,7 +65,7 @@ if (ocap_debug) then {
 // CAPTURE LOOP
 private _id = 0; // ID assigned to each entity (auto increments). Also acts as an index for each entity in entitiesData.
 while {true} do {
-	if (!ocap_capture) then {waitUntil {sleep 1; ocap_capture}};
+	if (!ocap_capture) then {waitUntil {sleep 0.1; ocap_capture}};
 
 	_sT = diag_tickTime;
 	{
@@ -103,7 +103,7 @@ while {true} do {
 					_id = _id + 1;
 
 					_x setVariable ["ocap_isInitialised", true];
-					if (ocap_debug) then {systemChat format["Initialised %1.", str(_x)]};
+					//if (ocap_debug) then {systemChat format["Initialised %1.", str(_x)]};
 				};
 			} else { // Update states data for this entity
 				if (_isUnit) then {
@@ -126,18 +126,17 @@ while {true} do {
 	} forEach (allUnits + allDead + (entities "LandVehicle") + (entities "Ship") + (entities "Air"));
 
 	_string = format["Captured frame %1 (%2ms).", ocap_captureFrameNo, (diag_tickTime - _sT)*1000];
-	if (ocap_debug) then {
-		systemChat _string;
-	};
+	[_string, false, true, false] call ocap_fnc_log;
 
-	// Write to log file every 10 frames
+	// Log to rpt every 10 frames
 	if ((ocap_captureFrameNo % 10) == 0) then {
-		[_string, false] call ocap_fnc_log;
+		[_string] call ocap_fnc_log;
 	};
 
 	// Export data if reached frame limit
-	if ((ocap_captureFrameNo % ocap_captureFrameLimit) == 0 && {ocap_captureFrameNo > 0}) then {
-		[false] call ocap_fnc_exportData;
+	if ((ocap_captureFrameNo % ocap_captureFrameLimit) == 0 &&
+			{ocap_captureFrameNo > 0}) then {
+		[] call ocap_fnc_exportData;
 	};
 
 	ocap_captureFrameNo = ocap_captureFrameNo + 1;

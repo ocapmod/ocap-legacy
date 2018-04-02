@@ -2,13 +2,30 @@
 	Author: MisterGoodson
 
 	Description:
-	Logs supplied string to Arma RPT log file (with "OCAP" prefix).
+		Output given string to log.
+
+	Parameters:
+		_string: STRING - The string to log. (Default: "")
+		_toHint: BOOLEAN - Log as hint. (Default: false)
+		_toChat: BOOLEAN - Log to system chat. (Default: false)
+		_toRpt: BOOLEAN - Log to RPT file. (Default: true)
 */
 
-_this params ["_string", ["_displayHint", true]];
+_this params [
+	["_string", ""],
+	["_toHint", false],
+	["_toChat", false],
+	["_toRpt", true]
+];
 
-if (_displayHint) then {
+if (_toHint) then {
 	hint _string;
 };
 
-diag_log text ("OCAP: " + _string);
+if (_toChat) then {
+	systemChat _string;
+};
+
+if (_toRpt) then {
+	diag_log text ("OCAP: " + _string);
+};

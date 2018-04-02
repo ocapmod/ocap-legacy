@@ -17,17 +17,22 @@ class CfgFunctions
 		class null
 		{
 			file = "ocap\functions";
-			class init {postInit = 1;};
-			class exportData {};
-			class callExtension {};
-			class startCaptureLoop {};
 			class addEventHandlers {};
+			class atEndOfArray {};
+			class callExtension {};
+			class entitiesToJson {};
+			class eventsToJson{};
+			class exportData {};
+			class init {postInit = 1;};
+			class isKindOf {};
 			class log {};
-			class eh_killed {};
+			class startCaptureLoop {};
+
+			class eh_connected {};
+			class eh_disconnected {};
 			class eh_fired {};
 			class eh_hit {};
-			class eh_disconnected {};
-			class eh_connected {};
+			class eh_killed {};
 		};
 	};
 };

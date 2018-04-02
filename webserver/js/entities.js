@@ -66,9 +66,11 @@ class Entity {
 	getPosAtFrame(f) {
 		f = this.getRelativeFrameIndex(f);
 
+		console.log(`${this._name}'s relative frame index: ${f}`);
+
 		var notExistYet = f<0; // Unit doesn't exist yet
-		var notExistAnymore = f >= (this._states.length-1); // Unit dead/doesn't exist anymore
-		if (notExistYet || notExistAnymore) { 
+		var notExistAnymore = f > (this._states.length-1); // Unit dead/doesn't exist anymore
+		if (notExistYet || notExistAnymore) {
 			return;
 		} else {
 			return this._states[f].position;
@@ -151,6 +153,10 @@ class Entity {
 	};*/
 
 	setMarkerIcon(icon) {
+		if (this._marker == null) {
+			console.log('Marker is null for:');
+			console.log(this);
+		};
 		this._marker.setIcon(icon);
 		this._curIcon = icon;
 	};

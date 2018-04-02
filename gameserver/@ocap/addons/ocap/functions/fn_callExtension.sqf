@@ -11,9 +11,23 @@
 	_this: STRING - Data to output to extension (e.g. JSON)
 */
 
+private _startTime = diag_tickTime;
+
+["Exporting data via extension...", true, true] call ocap_fnc_log;
+
 if (ocap_debug) then {
-	_str = "Export string length: " + str(count(_this));
-	[_str] call ocap_fnc_log;
+	["Export string length: " + str(count(_this))] call ocap_fnc_log;
 };
 
-"ocap_exporter" callExtension str(formatText["{%1}%2", ocap_host, _this]);
+private _result = "ocap_exporter" callExtension str(
+	formatText["{%1}%2", ocap_host, _this]
+);
+
+[
+	format[
+		"Extension responded (%1ms)",
+		(diag_tickTime - _startTime) * 1000
+	],
+	true,
+	true
+] call ocap_fnc_log;

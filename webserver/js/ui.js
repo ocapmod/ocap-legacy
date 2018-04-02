@@ -300,7 +300,7 @@ class UI {
 		var table = document.createElement("table");
 		var headerRow = document.createElement("tr");
 
-		var columnNames = ["Mission", "Terrain", "Date", "Duration"];
+		var columnNames = ["Mission", "Terrain", "Date", "Time", "Duration"];
 		columnNames.forEach(function(name) {
 			var th = document.createElement("th");
 			th.textContent = name;
@@ -314,10 +314,12 @@ class UI {
 			var row = document.createElement("tr");
 			var cell = document.createElement("td");
 
+			var date = new Date(op.timestamp * 1000);
 			var vals = [
 				op.mission,
 				op.world,
-				services.dateToLittleEndianString(new Date(op.timestamp * 1000)),
+				services.dateToLittleEndianString(date),
+				services.dateToTimeString(date, false),
 				services.secondsToTimeString(op.length)
 			];
 			vals.forEach(function(val) {

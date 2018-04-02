@@ -34,10 +34,10 @@ export function dateToLittleEndianString(date) {
 	return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 };
 
-export function dateToTimeString(date) {
-	const hours = date.getUTCHours();
-	const minutes = date.getUTCMinutes();
-	const seconds = date.getUTCSeconds();
+export function dateToTimeString(date, includeSeconds=true) {
+	const hours = date.getHours();
+	const minutes = date.getMinutes();
+	const seconds = date.getSeconds();
 	let string = "";
 
 	string += (hours + ":");
@@ -45,12 +45,15 @@ export function dateToTimeString(date) {
 	if (minutes < 10) {
 		string += "0";
 	}
-	string += (minutes + ":");
+	string += minutes;
 
-	if (seconds < 10) {
-		string+= "0";
+	if (includeSeconds) {
+		string += ":";
+		if (seconds < 10) {
+			string += "0";
+		};
+		string += seconds;
 	};
-	string += seconds;
 
 	return string;
 };

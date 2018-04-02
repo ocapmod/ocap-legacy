@@ -29,6 +29,9 @@ import {groups, Group, Groups} from './groups';
 import {ui} from './ui';
 import * as services from './services';
 
+window.globals = globals;
+window.gameEvents = gameEvents;
+
 function init() {
 	// Fetch operations and display op selection window
 	console.log('Fetching operations...')
@@ -310,13 +313,18 @@ function startPlaybackLoop() {
 						// Draw fire line (if enabled)
 						var projectilePos = entity.firedOnFrame(globals.playbackFrame);
 						if (projectilePos != null && ui.firelinesEnabled) {
-							//console.log(entity);
+							console.log('Shooter:');
+							console.log(entity);
+							console.log('Shooter pos:');
+							console.log(entity.getLatLng());
 							//console.log(`Shooter pos: ${entity.getLatLng()}\nFired event: ${projectilePos} (is null: ${projectilePos == null})`);
 							var line = L.polyline([entity.getLatLng(), services.armaToLatLng(projectilePos)], {
 								color: entity.getSideColour(),
 								weight: 2,
 								opacity: 0.4
 							});
+							console.log('Fireline:')
+							console.log(line);
 							line.addTo(globals.map);
 							firelines.push(line);
 						};
