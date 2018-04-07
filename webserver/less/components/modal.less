@@ -17,9 +17,13 @@
 
   #modal {
     background: none;
-    margin: 10% auto auto;
+    left: 0;
+    right: 0;
+    margin: auto;
     opacity: 0;
     pointer-events: none;
+    position: absolute;
+    top: 20vh;
     transform: translateY(-20px);
     transition: transform @transition-duration, opacity @transition-duration;
     width: 40%;
@@ -91,6 +95,17 @@
         color: @gray;
         font-style: italic;
       }
+    }
+  }
+
+  .progress-bar-container {
+    width: 100%;
+    height: 20px;
+
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background-color: white;
     }
   }
 

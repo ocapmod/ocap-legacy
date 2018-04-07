@@ -58,11 +58,17 @@ function init() {
 
 // Read operation JSON data and create unit objects
 export function processOp(filepath) {
-	console.group("Processing operation: (" + filepath + ")...");
+	console.group(`Processing operation: ${filepath}...`);
 	var time = new Date();
 
-	$.getJSON(filepath, function(data) {
-		var header = data.header;
+	fetch(filepath).then(response => {
+		return services.getJsonAndUpdateProgressBar(
+			response,
+			ui.progressBar,
+			ui.modalHeader
+		);
+	}).then(json => {
+		var header = json.header;
 		globals.missionName = header.missionName;
 		ui.setMissionName(globals.missionName);
 
@@ -70,8 +76,8 @@ export function processOp(filepath) {
 		ui.setMissionEndTime(globals.endFrame);
 
 		// Loop through entities
-		for (var entityId in data.entities) {
-			var entityJSON = data.entities[entityId];
+		for (var entityId in json.entities) {
+			var entityJSON = json.entities[entityId];
 
 			let type = entityJSON.type;
 			let startFrameNum = entityJSON.startFrameNum;
@@ -116,7 +122,7 @@ export function processOp(filepath) {
 		console.log(entities);
 
 		// Loop through events
-		data.events.forEach(function(eventJSON) {
+		json.events.forEach(function(eventJSON) {
 			var frameNum = eventJSON[0];
 			var type = eventJSON[1];
 
@@ -178,8 +184,9 @@ export function processOp(filepath) {
 		toggleHitEvents(false);
 		playPause();
 		ui.hideModal();
-	}).fail(function(xhr, textStatus, error) {
-		ui.modalBody.innerHTML = `Error: "${filepath}" failed to load.<br/>${error}.`;
+	}).catch(error => {
+		console.log(error);
+		ui.modalBody.textContent = `Error: "${filepath}" failed to load.<br/>${error}.`;
 	});
 };
 

@@ -29,6 +29,8 @@ export const ClassName = {
 	EVENT: 'event',
 	IN_PROGRESS: 'in-progress',
 	PAUSE: 'paused',
+	PROGRESS_BAR_CONTAINER: 'progress-bar-container',
+	PROGRESS_BAR: 'progress-bar',
 	REVEAL: 'reveal',
 	SHOW: 'show',
 };

@@ -44,6 +44,7 @@ class UI {
 		this.playbackSpeedSliderContainer = null;
 		this.playbackSpeedVal = null;
 		this.playPauseButton = null;
+		this.progressBar = null;
 		this.rightPanel = null;
 		this.showHitEvents = true;
 		this.toggleFirelinesButton = null;
@@ -350,7 +351,18 @@ class UI {
 			});
 
 			row.addEventListener("click", () => {
-				this.modalBody.textContent = "Loading...";
+				let progressBarContainer = document.createElement('div');
+				let progressBar = document.createElement('div');
+				progressBarContainer.appendChild(progressBar);
+				progressBarContainer.className =
+						constants.ClassName.PROGRESS_BAR_CONTAINER;
+				progressBar.className = constants.ClassName.PROGRESS_BAR;
+
+				this.modalBody.textContent = '';
+				this.progressBar = progressBar;
+				this.modalBody.appendChild(progressBarContainer);
+
+
 				services.getWorldByName(op.world).then((world) => {
 					console.log("Got world: ");
 					console.log(world);

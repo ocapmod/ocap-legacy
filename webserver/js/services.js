@@ -98,3 +98,42 @@ export function getWorldByName(worldName) {
 		});
 	});
 };
+
+/**
+ * Reads data from a fetch, updates progress bar as data is read.
+ *
+ * @param {Object} reader
+ * @param {Element} progressBarElem
+ * @param {Element} progressTextElem
+ * @return {Object}
+ */
+export function getJsonAndUpdateProgressBar(
+			response, progressBarElem=null, progressTextElem=null) {
+
+	let bytesReceivedCount = 0;
+	const bytesCount = parseInt(response.headers.get('Content-Length'));
+	const reader = response.body.getReader();
+	const decoder = new TextDecoder();
+	let jsonString = '';
+
+	function processResult(result) {
+		if (result.done) return JSON.parse(jsonString);
+
+		jsonString += decoder.decode(result.value, {stream: true});
+
+		bytesReceivedCount += result.value.length;
+		const progress = `${
+				Math.round((bytesReceivedCount / bytesCount) * 100)}%`;
+
+		if (progressBarElem) {
+			progressBarElem.style.width = progress;
+		}
+		if (progressTextElem) {
+			progressTextElem.textContent = `Loading (${progress})`;
+		}
+
+		return reader.read().then(processResult);
+	}
+
+	return reader.read().then(processResult);
+};
