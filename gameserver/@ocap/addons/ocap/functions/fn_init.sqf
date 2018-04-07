@@ -14,7 +14,7 @@ ocap_captureFrameLimit = 5; // Number of captured frames before auto-exporting
 ocap_captureFrameNo = 0; // Frame number for current capture
 ocap_entitiesData = [];  // Data on all units + vehicles that appear throughout the mission.
 ocap_eventsData = []; // Data on all events (involving 2+ units) that occur throughout the mission.
-ocap_serverId = format["%1__%2", serverName, serverTime];
+ocap_captureId = format["%1__%2", serverName, serverTime];
 
 // Add mission EHs
 addMissionEventHandler ["EntityKilled", {

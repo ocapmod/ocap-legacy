@@ -7,7 +7,7 @@ import config
 import models
 import services
 from models import db
-from gameserver import GameServer
+from capture import Capture
 from watcher import Watcher
 
 
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/data.db'
 app.json_encoder = services.CustomJSONEncoder
-gameservers = {} # type: Dict[str, GameServer]
+captures = {} # type: Dict[str, Capture]
 
 API_PREFIX = '/api/v1'
 
@@ -42,7 +42,10 @@ def admin_resetdb():
 
 @app.route(API_PREFIX + '/operations')
 def api_operations():
-	operations = models.Operation.query.limit(50).all()
+	operations = (models.Operation.query
+			.order_by(models.Operation.timestamp)
+			.limit(50)
+			.all())
 	return jsonify(operations)
 
 
@@ -54,22 +57,23 @@ def import_data():
 
 	data = request.get_json(force=True)
 
-	server_id = data['serverId'] # Defined in userconfig, included in export to dll
-	logger.debug('Received import request from game server: {}'.format(server_id))
+	capture_id = data['captureId']
+	logger.debug(
+			'Received import request from capture session: {}'.format(capture_id))
 
-	if server_id not in gameservers: # Create new server
-		gameservers[server_id] = GameServer(server_id)
+	if capture_id not in captures: # Create new capture
+		captures[capture_id] = Capture(capture_id, db)
 
-	gameservers[server_id].import_data(data['captureData'])
+	captures[capture_id].import_data(data['captureData'])
 	return 'Success'
 
 
 @app.route('/import/view', methods=['GET', 'POST'])
 def import_data_view():
-	return jsonify([g.to_dict() for g in gameservers.values()])
+	return jsonify([g.to_dict() for g in captures.values()])
 
 
-Watcher(gameservers, db).start()
+Watcher(captures, db).start()
 logger.debug('Main called')
 
 

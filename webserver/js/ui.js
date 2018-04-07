@@ -314,13 +314,22 @@ class UI {
 			var row = document.createElement("tr");
 			var cell = document.createElement("td");
 
+			if (op.in_progress) {
+				row.classList.add('in-progress');
+			};
+
 			var date = new Date(op.timestamp * 1000);
+			var duration = (
+					op.in_progress ?
+					"In progress" :
+					services.secondsToTimeString(op.length)
+			);
 			var vals = [
 				op.mission,
 				op.world,
 				services.dateToLittleEndianString(date),
 				services.dateToTimeString(date, false),
-				services.secondsToTimeString(op.length)
+				duration,
 			];
 			vals.forEach(function(val) {
 				var cell = document.createElement("td");

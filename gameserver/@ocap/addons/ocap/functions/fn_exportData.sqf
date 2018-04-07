@@ -55,7 +55,7 @@ ocap_capture = false; // Stop capture while we export
 	// Export
 	(str(formatText['
 		{
-			"serverId": "%1",
+			"captureId": "%1",
 			"captureData": {
 				"header": {
 					"worldName": "%2",
@@ -68,7 +68,7 @@ ocap_capture = false; // Stop capture while we export
 				"events": %8
 			}
 		}',
-		ocap_serverId, worldName, briefingName, getMissionConfigValue ["author", ""],
+		ocap_captureId, worldName, briefingName, getMissionConfigValue ["author", ""],
 		ocap_frameCaptureDelay, _frameNo, _entitiesJson, _eventsJson]
 	)) spawn ocap_fnc_callExtension;
 };

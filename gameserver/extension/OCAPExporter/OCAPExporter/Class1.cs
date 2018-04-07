@@ -38,10 +38,10 @@ namespace OCAPExporter
 {
     public class Main
     {
-        static string LOGDIR = "ocap_logs";
-        static string LOGFILE = string.Format("{0}/log.txt", LOGDIR);
-        static string LOGRAWFILE = string.Format("{0}/export_raw.txt", LOGDIR);
-        static string LOGJSONFILE = string.Format("{0}/export.json", LOGDIR);
+        const string LOGDIR = "ocap_logs";
+        const string LOGFILE = LOGDIR + "/log.txt";
+        const string LOGRAWFILE = LOGDIR + "/export_raw.txt";
+        const string LOGJSONFILE = LOGDIR + "/export.json";
         static List<string> argKeys = new List<string> { "capManagerHost" };
 
 
@@ -51,8 +51,11 @@ namespace OCAPExporter
         {
             outputSize--;
 
-            Thread thread = new Thread(()=>ProcessInput(input));
-            thread.Start();
+            //Thread thread = new Thread(()=>ProcessInput(input));
+            //thread.IsBackground = true;
+            //thread.Start();
+
+            ProcessInput(input);
 
             // Send output to Arma
             output.Append("Success");
@@ -63,11 +66,11 @@ namespace OCAPExporter
             Directory.CreateDirectory(LOGDIR);
             Log("==========");
 
-            File.WriteAllText(LOGRAWFILE, input);
+            Log(input, LOGRAWFILE, append: false, logToConsole: false);
             Dictionary<string, object> parsedInput = ParseInput(input);
             Dictionary<string, string> args = (Dictionary<string, string>)parsedInput["args"];
             string json = (string)parsedInput["json"];
-            File.WriteAllText(LOGJSONFILE, json);
+            Log(json, LOGJSONFILE, append: false, logToConsole: false);
 
             string capManagerHost = FormatUrl(args["capManagerHost"], true);
             string postUrl = capManagerHost + "/import";
@@ -109,13 +112,12 @@ namespace OCAPExporter
             Dictionary<string, string> argDict = new Dictionary<string, string>();
             char c = new char();
             int argCount = 0;
-            int index = 0;
+            int index = 1;
             String arg = "";
 
             Log("Parsing input...");
-            while (c != '}')
+            while (c != '}' && index < input.Length)
             {
-                index++;
                 c = input[index];
 
                 if (c != ';' && c != '}')
@@ -128,6 +130,8 @@ namespace OCAPExporter
                     argCount++;
                     arg = "";
                 }
+
+                index++;
             }
             string json = input.Remove(0, index + 1);
 
@@ -165,10 +169,18 @@ namespace OCAPExporter
         }
 
         // Write string to log file and console.
-        public static void Log(string str = "")
+        public static void Log(string str = "", string filePath = LOGFILE, bool append = true, bool logToConsole = true)
         {
-            File.AppendAllText(LOGFILE, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss | ") + str + Environment.NewLine);
-            Console.WriteLine(str);
+            if (logToConsole)
+            {
+                Console.WriteLine(str);
+            }
+
+            filePath = filePath.Replace("/", "\\");
+            using (StreamWriter writer = new StreamWriter(filePath, append: append))
+            {
+                writer.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss | ") + str);
+            }
         }
     }
 }

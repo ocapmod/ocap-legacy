@@ -18,10 +18,21 @@ class ModelMixin():
     return obj_dict
 
 
+# TODO: Store JSON in postgres as JSONB format.
+# from sqlalchemy.dialects.postgresql import JSON
+# data = db.Column(JSON)
+
 class Operation(db.Model, ModelMixin):
-  id = db.Column(db.Integer, primary_key=True, autoincrement=True) # Also acts as filename for JSON
+  """Represents an operation, holds capture metadata.
+
+  Used by frontend to display list of recorded operations.
+  `id` holds capture filename.
+  """
+  id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+  capture_id = db.Column(db.String, nullable=False)
   world = db.Column(db.String, nullable=False)
   mission = db.Column(db.String, nullable=False)
   author = db.Column(db.String, nullable=False)
-  timestamp = db.Column(db.Integer, nullable=False)
-  length = db.Column(db.Integer, nullable=False)
+  timestamp = db.Column(db.Integer)
+  length = db.Column(db.Integer)
+  in_progress = db.Column(db.Boolean, default=True)

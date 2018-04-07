@@ -3,9 +3,9 @@ import requests
 
 import config
 
-def send_import(server_id):
+def send_import(capture_id):
 	payload = json.load(open('emulate.json'))
-	payload[server_id] = server_id
+	payload[capture_id] = capture_id
 	send_request('import', payload)
 
 def send_request(command, payload):
@@ -19,7 +19,7 @@ try:
 	setup_ran = False
 	while True:
 		if not setup_ran:
-			server_id = input('Enter name of server you wish to '
+			capture_id = input('Enter id for capture you wish to '
 					'emulate (leave blank for default): ')
 			setup_ran = True
 			print('Options:')
@@ -30,9 +30,9 @@ try:
 		if opt == '0':
 			setup_ran = False
 		elif opt == '1':
-			if not server_id:
-				server_id = 'Test Server'
-			send_import(server_id)
+			if not capture_id:
+				capture_id = 'Test Server'
+			send_import(capture_id)
 		else:
 			print('Invalid option')
 except KeyboardInterrupt:
