@@ -26,10 +26,16 @@ Use it simply for fun or as a training tool to see how well your group performs 
 * Clicking on a unit lets you follow them.
 * Server based capture - no mods required for clients.
 
-## Running OCAP
-Capture automatically begins when server becomes populated (see userconfig for settings).
+## Arma server setup
+1. Put `@ocap` and `@ocap/userconfig` folders into your server's Arma root directory
+1. Put `ocap_exporter_x64.dll` into your server's Arma root directory
+1. Configure the userconfig file
+1. Launch server with `@ocap` enabled
 
-To stop capture, call the following (server-side):
+Capture automatically begins when server becomes populated (see userconfig for settings).
+Capture will stop on mission end.
+
+To stop capture manually, call the following (server-side):
 
 `[] call ocap_fnc_exportData;`
 
@@ -42,7 +48,18 @@ if (isServer) then {
 
 "end1" call BIS_fnc_endMission; // Ends mission for everyone
 ```
+## Web server setup
+TODO
 
+### Development
+1. Ensure you have Python 3 and NodeJS installed
+1. Run `cd webserver/`
+1. Run `npm install`
+1. Run `pip install -r requirements.txt`
+1. Configure `config.py` (can leave as default)
+1. Run `python main.py`
+
+The server is now running and listening for capture data from the Arma server(s).
 
 ## Credits
 
