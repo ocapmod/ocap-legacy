@@ -327,16 +327,9 @@ class UI {
 			var row = document.createElement("tr");
 			var cell = document.createElement("td");
 
-			if (op.in_progress) {
-				row.classList.add(constants.ClassName.IN_PROGRESS);
-			};
-
 			var date = new Date(op.timestamp * 1000);
-			var duration = (
-					op.in_progress ?
-					"In progress" :
-					services.secondsToTimeString(op.length)
-			);
+			var duration = services.secondsToTimeString(op.length);
+			if (op.in_progress) duration += ' (in progress)';
 			var vals = [
 				op.mission,
 				op.world,
@@ -350,26 +343,29 @@ class UI {
 				row.appendChild(cell);
 			});
 
-			row.addEventListener("click", () => {
-				let progressBarContainer = document.createElement('div');
-				let progressBar = document.createElement('div');
-				progressBarContainer.appendChild(progressBar);
-				progressBarContainer.className =
-						constants.ClassName.PROGRESS_BAR_CONTAINER;
-				progressBar.className = constants.ClassName.PROGRESS_BAR;
+			if (!op.in_progress) {
+				row.addEventListener("click", () => {
+					let progressBarContainer = document.createElement('div');
+					let progressBar = document.createElement('div');
+					progressBarContainer.appendChild(progressBar);
+					progressBarContainer.className =
+							constants.ClassName.PROGRESS_BAR_CONTAINER;
+					progressBar.className = constants.ClassName.PROGRESS_BAR;
 
-				this.modalBody.textContent = '';
-				this.progressBar = progressBar;
-				this.modalBody.appendChild(progressBarContainer);
+					this.modalBody.textContent = '';
+					this.progressBar = progressBar;
+					this.modalBody.appendChild(progressBarContainer);
 
-
-				services.getWorldByName(op.world).then((world) => {
-					console.log("Got world: ");
-					console.log(world);
-					globals.world = world;
-					app.processOp(`${constants.CAPTURES_PATH}/${op.id}.json`);
+					services.getWorldByName(op.world).then((world) => {
+						console.log("Got world: ");
+						console.log(world);
+						globals.world = world;
+						app.processOp(`${constants.CAPTURES_PATH}/${op.id}.json`);
+					});
 				});
-			});
+			} else {
+				row.classList.add(constants.ClassName.IN_PROGRESS);
+			};
 			table.insertBefore(row, table.childNodes[1]);
 		});
 		this.modalBody.textContent = "";

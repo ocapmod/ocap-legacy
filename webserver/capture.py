@@ -1,3 +1,4 @@
+import json
 import logging
 import time
 
@@ -77,8 +78,26 @@ class Capture():
 				mission=header[CaptureHeader.MISSION],
 				author=header[CaptureHeader.AUTHOR],
 				timestamp=self.first_import_time))
-			self.db.session.commit()
 			self.is_first_import = False
+		else:
+			operation = models.Operation.query.filter_by(capture_id=self.id).first()
+			operation.length = header[
+					CaptureHeader.CAPTURE_DELAY] * header[CaptureHeader.FRAME_COUNT]
+
+		self.db.session.commit()
 
 		# logger.debug('Data after import: {}'.format(self.data))
 		logger.debug('Import complete')
+
+	def publish_data(self):
+		"""Publishes the captures's data."""
+		self.is_capturing = False
+
+		# Get op from db, update it
+		operation = models.Operation.query.filter_by(capture_id=self.id).first()
+		operation.in_progress = False
+		self.db.session.commit()
+
+		# Store capture as json file
+		with open('static/captures/{}.json'.format(operation.id), 'w') as f:
+			f.write(json.dumps(self.data))

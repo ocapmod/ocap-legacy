@@ -33,17 +33,16 @@ Use it simply for fun or as a training tool to see how well your group performs 
 1. Launch server with `@ocap` enabled
 
 Capture automatically begins when server becomes populated (see userconfig for settings).
-Capture will stop on mission end.
+Capture will stop on mission end/server close.
 
-To stop capture manually, call the following (server-side):
+To stop capture manually, set the following (server-side):
 
-`[] call ocap_fnc_exportData;`
+`ocap_capture = false;`
 
-**Tip:** You can use the above function in a trigger.
-e.g. Create a trigger that activates once all objectives complete. Then on activiation:
+**Tip:** Create a trigger that activates once all objectives complete. Then on activiation:
 ```
 if (isServer) then {
-    [] call ocap_fnc_exportData;
+    ocap_capture = false;
 };
 
 "end1" call BIS_fnc_endMission; // Ends mission for everyone

@@ -1,4 +1,3 @@
-import json
 import logging
 import time
 from threading import Thread
@@ -44,27 +43,9 @@ class Watcher(Thread):
 				if time_delta > config.CAPTURE_TIMEOUT and capture.is_capturing:
 					logger.debug('  Timed out. Publishing...'.format(capture_id))
 
-					self.publish(capture)
+					capture.publish_data()
 					timed_out_captures.append(capture_id)
 
 			# Remove timed-out captures from watchlist
 			for capture_id in timed_out_captures:
 				self.captures.pop(capture_id)
-
-	def publish(self, capture):
-		"""Publishes the captures's data."""
-		capture.is_capturing = False
-
-		# Update row in db
-		header = capture.data[CaptureData.HEADER]
-
-		# Get op from db, update it
-		operation = models.Operation.query.filter_by(capture_id=capture.id).first()
-		operation.length = header[
-				CaptureHeader.CAPTURE_DELAY] * header[CaptureHeader.FRAME_COUNT]
-		operation.in_progress = False
-		self.db.session.commit()
-
-		# Store capture as json file
-		with open('static/captures/{}.json'.format(operation.id), 'w') as f:
-			f.write(json.dumps(server.data))
