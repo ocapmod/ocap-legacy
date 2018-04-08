@@ -21,7 +21,6 @@ class UI {
 		this.filterHitEventsButton = null;
 		this.firelinesEnabled = true;
 		this.frameSlider = null;
-		this.frameSliderWidthInPercent = -1;
 		this.fullscreenButton = null;
 		this.hideMarkerPopups = false;
 		this.hint = null;
@@ -205,12 +204,6 @@ class UI {
 			globals.playbackMultiplier = sliderVal;
 		});
 
-		this.frameSliderWidthInPercent = (
-			(this.frameSlider.offsetWidth /
-			this.frameSlider.parentElement.offsetWidth)
-			* 100
-		);
-
 		this.fullscreenButton = document.getElementById('fullscreen-button');
 		this.fullscreenButton.addEventListener('click', services.goFullscreen);
 	};
@@ -262,7 +255,7 @@ class UI {
 
 	setMissionEndTime(f) {
 		this.missionEndTime.textContent = services.dateToTimeString(
-				new Date(f*globals.frameCaptureDelay));
+				new Date(f * globals.frameCaptureDelay));
 		this.setFrameSliderMax(f);
 	};
 
@@ -417,11 +410,11 @@ class UI {
 	};
 
 	showPlaybackSpeedSlider() {
-		this.playbackSpeedSlider.style.display = "inherit";
+		this.playbackSpeedSlider.classList.add(constants.ClassName.SHOW);
 	};
 
 	hidePlaybackSpeedSlider() {
-		this.playbackSpeedSlider.style.display = "none";
+		this.playbackSpeedSlider.classList.remove(constants.ClassName.SHOW);
 	};
 
 	removeEvent(event) {
@@ -472,12 +465,12 @@ class UI {
 	};
 
 	addTickToTimeline(frameNum) {
-		var frameWidth = this.frameSliderWidthInPercent / globals.endFrame;
+		var frameWidth = 100 / globals.endFrame;
 		var tick = document.createElement("div");
 
 		tick.className = constants.ClassName.EVENT_TIMELINE_TICK;
-		tick.style.left = (frameNum * frameWidth) + "%"; // We use percent so position of tick maintains even on window resize
-		tick.style.width = frameWidth + "%";
+		tick.style.left = `${frameNum * frameWidth}%`; // We use percent so position of tick maintains even on window resize
+		tick.style.width = `${frameWidth}%`;
 		this.eventTimeline.appendChild(tick);
 	};
 
