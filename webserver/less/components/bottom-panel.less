@@ -11,7 +11,7 @@
 	position: absolute;
 	width: 100%;
 
-	div {
+	div, i {
 		margin-right: 15px;
 	}
 
@@ -37,25 +37,32 @@
 	}
 
 	#play-pause-button {
-		background-image: url("../images/play-pause.png");
-		background-position: 15px 0;
-		background-size: auto 15px;
-		height: 15px;
-		position: relative;
-		width: 15px;
+		cursor: pointer;
 
-		&.paused {
-			background-position: 0 0;
+		&:before {
+			content: "pause";
+		}
+
+		&.paused:before {
+			content: "play_arrow";
+		}
+	}
+
+	#share-link {
+		cursor: pointer;
+		display: none; // Remove once completed
+
+		&:before {
+			content: "link";
 		}
 	}
 
 	#fullscreen-button {
-		background-image: url("../images/fullscreen.png");
-		opacity: 0.95;
-		background-size: 15px 15px;
-		width: 15px;
-		height: 15px;
-		image-rendering: pixelated;
+		cursor: pointer;
+
+		&:before {
+			content: "fullscreen";
+		}
 	}
 
 	#timecode-container {

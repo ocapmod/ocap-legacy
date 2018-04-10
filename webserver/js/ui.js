@@ -35,9 +35,9 @@ class UI {
 		this.missionEndTime = null;
 		this.missionName = null;
 		this.modal = null;
-		this.modalContainer = null;
 		this.modalBody = null;
 		this.modalButtons = null;
+		this.modalContainer = null;
 		this.modalHeader = null;
 		this.playbackSpeedSlider = null;
 		this.playbackSpeedSliderContainer = null;
@@ -45,6 +45,7 @@ class UI {
 		this.playPauseButton = null;
 		this.progressBar = null;
 		this.rightPanel = null;
+		this.shareLink = null;
 		this.showHitEvents = true;
 		this.toggleFirelinesButton = null;
 
@@ -206,6 +207,8 @@ class UI {
 
 		this.fullscreenButton = document.getElementById('fullscreen-button');
 		this.fullscreenButton.addEventListener('click', services.goFullscreen);
+
+		this.shareLink = document.getElementById('share-link');
 	};
 
 	showCursorTooltip(text) {
@@ -250,8 +253,15 @@ class UI {
 		this.missionCurTime.textContent = services.dateToTimeString(
 				globals.missionCurDate);
 		this.setFrameSliderVal(f);
+		this.setShareLinkFrame(f);
 		globals.playbackFrame = f;
 	};
+
+	setShareLinkFrame(frame) {
+		// TODO: Set share link on op load. Then update link time/frame value
+		// when this method is called.
+		//this.shareLink.setAttribute('data-share-link', link);
+	}
 
 	setMissionEndTime(f) {
 		this.missionEndTime.textContent = services.dateToTimeString(

@@ -5,6 +5,7 @@
 	<meta charset="utf-8"/>
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
 	<link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<link href="{{ url_for('static', filename='style/leaflet-1.0.0-rc1.css') }}" rel="stylesheet">
 	<link href="{{ url_for('static', filename='style/main.css') }}" rel="stylesheet">
 	<link href="{{ url_for('static', filename='images/favicon.png') }}" rel="icon" type="img/png">
@@ -47,7 +48,7 @@
 	</div>
 	<div id="bottom-panel">
 		<div class="left">
-			<div id="play-pause-button" class="paused"></div>
+			<i id="play-pause-button" class="material-icons paused"></i>
 			<div id="timecode-container" class="medium">
 				<span id="mission-cur-time">0:00:00</span>
 				<span>/</span>
@@ -64,7 +65,8 @@
 				<span id="playback-speed-val"></span>
 				<input type="range" id="playback-speed-slider" />
 			</div>
-			<div id="fullscreen-button"></div>
+			<i id="share-link" data-share-link="" class="material-icons"></i>
+			<i id="fullscreen-button" class="material-icons"></i>
 		</div>
 	</div>
 </div>
