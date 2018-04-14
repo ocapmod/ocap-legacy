@@ -308,20 +308,34 @@ function startPlaybackLoop() {
 					globals.map.removeLayer(line);
 				});
 
-				entities.getAll().forEach(function playbackEntity(entity) {
+				for (const entity of entities.getAll()) {
 					//console.log(entity);
+
+					// if (entity.isFrameOutOfBounds(globals.playbackFrame)) {
+					// 	continue;
+					// }
+
 					entity.manageFrame(globals.playbackFrame);
 
+					// Draw firelines
 					if (entity instanceof Unit) {
 						// Draw fire line (if enabled)
 						var projectilePos = entity.firedOnFrame(globals.playbackFrame);
 						if (projectilePos != null && ui.firelinesEnabled) {
 							console.log('Shooter:');
 							console.log(entity);
+
+							// TODO: Figure out why/how some entities seem to have 1 extra
+							// frame where they've fired *after* they no longer exist.
+							// This seems to be a problem with capture, not playback.
+							// e.g. Entity's number of states = 10 (so max frame=9). Frame fired = 10
+							// `globals.playbackFrame - 1` is a hack to get around this for now.
+							const entityPos = entity.getLatLngAtFrame(globals.playbackFrame - 1);
 							console.log('Shooter pos:');
-							console.log(entity.getLatLng());
+							console.log(entityPos);
+
 							//console.log(`Shooter pos: ${entity.getLatLng()}\nFired event: ${projectilePos} (is null: ${projectilePos == null})`);
-							var line = L.polyline([entity.getLatLng(), services.armaToLatLng(projectilePos)], {
+							var line = L.polyline([entityPos, services.armaToLatLng(projectilePos)], {
 								color: entity.getSideColour(),
 								weight: 2,
 								opacity: 0.4
@@ -332,11 +346,10 @@ function startPlaybackLoop() {
 							firelines.push(line);
 						};
 					};
-				});
+				};
 
 				// Display events for this frame (if any)
-				gameEvents.getEvents().forEach(function playbackEvent(event) {
-
+				for (const event of gameEvents.getEvents()) {
 					// Check if event is supposed to exist by this point
 					if (event.frameNum <= globals.playbackFrame) {
 						ui.addEvent(event);
@@ -376,7 +389,7 @@ function startPlaybackLoop() {
 					} else {
 						ui.removeEvent(event);
 					};
-				});
+				};
 
 				// Handle globals.entityToFollow
 				if (globals.entityToFollow != null) {

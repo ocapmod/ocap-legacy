@@ -80,8 +80,7 @@ class Entity {
 	// Get LatLng at specific frame
 	getLatLngAtFrame(f) {
 		var pos = this.getPosAtFrame(f);
-		if (pos != null) {return services.armaToLatLng(pos)};
-		return;
+		return services.armaToLatLng(pos);
 	};
 
 	// Get LatLng at current frame

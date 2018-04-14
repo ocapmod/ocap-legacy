@@ -5,9 +5,11 @@
   "main": "app.js",
   "dependencies": {},
   "scripts": {
-    "js": "webpack",
-    "less": "lessc ./less/base.less ./static/style/main.css --autoprefix=\"browsers\"",
-    "watch": "concurrently \"watch \"\"npm run js\"\" ./js/ --interval=1\" \"watch \"\"npm run less\"\" ./less/ --interval=1\""
+    "build:js": "webpack",
+    "build:less": "lessc ./less/base.less ./static/style/main.css --autoprefix=\"browsers\"",
+    "watch:js": "watch \"npm run build:js\" ./js/ --interval=1",
+    "watch:less": "watch \"npm run build:less\" ./less/ --interval=1",
+    "watch": "concurrently \"npm run watch:js\" \"npm run watch:less\""
   },
   "devDependencies": {
     "concurrently": "^3.5.1",
