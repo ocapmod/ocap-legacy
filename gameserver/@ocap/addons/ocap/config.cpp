@@ -20,8 +20,7 @@ class CfgFunctions
 			class addEventHandlers {};
 			class atEndOfArray {};
 			class callExtension {};
-			class entitiesToJson {};
-			class eventsToJson{};
+			class prepareEntitiesForTransit {};
 			class exportData {};
 			class init {postInit = 1;};
 			class isKindOf {};

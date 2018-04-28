@@ -6,15 +6,19 @@
 	Capture loop is automatically started once init complete.
 */
 
-//if (!isServer) exitWith {};
-
 // Define global vars
 #include "\userconfig\ocap\config.hpp";
 ocap_captureFrameLimit = 5; // Number of captured frames before auto-exporting
 ocap_captureFrameNo = 0; // Frame number for current capture
 ocap_entitiesData = [];  // Data on all units + vehicles that appear throughout the mission.
 ocap_eventsData = []; // Data on all events (involving 2+ units) that occur throughout the mission.
-ocap_captureId = format["%1__%2", serverName, serverTime];
+
+private _serverName = serverName;
+private _missionName = [briefingName, " ", "-"] call CBA_fnc_replace;
+if (!isMultiplayer) then {_serverName = "singleplayer"};
+ocap_captureId = format[
+		"%1__%2__%3", _serverName, _missionName, round (random 1000000)];
+
 
 // Add mission EHs
 addMissionEventHandler ["EntityKilled", {

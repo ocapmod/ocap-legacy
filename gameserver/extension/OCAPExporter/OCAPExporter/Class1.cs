@@ -44,38 +44,56 @@ namespace OCAPExporter
         const string LOGJSONFILE = LOGDIR + "/export.json";
         static List<string> argKeys = new List<string> { "capManagerHost" };
 
-
-        // To send a string back to Arma, append to the output StringBuilder. Arma outputSize limit applies!
         [DllExport("RVExtension", CallingConvention = System.Runtime.InteropServices.CallingConvention.Winapi)]
-        public static void RVExtension(StringBuilder output, int outputSize, string input)
+        public static void RvExtension(StringBuilder output, int outputSize, string function)
         {
             outputSize--;
-
-            //Thread thread = new Thread(()=>ProcessInput(input));
-            //thread.IsBackground = true;
-            //thread.Start();
-
-            ProcessInput(input);
-
-            // Send output to Arma
-            output.Append("Success");
+            output.Append("callExtension syntax not supported.");
         }
 
-        public static void ProcessInput(string input)
+        // To send a string back to Arma, append to the output StringBuilder. Arma outputSize limit applies!
+        [DllExport("RVExtensionArgs", CallingConvention = System.Runtime.InteropServices.CallingConvention.Winapi)]
+        public static int RvExtensionArgs(
+            StringBuilder output,
+            int outputSize,
+            [MarshalAs(UnmanagedType.LPStr)] string function,
+            [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr, SizeParamIndex = 4)] string[] args,
+            int argsCnt)
+        {
+            Thread thread = new Thread(()=>ProcessInput(function, args));
+            //thread.IsBackground = true;
+            thread.Start();
+
+            // Send output to Arma
+            outputSize--;
+            output.Append("Call successful");
+
+            return 200;
+        }
+
+        public static void ProcessInput(string ocapHost, string[] input)
         {
             Directory.CreateDirectory(LOGDIR);
             Log("==========");
+            Log(string.Join(" | ", input), LOGRAWFILE, append: false, logToConsole: false);
 
-            Log(input, LOGRAWFILE, append: false, logToConsole: false);
-            Dictionary<string, object> parsedInput = ParseInput(input);
-            Dictionary<string, string> args = (Dictionary<string, string>)parsedInput["args"];
-            string json = (string)parsedInput["json"];
-            Log(json, LOGJSONFILE, append: false, logToConsole: false);
+            String json = "";
+            try
+            {
+                json = String.Format("{{\"header\": {0},\"entities\": {1},\"events\": {2}}}", input[0], input[1], input[2]);
+            } catch (FormatException e)
+            {
+                Log("Error formatting input to json.");
+                Log(e.ToString());
+                return;
+            }
 
-            string capManagerHost = FormatUrl(args["capManagerHost"], true);
-            string postUrl = capManagerHost + "/import";
+            Log(json, LOGJSONFILE, append: false, logToConsole: false, isJson: true);
 
-            // POST capture data to Capture Manager
+            ocapHost = FormatUrl(ocapHost, true);
+            string postUrl = ocapHost + "/import";
+
+            // POST capture data to OCAP webserver
             try
             {
                 Log("Sending POST request to " + postUrl);
@@ -95,63 +113,6 @@ namespace OCAPExporter
             }
         }
 
-        /* Parses the given input string.
-         *
-         * Returns:
-         *   A dictionary containing two elements - "args" and "json".
-         *   "args" is a dictionary containing special arguments supplied by the user
-         *   when calling this exentsion.
-         *   "json" is a string containing OCAP capture data.
-         */
-        public static Dictionary<string, object> ParseInput(string input)
-        {
-            Dictionary<string, object> dict = new Dictionary<string, object>();
-
-            // Very crude parser
-            // Split arguments (inside {...}) into a list
-            Dictionary<string, string> argDict = new Dictionary<string, string>();
-            char c = new char();
-            int argCount = 0;
-            int index = 1;
-            String arg = "";
-
-            Log("Parsing input...");
-            while (c != '}' && index < input.Length)
-            {
-                c = input[index];
-
-                if (c != ';' && c != '}')
-                {
-                    arg += c;
-                }
-                else
-                {
-                    argDict.Add(argKeys[argCount], arg);
-                    argCount++;
-                    arg = "";
-                }
-
-                index++;
-            }
-            string json = input.Remove(0, index + 1);
-
-            Log("Done.");
-            Log("Args: " + string.Join(";", argDict));
-            if (json.Length > 100)
-            {
-                Log("JSON: " + json.Substring(0, 100) + "...");
-            } else
-            {
-                Log("JSON: " + json);
-            }
-            Log();
-
-            dict.Add("args", argDict);
-            dict.Add("json", json);
-
-            return dict;
-        }
-
         // Format a URL if malformed
         public static string FormatUrl(string url, bool removeTrailingSlash = true)
         {
@@ -169,7 +130,7 @@ namespace OCAPExporter
         }
 
         // Write string to log file and console.
-        public static void Log(string str = "", string filePath = LOGFILE, bool append = true, bool logToConsole = true)
+        public static void Log(string str = "", string filePath = LOGFILE, bool append = true, bool logToConsole = true, bool isJson = false)
         {
             if (logToConsole)
             {
@@ -179,7 +140,14 @@ namespace OCAPExporter
             filePath = filePath.Replace("/", "\\");
             using (StreamWriter writer = new StreamWriter(filePath, append: append))
             {
-                writer.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss | ") + str);
+                if (isJson)
+                {
+                    writer.WriteLine(str);
+                } else
+                {
+                    writer.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss | ") + str);
+                }
+                
             }
         }
     }

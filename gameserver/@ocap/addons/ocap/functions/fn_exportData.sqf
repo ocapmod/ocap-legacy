@@ -35,50 +35,42 @@ ocap_capture = false; // Stop capture while we export
 	// them without their state changing while capturing continues in background
 	params ["_frameNo", "_entitiesData", "_eventsData"];
 
-	private _jsonifyStartTime = diag_tickTime;
-	private _entitiesJson = _entitiesData call ocap_fnc_entitiesToJson;
+	private _preparationStartTime = diag_tickTime;
+	private _preppedEntities = _entitiesData call ocap_fnc_prepareEntitiesForTransit;
 	[
-		format["Entities jsonifed (%1ms).", (diag_tickTime - _jsonifyStartTime) * 1000],
+		format["Entities prepared for transit (%1ms).", (diag_tickTime - _preparationStartTime) * 1000],
 		true,
 		true
 	] call ocap_fnc_log;
 
+	private _header = [
+		ocap_captureId,
+		worldName,
+		briefingName,
+		getMissionConfigValue ["author", ""],
+		ocap_frameCaptureDelay,
+		_frameNo
+	];
 
-	_jsonifyStartTime = diag_tickTime;
-	private _eventsJson = _eventsData call ocap_fnc_eventsToJson;
-	[
-		format["Events jsonifed (%1ms).", (diag_tickTime - _jsonifyStartTime) * 1000],
-		true,
-		true
-	] call ocap_fnc_log;
+	[_header, _preppedEntities, _eventsData] spawn ocap_fnc_callExtension;
 
-	// Export
-	(str(formatText['
-		{
-			"captureId": "%1",
-			"captureData": {
-				"header": {
-					"worldName": "%2",
-					"missionName": "%3",
-					"missionAuthor": "%4",
-					"captureDelay": %5,
-					"frameCount": %6
-				},
-				"entities": %7,
-				"events": %8
-			}
-		}',
-		ocap_captureId, worldName, briefingName, getMissionConfigValue ["author", ""],
-		ocap_frameCaptureDelay, _frameNo, _entitiesJson, _eventsJson]
-	)) spawn ocap_fnc_callExtension;
 };
 
+
 // Reset capture data
+private _resetStartTime = diag_tickTime;
 {
 	_x set [1, []]; // Reset states
 	_x set [2, []]; // Reset frames fired
 } forEach ocap_entitiesData;
 ocap_eventsData = [];
+
+[
+	format["Capture data reset (%1ms).", (diag_tickTime - _resetStartTime) * 1000],
+	true,
+	true
+] call ocap_fnc_log;
+
 
 if (!_stopCapture) then {
 	[

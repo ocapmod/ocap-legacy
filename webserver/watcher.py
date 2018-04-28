@@ -4,7 +4,6 @@ from threading import Thread
 
 import config
 import models
-from constants import CaptureData, CaptureHeader
 
 
 logger = logging.getLogger(__name__)
@@ -34,13 +33,9 @@ class Watcher(Thread):
 			for capture_id, capture in self.captures.items():
 				logger.debug('Checking: {}'.format(capture_id))
 
-				if not capture.is_capturing:
-					logger.debug('  Skipping (not capturing)')
-					continue
-
 				time_delta = time_now - capture.last_import_time
 				logger.debug('  Seconds since last import: {}'.format(round(time_delta, 1)))
-				if time_delta > config.CAPTURE_TIMEOUT and capture.is_capturing:
+				if time_delta > config.CAPTURE_TIMEOUT:
 					logger.debug('  Timed out. Publishing...'.format(capture_id))
 
 					capture.publish_data()

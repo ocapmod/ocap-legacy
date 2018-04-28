@@ -363,7 +363,7 @@ class UI {
 						console.log("Got world: ");
 						console.log(world);
 						globals.world = world;
-						app.processOp(`${constants.CAPTURES_PATH}/${op.id}.json`);
+						app.processOp(`${constants.CAPTURES_PATH}/${op.capture_id}.json`);
 					});
 				});
 			} else {

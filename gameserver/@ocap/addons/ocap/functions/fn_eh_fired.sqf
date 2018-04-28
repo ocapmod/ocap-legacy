@@ -18,16 +18,15 @@
 	_this select 6: OBJECT - Projectile that was fired
 */
 
-_unit = _this select 0;
-_projectile = _this select 6;
-_frame = ocap_captureFrameNo;
+private _unit = _this select 0;
+private _projectile = _this select 6;
 
-_unitData = (ocap_entitiesData select (_unit getVariable "ocap_id"));
+private _unitData = (ocap_entitiesData select (_unit getVariable "ocap_id"));
 
 // Wait until bullet lands, capture position
-_lastPos = [];
+private _lastPos = [];
 waitUntil {
-	_pos = getPosATL _projectile;
+	private _pos = getPosATL _projectile;
 
 	// We exit if projectile no longer exists
 	if (((_pos select 0) == 0) || isNull _projectile) exitWith {true};
@@ -53,9 +52,9 @@ waitUntil {
 
 
 if ((count _lastPos) != 0) then {
-/*	_m = createVehicle ["Sign_Sphere100cm_F", _lastPos, [], 0, "NONE"];
-	_m setPosATL _lastPos;*/
-
 	// Append to existing framesFired data for this unit
-	(_unitData select 2) pushBack [_frame, [_lastPos select 0, _lastPos select 1]];
+	(_unitData select 2) pushBack [
+		ocap_captureFrameNo,
+		[_lastPos select 0, _lastPos select 1]
+	];
 };

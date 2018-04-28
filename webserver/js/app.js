@@ -28,6 +28,7 @@ import {globals} from './globals';
 import {groups, Group, Groups} from './groups';
 import {ui} from './ui';
 import * as services from './services';
+import {DataIn} from './data_structure.js';
 
 window.globals = globals;
 window.constants = constants;
@@ -59,7 +60,7 @@ function init() {
 // Read operation JSON data and create unit objects
 export function processOp(filepath) {
 	console.group(`Processing operation: ${filepath}...`);
-	var time = new Date();
+	let time = new Date();
 
 	fetch(filepath).then(response => {
 		return services.getJsonAndUpdateProgressBar(
@@ -68,53 +69,73 @@ export function processOp(filepath) {
 			ui.modalHeader
 		);
 	}).then(json => {
-		var header = json.header;
-		globals.missionName = header.missionName;
+		globals.missionName = json.missionName;
 		ui.setMissionName(globals.missionName);
 
-		globals.endFrame = header.frameCount;
+		globals.endFrame = json.frameCount;
 		ui.setMissionEndTime(globals.endFrame);
 
 		// Loop through entities
-		for (var entityId in json.entities) {
-			var entityJSON = json.entities[entityId];
+		for (const id in json[DataIn.ENTITIES]) {
+			const entity = json[DataIn.ENTITIES][id];
+			const header = entity[DataIn.Entity.HEADER]
+			const isUnit = header[DataIn.Entity.Header.IS_UNIT] == 1;
+			const startFrameNum = header[DataIn.Entity.Header.START_FRAME_NUM];
+			const name = header[DataIn.Entity.Header.NAME];
 
-			let type = entityJSON.type;
-			let startFrameNum = entityJSON.startFrameNum;
-			let id = entityJSON.id;
-			let name = entityJSON.name;
-
-			// Convert positions into array of objects
+			// Process states
 			let states = [];
-			entityJSON.states.forEach(entry => {
-				let pos = entry[0];
-				let dir = entry[1];
-				let alive = Boolean(entry[2]);
-
-				if (type == constants.EntityType.UNIT) {
-					states.push({position: pos, direction: dir, alive: alive, isInVehicle: Boolean(entry[3])});
-				} else if (type == constants.EntityType.VEHICLE) {
-					states.push({position: pos, direction: dir, alive: alive, crew: entry[3]});
+			const In = DataIn.Entity.State;
+			for (const state of entity[DataIn.Entity.STATES]) {
+				let stateObj = {
+					position: state[In.POSITION],
+					direction: state[In.DIRECTION],
+					isAlive: state[In.IS_ALIVE],
 				};
-			});
 
-			if (type == constants.EntityType.UNIT) {
+				if (isUnit) {
+					stateObj.isInVehicle = state[In.IS_IN_VEHICLE];
+				} else {
+					stateObj.crewIds = state[In.CREW_IDS];
+				};
+
+				states.push(stateObj);
+			};
+
+			// TODO: Process frames fired
+			let framesFired = entity[DataIn.Entity.FRAMES_FIRED];
+
+			if (isUnit) {
+				const groupID = header[DataIn.Entity.Header.GROUP_ID];
+				const side = header[DataIn.Entity.Header.SIDE];
+
 				// Add group to global groups object (if new)
-				var group = groups.findGroup(entityJSON.group, entityJSON.side);
+				let group = groups.findGroup(groupID, side);
 				if (group == null) {
-					group = new Group(entityJSON.group, entityJSON.side);
+					group = new Group(groupID, side);
 					groups.addGroup(group);
 				};
 
 				// Create unit and add to entities list
-				var unit = new Unit(startFrameNum, id, name, group, entityJSON.side, (entityJSON.isPlayer == 1), states, entityJSON.framesFired);
-				entities.add(unit);
-			} else if (type == constants.EntityType.VEHICLE) {
+				entities.add(new Unit(
+					startFrameNum,
+					id,
+					name,
+					group,
+					side,
+					header[DataIn.Entity.Header.IS_PLAYER],
+					states,
+					framesFired
+				));
+			} else {
 				// Create vehicle and add to entities list
-				var vehicle = new Vehicle(startFrameNum, id, entityJSON.class, name, states);
-				entities.add(vehicle);
-				console.log('Imported vehicle:');
-				console.log(vehicle);
+				entities.add(new Vehicle(
+					startFrameNum,
+					id,
+					header[DataIn.Entity.Header.CLASS],
+					name,
+					states
+				));
 			};
 		};
 
@@ -122,27 +143,29 @@ export function processOp(filepath) {
 		console.log(entities);
 
 		// Loop through events
-		json.events.forEach(function(eventJSON) {
-			var frameNum = eventJSON[0];
-			var type = eventJSON[1];
+		for (const event of json[DataIn.EVENTS]) {
+			let frameNum = event[DataIn.Event.FRAME_NUM];
+			let type = event[DataIn.Event.TYPE];
 
-			var gameEvent = null;
+			let gameEvent = null;
 			switch (true) {
 				case (type == "killed" || type == "hit"):
-					var victimId = eventJSON[2];
-					var causedByInfo = eventJSON[3];
-					var victim = entities.getById(victimId);
-					var causedBy = entities.getById(causedByInfo[0]);
-					var distance = eventJSON[4];
+					let victimId = event[DataIn.Event.VICTIM_ID];
+					let causedByInfo = event[DataIn.Event.ATTACKER_INFO];
+					let victim = entities.getById(victimId);
+					let causedBy = entities.getById(
+							causedByInfo[DataIn.Event.AttackerInfo.ID]);
+					let distance = event[DataIn.Event.DISTANCE];
 
 					// Create event object
-					var weapon;
+					let weapon;
 					if (causedBy instanceof Unit) {
-						weapon = causedByInfo[1];
+						weapon = causedByInfo[DataIn.Event.AttackerInfo.WEAPON_NAME];
 					} else {
 						weapon = "N/A";
 					};
-					gameEvent = new HitOrKilledEvent(frameNum, type, causedBy, victim, distance, weapon);
+					gameEvent = new HitOrKilledEvent(
+							frameNum, type, causedBy, victim, distance, weapon);
 
 					// TODO: Find out why victim/causedBy can sometimes be null
 					if (causedBy == null || (victim == null)) {
@@ -162,7 +185,8 @@ export function processOp(filepath) {
 					ui.addTickToTimeline(frameNum);
 					break;
 				case (type == "connected" || type == "disconnected"):
-					gameEvent = new ConnectEvent(frameNum, type, eventJSON[2]);
+					gameEvent = new ConnectEvent(
+							frameNum, type, event[DataIn.Event.VICTIM_ID]);
 					break;
 			};
 
@@ -170,7 +194,7 @@ export function processOp(filepath) {
 			if (gameEvent != null) {
 				gameEvents.addEvent(gameEvent);
 			};
-		});
+		};
 
 		console.log('Events extracted from capture data:')
 		console.log(gameEvents);
@@ -185,7 +209,7 @@ export function processOp(filepath) {
 		playPause();
 		ui.hideModal();
 	}).catch(error => {
-		console.log(error);
+		console.error(error);
 		ui.modalBody.textContent = `Error: "${filepath}" failed to load.<br/>${error}.`;
 	});
 };
@@ -218,7 +242,7 @@ function initMap() {
 	globals.imageSize = world.imageSize;
 	map.setView(map.unproject([globals.imageSize/2, globals.imageSize/2]), globals.mapMinZoom);
 
-	var mapBounds = new L.LatLngBounds(
+	let mapBounds = new L.LatLngBounds(
 		map.unproject([0, globals.imageSize], globals.mapMaxNativeZoom),
 		map.unproject([globals.imageSize, 0], globals.mapMaxNativeZoom)
 	);
@@ -247,7 +271,7 @@ function initMap() {
 function createInitialMarkers() {
 	entities.getAll().forEach(function(entity) {
 		// Create and set marker for unit
-		var pos = entity.getPosAtFrame(0);
+		let pos = entity.getPosAtFrame(0);
 		if (pos != null) { // If unit did exist at start of game
 			entity.createMarker(services.armaToLatLng(pos));
 		};
@@ -259,14 +283,14 @@ function test() {
 	map.on("click", function(e) {
 		//console.log(e.latlng);
 		console.log(map.project(e.latlng, globals.mapMaxNativeZoom));
-		var marker = L.circleMarker(e.latlng).addTo(map);
+		let marker = L.circleMarker(e.latlng).addTo(map);
 		marker.setRadius(5);
 	});
 
-	var marker = L.circleMarker(services.armaToLatLng([2438.21,820])).addTo(map);
+	let marker = L.circleMarker(services.armaToLatLng([2438.21,820])).addTo(map);
 	marker.setRadius(5);
 
-	var marker = L.circleMarker(services.armaToLatLng([2496.58,5709.34])).addTo(map);
+	let marker = L.circleMarker(services.armaToLatLng([2496.58,5709.34])).addTo(map);
 	marker.setRadius(5);
 };
 
@@ -293,8 +317,8 @@ function toggleHitEvents(showHint = true) {
 };
 
 function startPlaybackLoop() {
-	var killlines = [];
-	var firelines = [];
+	let killlines = [];
+	let firelines = [];
 
 	function playbackFunction() {
 		if (!globals.playbackPaused && !(globals.playbackFrame == globals.endFrame)) {
@@ -320,7 +344,7 @@ function startPlaybackLoop() {
 					// Draw firelines
 					if (entity instanceof Unit) {
 						// Draw fire line (if enabled)
-						var projectilePos = entity.firedOnFrame(globals.playbackFrame);
+						let projectilePos = entity.firedOnFrame(globals.playbackFrame);
 						if (projectilePos != null && ui.firelinesEnabled) {
 							console.log('Shooter:');
 							console.log(entity);
@@ -335,7 +359,7 @@ function startPlaybackLoop() {
 							console.log(entityPos);
 
 							//console.log(`Shooter pos: ${entity.getLatLng()}\nFired event: ${projectilePos} (is null: ${projectilePos == null})`);
-							var line = L.polyline([entityPos, services.armaToLatLng(projectilePos)], {
+							let line = L.polyline([entityPos, services.armaToLatLng(projectilePos)], {
 								color: entity.getSideColour(),
 								weight: 2,
 								opacity: 0.4
@@ -357,18 +381,18 @@ function startPlaybackLoop() {
 						// Draw kill line
 						if (event.frameNum == globals.playbackFrame) {
 							if (event.type == "killed") {
-								var victim = event.victim;
-								var killer = event.causedBy;
+								let victim = event.victim;
+								let killer = event.causedBy;
 
 								// Draw kill line
 								if (killer.getName() != "something") {
 									//console.log(victim);
 									//console.log(killer);
-									var victimPos = victim.getLatLng();
-									var killerPos = killer.getLatLng();
+									let victimPos = victim.getLatLng();
+									let killerPos = killer.getLatLng();
 
 									if (victimPos != null && killerPos != null) {
-										var line = L.polyline([victimPos, killerPos], {
+										let line = L.polyline([victimPos, killerPos], {
 											color: killer.getSideColour(),
 											weight: 2,
 											opacity: 0.4
@@ -381,7 +405,7 @@ function startPlaybackLoop() {
 
 							// Flash unit's icon
 							if (event.type == "hit") {
-								var victim = event.victim;
+								let victim = event.victim;
 								victim.flashHit();
 							};
 						};
@@ -393,7 +417,7 @@ function startPlaybackLoop() {
 
 				// Handle globals.entityToFollow
 				if (globals.entityToFollow != null) {
-					var pos = globals.entityToFollow.getPosAtFrame(globals.playbackFrame);
+					let pos = globals.entityToFollow.getPosAtFrame(globals.playbackFrame);
 					if (pos != null) {
 						globals.map.setView(services.armaToLatLng(pos), globals.map.getZoom());
 					} else { // Unit has died or does not exist, unfollow
@@ -411,7 +435,7 @@ function startPlaybackLoop() {
 		playbackTimeout = setTimeout(playbackFunction, globals.frameCaptureDelay/globals.playbackMultiplier);
 	};
 
-	var playbackTimeout = setTimeout(playbackFunction, globals.frameCaptureDelay/globals.playbackMultiplier);
+	let playbackTimeout = setTimeout(playbackFunction, globals.frameCaptureDelay/globals.playbackMultiplier);
 };
 
 init();

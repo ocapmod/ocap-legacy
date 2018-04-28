@@ -11,7 +11,7 @@
 		_toRpt: BOOLEAN - Log to RPT file. (Default: true)
 */
 
-_this params [
+params [
 	["_string", ""],
 	["_toHint", false],
 	["_toChat", false],

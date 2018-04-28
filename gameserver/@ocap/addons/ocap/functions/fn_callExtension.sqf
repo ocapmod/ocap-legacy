@@ -14,15 +14,15 @@
 private _startTime = diag_tickTime;
 
 [
-	format["Exporting data via extension (length: %1)...", count(_this)],
+	format["Exporting data via extension (length: %1)...", count(str(_this))],
 	true,
 	true
 ] call ocap_fnc_log;
 
-"ocap_exporter" callExtension str(formatText["{%1}%2", ocap_host, _this]);
+_result = "ocap_exporter" callExtension [ocap_host, _this];
 
 [
-	format["Extension responded (%1ms)", (diag_tickTime - _startTime) * 1000],
+	format["Extension responded (%1ms) with: %2", (diag_tickTime - _startTime) * 1000, _result],
 	true,
 	true
 ] call ocap_fnc_log;

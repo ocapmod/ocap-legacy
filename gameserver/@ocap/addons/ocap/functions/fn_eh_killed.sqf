@@ -17,8 +17,7 @@
 	_this select 1: OBJECT - Killer
 */
 
-_victim = _this select 0;
-_killer = _this select 1;
+params ["_victim", "_killer"];
 
 if (_victim getVariable ["ocap_exclude", false]) exitWith {}; // Just in case
 
@@ -29,9 +28,11 @@ _eventData = [ocap_captureFrameNo, "killed", _victimId, ["null"], -1];
 if (!isNull _killer) then {
 	_killerInfo = [];
 	if (_killer isKindOf "CAManBase") then {
+		_weaponName = getText (configFile >> "CfgWeapons" >> currentWeapon _killer >> "displayName");
+		_weaponName = [_weaponName, """", "'"] call CBA_fnc_replace;
 		_killerInfo = [
 			_killer getVariable "ocap_id",
-			getText (configFile >> "CfgWeapons" >> currentWeapon _killer >> "displayName")
+			_weaponName
 		];
 	} else {
 		_killerInfo = [_killer getVariable "ocap_id"];
@@ -42,7 +43,7 @@ if (!isNull _killer) then {
 		"killed",
 		_victimId,
 		_killerInfo,
-		_killer distance _victim
+		round(_killer distance _victim)
 	];
 };
 

@@ -49,7 +49,7 @@ class Entity {
 		this._tempIcon = icons.unknown.dead;
 		this._lockMarkerIcon = false; // When true, prevent marker icon from being changed
 		this._element = null; // DOM element associated with this entity
-		this._alive = false;
+		this._isAlive = false;
 		this._sideColour = "#000000";
 		this._markerRotationOrigin = "50% 50%";
 		this._popupClassName = "";
@@ -221,7 +221,7 @@ class Entity {
 		this._marker.setRotationAngle(this._states[relativeFrameIndex].direction);
 
 		// Set alive status
-		this.setAlive(this._states[relativeFrameIndex].alive);
+		this.setIsAlive(this._states[relativeFrameIndex].isAlive);
 	};
 
 	// Manage entity at given frame
@@ -252,9 +252,9 @@ class Entity {
 		this._flash(this.iconType.follow, 6);
 	};
 
-	setAlive(alive) {
-		if (alive) {
-			this._alive = alive;
+	setIsAlive(isAlive) {
+		if (isAlive) {
+			this._isAlive = isAlive;
 
 			if ((!this._lockMarkerIcon) && (this._curIcon != this._realIcon)) {
 				this.setMarkerIcon(this._realIcon);
@@ -263,7 +263,7 @@ class Entity {
 			this.setMarkerOpacity(1);
 		} else {
 			let icon = this.iconType.dead;
-			this._alive = alive;
+			this._isAlive = isAlive;
 
 			if (this._curIcon != icon) {
 				this.setMarkerIcon(icon);
@@ -361,7 +361,7 @@ class Unit extends Entity {
 
 		if (isInVehicle) {
 			this.setMarkerOpacity(0);
-		} else if (!isInVehicle && this._alive) {
+		} else if (!isInVehicle && this._isAlive) {
 			this.setMarkerOpacity(1);
 		};
 	};
@@ -407,10 +407,10 @@ class Unit extends Entity {
 
 	getSideClass() {return this._sideClass};
 
-	setAlive(alive) {
-		super.setAlive(alive);
+	setIsAlive(isAlive) {
+		super.setIsAlive(isAlive);
 
-		if (alive) {
+		if (isAlive) {
 			this._group.addUnit(this);
 		} else {
 			this._group.removeUnit(this);
@@ -423,7 +423,7 @@ class Vehicle extends Entity {
 		super(startFrameNum, id, name, states);
 		this._popupClassName = "leaflet-popup-vehicle";
 		this._type = type;
-		this._crew = []; // Crew in order: [driver,gunner,commander,turrets,cargo]
+		this._crew = []; // Crew in order: [driver, gunner, commander, turrets, cargo]
 
 		let iconType = null;
 		switch (type) {
@@ -483,7 +483,7 @@ class Vehicle extends Entity {
 
 	_updateAtFrame(relativeFrameIndex) {
 		super._updateAtFrame(relativeFrameIndex);
-		this.setCrew(this._states[relativeFrameIndex].crew);
+		this.setCrew(this._states[relativeFrameIndex].crewIds);
 	};
 
 	setCrew(crew) {

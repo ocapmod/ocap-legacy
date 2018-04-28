@@ -4,31 +4,6 @@
 	Description:
 	Captures unit/vehicle data (including dynamically spawned AI/JIP players) during a mission for playback.
 	Compatible with dynamically spawned AI and JIP players.
-
-	Structure of entitiesData:
-	[
-		// Unit 1 (OCAP id 0)
-		[
-			[startFrameNo, "unit", id, name, group, side, isPlayer] // Doesn't change
-			[[pos, dir, alive, isInVehicle], [pos, dir, alive, isInVehicle], ...]
-			[[frameNum, projectileLandingPos], [frameNum, projectileLandingPos] ...] // Frame number fired, landing pos of projectile
-		]
-
-		// Unit 2 (OCAP id 1)
-		[
-			[startFrameNo, "unit", id, name, group, side, isPlayer] // Doesn't change
-			[[pos, dir, alive, isInVehicle], [pos, dir, alive, isInVehicle], ...]
-			[[frameNum, projectileLandingPos], [frameNum, projectileLandingPos] ...] // Frame number fired, landing pos of projectile
-		]
-
-		// Vehicle 1 (OCAP id 2)
-		[
-			[startFrameNo, "vehicle", id, classname] // Doesn't change
-			[[pos, dir, alive, crew], [pos, dir, alive, crew], ...] // position, direction, alive, crew IDs
-		]
-
-		etc...
-	]
 */
 
 // Wait until minimum player count is reached before starting capture
@@ -53,13 +28,12 @@ waitUntil{sleep 1; (time > 1) && (count(allPlayers) >= ocap_minPlayerCount) && (
 };*/
 
 if (ocap_debug) then {
-	//player addAction ["Copy entitiesData to clipboard", {copyToClipboard str(ocap_entitiesData)}];
+	player addAction ["Copy entitiesData to clipboard", {copyToClipboard str(ocap_entitiesData)}];
 	player addAction ["Write saved data", {[] call ocap_fnc_exportData}];
 	player addEventHandler ["Respawn", {
+		player addAction ["Copy entitiesData to clipboard", {copyToClipboard str(ocap_entitiesData)}];
 		player addAction ["Write saved data", {[] call ocap_fnc_exportData}];
 	}];
-
-	//player addAction ["End mission", {endMission "end1"}];
 };
 
 // CAPTURE LOOP
@@ -69,33 +43,38 @@ while {true} do {
 
 	_sT = diag_tickTime;
 	{
-		if (!(_x getVariable ["ocap_exclude", false])) then {
-			if (_x isKindOf "Logic") exitWith {
-				_x setVariable ["ocap_exclude", true];
-			};
-
+		if (
+      (!(_x isKindOf "Logic")) &&
+      (!(_x getVariable ["ocap_exclude", false]))
+		) then {
 			_pos = getPosATL _x;
 			_pos = [_pos select 0, _pos select 1];
-			_dir = getDir _x;
-			_alive = alive _x;
+			_dir = round(getDir _x);
+			_isAlive = alive _x;
 			_isUnit = _x isKindOf "CAManBase";
 
+			private _isAliveInt = 0; if (_isAlive) then {_isAliveInt = 1};
+			private _isUnitInt = 0; if (_isUnit) then {_isUnitInt = 1};
+
 			if (!(_x getVariable ["ocap_isInitialised", false])) then { // Setup entity if not initialised
-				if (_alive) then { // Only init alive entities
+				if (_isAlive) then { // Only init alive entities
 					_x setVariable ["ocap_exclude", false];
 					_x setVariable ["ocap_id", _id];
 
 					if (_isUnit) then {
-							ocap_entitiesData pushBack [
-								[ocap_captureFrameNo, "unit", _id, name _x, groupID (group _x), str(side _x), isPlayer _x], // Properties
-								[[_pos, _dir, _alive, (vehicle _x) != _x]], // States
-								[] // Frames fired
-							];
+						private _isInVehicleInt = 0; if ((vehicle _x) != _x) then {_isInVehicleInt = 1};
+						private _isPlayerInt = 0; if (isPlayer _x) then {_isPlayerInt = 1};
+
+						ocap_entitiesData pushBack [
+							[ocap_captureFrameNo, _isUnitInt, _id, name _x, groupID (group _x), str(side _x), _isPlayerInt], // Header
+							[[_pos, _dir, _isAliveInt, _isInVehicleInt]], // States
+							[] // Frames fired
+						];
 					} else { // Else vehicle
 						_vehType = typeOf _x;
 						ocap_entitiesData pushBack [
-							[ocap_captureFrameNo, "vehicle", _id, _vehType, getText (configFile >> "CfgVehicles" >> _vehType >> "displayName")], // Properties
-							[[_pos, _dir,_alive, []]] // States
+							[ocap_captureFrameNo, _isUnitInt, _id, getText (configFile >> "CfgVehicles" >> _vehType >> "displayName"), _vehType], // Header
+							[[_pos, _dir, _isAliveInt, []]] // States
 						];
 					};
 
@@ -103,23 +82,24 @@ while {true} do {
 					_id = _id + 1;
 
 					_x setVariable ["ocap_isInitialised", true];
-					//if (ocap_debug) then {systemChat format["Initialised %1.", str(_x)]};
 				};
 			} else { // Update states data for this entity
 				if (_isUnit) then {
+					private _isInVehicleInt = 0; if ((vehicle _x) != _x) then {_isInVehicleInt = 1};
+
 					// Get entity data from entitiesData array, select states entry, push new data to it
-					((ocap_entitiesData select (_x getVariable "ocap_id")) select 1) pushBack [_pos, _dir, _alive, (vehicle _x) != _x];
+					((ocap_entitiesData select (_x getVariable "ocap_id")) select 1) pushBack [_pos, _dir, _isAliveInt, _isInVehicleInt];
 				} else {
 					// Get ID for each crew member
-					_crew = [];
+					_crewIds = [];
 					{
 						if (_x getVariable ["ocap_isInitialised", false]) then {
-							_crew pushBack (_x getVariable "ocap_id");
+							_crewIds pushBack (_x getVariable "ocap_id");
 						};
 					} forEach (crew _x);
 
 					// Get entity data from entitiesData array, select states entry, push new data to it
-					((ocap_entitiesData select (_x getVariable "ocap_id")) select 1) pushBack [_pos, _dir, _alive, _crew];
+					((ocap_entitiesData select (_x getVariable "ocap_id")) select 1) pushBack [_pos, _dir, _isAliveInt, _crewIds];
 				};
 			};
 		};

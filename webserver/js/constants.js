@@ -15,11 +15,6 @@ export const CharCode = {
 	R: 114,
 };
 
-export const EntityType = {
-	UNIT: 'unit',
-	VEHICLE: 'vehicle',
-};
-
 export const ElementId = {
 };
 

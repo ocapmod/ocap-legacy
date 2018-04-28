@@ -8,12 +8,13 @@ namespace OCAPExporterTester
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            string input = "{localhost:5000}{\"myKey\": \"myValue\"}";
-            OCAPExporter.Main.RVExtension(new StringBuilder(), 1024, input);
+            string[] args = { "1", "2", "3" };
+            int argsCnt = 3;
 
-            //AARExporter.Main.Test();
+            OCAPExporter.Main.RvExtensionArgs(new StringBuilder(), 1024, "main", args, argsCnt);
+
             Console.WriteLine("Press any key to exit.");
             Console.ReadKey();
         }

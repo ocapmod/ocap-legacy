@@ -8,6 +8,7 @@ import models
 import services
 from models import db
 from capture import Capture
+from constants import ImportData
 from watcher import Watcher
 
 
@@ -56,21 +57,22 @@ def import_data():
 		f.write(raw_data)
 
 	data = request.get_json(force=True)
+	header = data['header']
+	capture_id = header[ImportData.HeaderIndex.ID]
 
-	capture_id = data['captureId']
 	logger.debug(
 			'Received import request from capture session: {}'.format(capture_id))
 
 	if capture_id not in captures: # Create new capture
 		captures[capture_id] = Capture(capture_id, db)
 
-	captures[capture_id].import_data(data['captureData'])
+	captures[capture_id].import_data(data)
 	return 'Success'
 
 
 @app.route('/import/view', methods=['GET', 'POST'])
 def import_data_view():
-	return jsonify([g.to_dict() for g in captures.values()])
+	return jsonify([x.to_dict() for x in captures.values()])
 
 
 Watcher(captures, db).start()

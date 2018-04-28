@@ -17,8 +17,7 @@
 	_this select 1: OBJECT - Hitter
 */
 
-_victim = _this select 0;
-_hitter = _this select 1;
+params ["_victim", "_hitter"];
 
 if (_victim getVariable ["ocap_exclude", false]) exitWith {}; // Just in case
 
@@ -30,9 +29,11 @@ if (!isNull _hitter) then {
 
 	_hitterInfo = [];
 	if (_hitter isKindOf "CAManBase") then {
+		_weaponName = getText (configFile >> "CfgWeapons" >> currentWeapon _hitter >> "displayName");
+		_weaponName = [_weaponName, """", "'"] call CBA_fnc_replace;
 		_hitterInfo = [
 			_hitter getVariable "ocap_id",
-			getText (configFile >> "CfgWeapons" >> currentWeapon _hitter >> "displayName")
+			_weaponName
 		];
 	} else {
 		_hitterInfo = [_hitter getVariable "ocap_id"];
@@ -43,7 +44,7 @@ if (!isNull _hitter) then {
 		"hit",
 		_victimId,
 		_hitterInfo,
-		_victim distance _hitter
+		round(_victim distance _hitter)
 	];
 };
 
