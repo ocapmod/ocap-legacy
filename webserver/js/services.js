@@ -102,13 +102,19 @@ export function getWorldByName(worldName) {
 /**
  * Reads data from a fetch, updates progress bar as data is read.
  *
- * @param {Object} reader
+ * @param {Object} response
  * @param {Element} progressBarElem
  * @param {Element} progressTextElem
  * @return {Object}
  */
 export function getJsonAndUpdateProgressBar(
 			response, progressBarElem=null, progressTextElem=null) {
+
+	if (response.body === undefined) {
+		// Not supported in this browser
+		progressTextElem.textContent = 'Loading...';
+		return response.json();
+	};
 
 	let bytesReceivedCount = 0;
 	const bytesCount = parseInt(response.headers.get('Content-Length'));

@@ -102,7 +102,7 @@ export function processOp(filepath) {
 				states.push(stateObj);
 			};
 
-			// TODO: Process frames fired
+			// TODO: Format frames fired
 			let framesFired = entity[DataIn.Entity.FRAMES_FIRED];
 
 			if (isUnit) {
@@ -276,22 +276,6 @@ function createInitialMarkers() {
 			entity.createMarker(services.armaToLatLng(pos));
 		};
 	});
-};
-
-function test() {
-	// Add marker to map on click
-	map.on("click", function(e) {
-		//console.log(e.latlng);
-		console.log(map.project(e.latlng, globals.mapMaxNativeZoom));
-		let marker = L.circleMarker(e.latlng).addTo(map);
-		marker.setRadius(5);
-	});
-
-	let marker = L.circleMarker(services.armaToLatLng([2438.21,820])).addTo(map);
-	marker.setRadius(5);
-
-	let marker = L.circleMarker(services.armaToLatLng([2496.58,5709.34])).addTo(map);
-	marker.setRadius(5);
 };
 
 export function playPause() {

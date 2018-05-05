@@ -93,7 +93,7 @@
 		}
 
 		#frame-slider {
-			-webkit-appearance: none; // Hides the default slider so that custom slider can be made
+			appearance: none; // Hides the default slider so that custom slider can be made
 			background: transparent;
 			width: 100%; // Required for firefox
 			z-index: 2;
@@ -102,12 +102,16 @@
 				outline: none;
 			}
 
-			&::-webkit-slider-runnable-track {
+			&::-webkit-slider-runnable-track,
+			&::-moz-range-track,
+			&::-ms-track {
 				.slider-track;
 				background: transparent;
 			}
 
-			&::-webkit-slider-thumb {
+			&::-webkit-slider-thumb,
+			&::-moz-range-thumb,
+			&::-ms-thumb {
 				.slider-thumb;
 			}
 		}
@@ -127,7 +131,7 @@
 		}
 
 		#playback-speed-slider {
-			-webkit-appearance: none;
+			appearance: none;
 			background: transparent;
 			bottom: 50px;
 			left: 5px;
@@ -147,11 +151,15 @@
 				outline: none;
 			}
 
-			&::-webkit-slider-runnable-track {
+			&::-webkit-slider-runnable-track,
+			&::-moz-range-track,
+			&::-ms-track {
 				.slider-track;
 			}
 
-			&::-webkit-slider-thumb {
+			&::-webkit-slider-thumb,
+			&::-moz-range-thumb,
+			&::-ms-thumb {
         .slider-thumb;
 				background: #404040;
 			}
