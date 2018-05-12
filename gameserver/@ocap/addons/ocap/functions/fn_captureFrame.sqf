@@ -87,7 +87,14 @@ if ((ocap_captureFrameNo % ocap_captureFrameLimit) == 0 &&
 
 
 private _runTime = diag_tickTime - _sT;
-private _string = format["Captured frame %1 (%2 entities in %3ms / %4 frames).", ocap_captureFrameNo, count _entities, _runTime * 1000, _runTime / _secondsPerFrame];
+private _frameCost = _runTime / _secondsPerFrame; // Number of equivalent (real) frames this took to run
+private _string = format[
+	"Captured frame %1 (%2 entities in %3ms / %4 frames).",
+	ocap_captureFrameNo,
+	count _entities,
+	round (_runTime * 1000),
+	_frameCost toFixed 1
+];
 [_string, false, true, false] call ocap_fnc_log;
 
 ocap_captureFrameNo = ocap_captureFrameNo + 1;

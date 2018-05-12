@@ -6,6 +6,7 @@
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
 	<link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link href="{{ url_for('static', filename='style/normalize.min.css') }}" rel="stylesheet">
 	<link href="{{ url_for('static', filename='style/leaflet-1.0.0-rc1.css') }}" rel="stylesheet">
 	<link href="{{ url_for('static', filename='style/main.css') }}" rel="stylesheet">
 	<link href="{{ url_for('static', filename='images/favicon.png') }}" rel="icon" type="img/png">
@@ -22,8 +23,12 @@
 		<span id="mission-name" class="medium"></span>
 	</div>
 	<div id="left-panel">
-		<div class="title bold"><span>Units</span></div>
-		<div class="filter-box"></div>
+		<div class="title">Units</div>
+		<div class="filter-box">
+			<button id="entity-list-toggle-ai-button">
+				Toggle AI
+			</button>
+		</div>
 		<div class="entity-list">
 			<ul id="list-west"><span class="blufor side-title">BLUFOR</span></ul>
 			<ul id="list-east"><span class="opfor side-title">OPFOR</span></ul>
@@ -32,7 +37,7 @@
 		</div>
 	</div>
 	<div id="right-panel">
-		<div class="title bold">Events</div>
+		<div class="title">Events</div>
 		<div class="filter-box">
 			<div id="filter-hit-events-button"></div>
 			<input type="text" id="filter-events-input" placeholder="Filter" />

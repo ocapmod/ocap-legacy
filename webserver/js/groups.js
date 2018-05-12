@@ -30,7 +30,7 @@ class Groups {
 		for (let i = 0; i < this.groups.length; i++) {
 			var group = this.groups[i];
 			//console.log("Comparing with group name: " + group.name + ", side: " + group.side);
-			
+
 			if ((group.getName() == name) && (group.getSide() == side)) {
 				//console.log("Group exists!");
 				return group;
@@ -85,7 +85,7 @@ class Group {
 	// Add unit to group (if not already added)
 	addUnit(unit) {
 		if (this.units.indexOf(unit) != -1) {return};
-		
+
 		var wasEmpty = this.isEmpty();
 		this.units.push(unit);
 
@@ -118,7 +118,7 @@ class Group {
 	};
 
 	// Remove element from UI groups list
-	removeElement() { 
+	removeElement() {
 		this.element.parentElement.removeChild(this.element);
 		this.setElement(null);
 	};

@@ -48,6 +48,7 @@ class UI {
 		this.shareLink = null;
 		this.showHitEvents = true;
 		this.toggleFirelinesButton = null;
+		this.toggleAiButton = null;
 
 		this._init();
 	};
@@ -107,7 +108,7 @@ class UI {
 		this.filterHitEventsButton = document.getElementById(
 				"filter-hit-events-button");
 		this.filterHitEventsButton.addEventListener("click", () => {
-			toggleHitEvents();
+			this.toggleHitEvents();
 		});
 		this.filterEventsInput = document.getElementById("filter-events-input");
 
@@ -501,6 +502,28 @@ class UI {
 		} else {
 			el.style.display = "none";
 		}
+	};
+
+	toggleHitEvents(showHint = true) {
+		this.showHitEvents = !this.showHitEvents;
+
+		let text;
+		if (this.showHitEvents) {
+			this.filterHitEventsButton.style.opacity = 1;
+			text = "shown";
+		} else {
+			this.filterHitEventsButton.style.opacity = 0.5;
+			text = "hidden";
+		};
+
+		if (showHint) {
+			this.showHint("Hit events " + text);
+		};
+	};
+
+	toggleAi() {
+		// TODO: Show/hide AI units in entity list. Also show/hide any units that
+		// are added during playback (not just the ones existing right now)
 	};
 };
 

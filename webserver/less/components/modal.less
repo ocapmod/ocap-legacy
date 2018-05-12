@@ -38,7 +38,7 @@
   #modal-header {
     box-sizing: border-box;
     font-size: 16px;
-    background-color: @highlight-color;
+    background-color: @orange;
     width: 100%;
     margin-bottom: 3px;
     padding: 5px;
@@ -59,7 +59,7 @@
     overflow-x: auto;
 
     a {
-      color: #fff;
+      color: @primary-text-color;
       text-decoration: underline;
 
       &:hover {
@@ -87,8 +87,8 @@
         text-align: left;
 
         &:not(:first-child):hover {
-          background-color: @highlight-color;
-        }
+          background-color: @orange;
+				}
       }
 
       .in-progress {

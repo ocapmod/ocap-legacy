@@ -34,6 +34,7 @@ window.globals = globals;
 window.constants = constants;
 window.gameEvents = gameEvents;
 window.entities = entities;
+window.ui = ui;
 
 function init() {
 	// Fetch operations and display op selection window
@@ -203,9 +204,8 @@ export function processOp(filepath) {
 		console.groupEnd();
 		initMap();
 		createInitialMarkers();
-		//test();
 		startPlaybackLoop();
-		toggleHitEvents(false);
+		ui.toggleHitEvents(false);
 		playPause();
 		ui.hideModal();
 	}).catch(error => {
@@ -283,23 +283,6 @@ export function playPause() {
 	ui.updatePlayPauseButton(globals.playbackPaused);
 };
 
-function toggleHitEvents(showHint = true) {
-	ui.showHitEvents = !ui.showHitEvents;
-
-	let text;
-	if (ui.showHitEvents) {
-		ui.filterHitEventsButton.style.opacity = 1;
-		text = "shown";
-	} else {
-		ui.filterHitEventsButton.style.opacity = 0.5;
-		text = "hidden";
-	};
-
-	if (showHint) {
-		ui.showHint("Hit events " + text);
-	};
-};
-
 function startPlaybackLoop() {
 	let killlines = [];
 	let firelines = [];
@@ -317,11 +300,9 @@ function startPlaybackLoop() {
 				});
 
 				for (const entity of entities.getAll()) {
-					//console.log(entity);
-
-					// if (entity.isFrameOutOfBounds(globals.playbackFrame)) {
-					// 	continue;
-					// }
+					if (entity.isFrameOutOfBounds(globals.playbackFrame)) {
+						continue;
+					};
 
 					entity.manageFrame(globals.playbackFrame);
 
@@ -337,8 +318,7 @@ function startPlaybackLoop() {
 							// frame where they've fired *after* they no longer exist.
 							// This seems to be a problem with capture, not playback.
 							// e.g. Entity's number of states = 10 (so max frame=9). Frame fired = 10
-							// `globals.playbackFrame - 1` is a hack to get around this for now.
-							const entityPos = entity.getLatLngAtFrame(globals.playbackFrame - 1);
+							const entityPos = entity.getLatLngAtFrame(globals.playbackFrame);
 							console.log('Shooter pos:');
 							console.log(entityPos);
 

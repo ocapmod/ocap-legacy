@@ -6,27 +6,44 @@
 	.title {
 		align-items: center;
 		background-color: rgba(0,0,0,0.5);
+		box-sizing: border-box;
 		display: flex;
 		font-size: 16px;
-		height: 30px;
+		font-weight: 700;
 		justify-content: center;
-		padding: 5px 0;
+		padding: 14px 0;
 		width: 100%;
 	}
 
 	.filter-box {
 		background-color: rgba(0,0,0,0.25);
 		box-sizing: border-box;
-		height: 35px;
-		padding: 4px 5px;
+		padding: 10px 5px;
 		width: 100%;
 		display: flex;
 		align-items: center;
 
+		button {
+			border: none;
+			background: none;
+			color: @primary-text-color;
+			cursor: pointer;
+			font-weight: 500;
+			padding: 5px;
+
+			&:hover {
+				background-color: @orange;
+			}
+
+			&:focus {
+				outline: none;
+			}
+		}
+
 		input[type="text"] {
 			background: none;
 			border: 0;
-			color: #F2F2F2;
+			color: @primary-text-color;
 			display: inline-block;
 			height: 18px;
 			padding: 0 10px;
@@ -54,7 +71,13 @@
   flex-direction: column;
 	height: calc(100% - (@panel-height * 2));
 	left: 0;
-  width: 200px;
+	width: 200px;
+
+	// TODO: Implement toggle AI button
+	.filter-box {
+		justify-content: center;
+		display: none;
+	}
 
 	.entity-list {
     flex: 1;
@@ -69,13 +92,15 @@
 
 		ul {
 			list-style-type: none;
+			margin-top: 15px;
 			padding: 0;
 
 			.group {
-        padding-top: 10px;
+        margin-top: 10px;
 
         .group-title {
-          color: rgba(255, 255, 255, 0.6);
+					color: rgba(255, 255, 255, 0.6);
+					margin-bottom: 5px;
         }
 			}
 
@@ -83,7 +108,7 @@
         padding: 5px 16px;
 
 				&:hover {
-					background-color: @highlight-color;
+					background-color: @orange;
 				}
 			}
 		}

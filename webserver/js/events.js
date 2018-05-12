@@ -32,7 +32,8 @@ class GameEvents {
 class HitOrKilledEvent {
 	constructor(frameNum, type, causedBy, victim, distance, weapon) {
 		this.frameNum = frameNum; // Frame number that event occurred
-		this.timecode = services.dateToTimeString(new Date(frameNum*globals.frameCaptureDelay));
+		this.timecode = services.dateToTimeString(
+			new Date(frameNum*globals.frameCaptureDelay));
 		this.type = type; // "hit" or "killed"
 		this.causedBy = causedBy;
 		this.victim = victim;
@@ -58,7 +59,9 @@ class HitOrKilledEvent {
 
 		// CausedBy
 		var causedBySpan = document.createElement("span");
-		if ((causedBy instanceof Unit) && (causedBy.getId() != null)) {causedBySpan.className = this.causedBy.getSideClass()};
+		if ((causedBy instanceof Unit) && (causedBy.getId() != null)) {
+			causedBySpan.className = this.causedBy.getSideClass()
+		};
 		causedBySpan.className += " medium";
 		causedBySpan.textContent = this.causedBy.getName();
 
@@ -74,7 +77,7 @@ class HitOrKilledEvent {
 
 		var detailsDiv = document.createElement("div");
 		detailsDiv.className = constants.ClassName.EVENT_DETAILS;
-		detailsDiv.textContent = this.timecode + " - " + this.distance + "m - " + this.weapon;
+		detailsDiv.textContent = `${this.timecode} - ${this.distance}m - ${this.weapon}`;
 
 		var li = document.createElement("li");
 		li.appendChild(victimSpan);
@@ -89,7 +92,7 @@ class HitOrKilledEvent {
 			// Aim to skip back to a point just before this event
 			let targetFrame = this.frameNum - globals.playbackMultiplier;
 			let latLng = this.victim.getLatLngAtFrame(targetFrame);
-			
+
 			// Rare case: victim did not exist at target frame, fallback to event frame
 			if (latLng == null) {
 				targetFrame = this.frameNum;

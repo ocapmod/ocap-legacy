@@ -32,8 +32,7 @@ waitUntil {
 	if (((_pos select 0) == 0) || isNull _projectile) exitWith {true};
 
 	_finalPos = _pos;
-	sleep 0.2;
-	false;
+	false
 };
 
 
