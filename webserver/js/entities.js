@@ -66,7 +66,7 @@ class Entity {
 	getPosAtFrame(f) {
 		f = this.getRelativeFrameIndex(f);
 
-		console.log(`${this._name}'s relative frame index: ${f}`);
+		//console.log(`${this._name}'s relative frame index: ${f}`);
 
 		var notExistYet = f<0; // Unit doesn't exist yet
 		var notExistAnymore = f > (this._states.length-1); // Unit dead/doesn't exist anymore
@@ -277,7 +277,7 @@ class Entity {
 	follow() {
 		this._lockMarkerIcon = true; // Prevent marker colour from being changed
 		if (globals.entityToFollow != null) {globals.entityToFollow.unfollow()}; // Unfollow current followed entity (if any)
-		
+
 		let icon = this.iconType.follow;
 		this.setMarkerIcon(icon);
 		this._tempIcon = icon;

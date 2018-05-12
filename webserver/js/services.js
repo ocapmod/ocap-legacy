@@ -92,9 +92,11 @@ export function getWorldByName(worldName) {
 			};
 			throw new Error();
 		}).then(json => {
-				resolve(json);
+			resolve(json);
 		}).catch(error => {
-			reject(`Error fetching meta file for ${worldName}`)
+			const errString = `Error fetching meta file for ${worldName}`;
+			ui.modalBody.textContent = `${errString}<br/>${error}.`;
+			reject(errString);
 		});
 	});
 };

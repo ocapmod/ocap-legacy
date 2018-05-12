@@ -33,6 +33,7 @@ import {DataIn} from './data_structure.js';
 window.globals = globals;
 window.constants = constants;
 window.gameEvents = gameEvents;
+window.entities = entities;
 
 function init() {
 	// Fetch operations and display op selection window
@@ -90,11 +91,11 @@ export function processOp(filepath) {
 				let stateObj = {
 					position: state[In.POSITION],
 					direction: state[In.DIRECTION],
-					isAlive: state[In.IS_ALIVE],
+					isAlive: Boolean(state[In.IS_ALIVE]),
 				};
 
 				if (isUnit) {
-					stateObj.isInVehicle = state[In.IS_IN_VEHICLE];
+					stateObj.isInVehicle = Boolean(state[In.IS_IN_VEHICLE]);
 				} else {
 					stateObj.crewIds = state[In.CREW_IDS];
 				};
@@ -102,12 +103,11 @@ export function processOp(filepath) {
 				states.push(stateObj);
 			};
 
-			// TODO: Format frames fired
-			let framesFired = entity[DataIn.Entity.FRAMES_FIRED];
-
 			if (isUnit) {
 				const groupID = header[DataIn.Entity.Header.GROUP_ID];
 				const side = header[DataIn.Entity.Header.SIDE];
+				// TODO: Format frames fired
+				const framesFired = entity[DataIn.Entity.FRAMES_FIRED];
 
 				// Add group to global groups object (if new)
 				let group = groups.findGroup(groupID, side);
@@ -123,7 +123,7 @@ export function processOp(filepath) {
 					name,
 					group,
 					side,
-					header[DataIn.Entity.Header.IS_PLAYER],
+					Boolean(header[DataIn.Entity.Header.IS_PLAYER]),
 					states,
 					framesFired
 				));

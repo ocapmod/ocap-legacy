@@ -1,22 +1,11 @@
 private _entities = _this;
 
-private _APC_CLASSES = [
-	"Wheeled_APC_F",
-	"Tracked_APC",
-	"APC_Wheeled_01_base_F",
-	"APC_Wheeled_02_base_F",
-	"APC_Wheeled_03_base_F",
-	"APC_Tracked_01_base_F",
-	"APC_Tracked_02_base_F",
-	"APC_Tracked_03_base_F"
-];
-
+private _APC = "apc";
 private _TANK_CLASSES = [
 	"MBT_01_base_F",
 	"MBT_02_base_F",
 	"MBT_03_base_F"
 ];
-
 
 {
 	_x params ["_header"];
@@ -29,9 +18,9 @@ private _TANK_CLASSES = [
 		_header set[3, _name];
 		_header set[4, _group];
 	} else {
-		private _class = _header select 3;
-		private _name = [_header select 4, """", "'"] call CBA_fnc_replace;
-		_header set[4, _name];
+		private _name = [_header select 3, """", "'"] call CBA_fnc_replace;
+		_header set[3, _name];
+		private _class = _header select 4;
 
 		// Identify vehicle category.
 		// Order of cases is important. With each super class (Ship, Air, LandVehicle),
@@ -56,17 +45,25 @@ private _TANK_CLASSES = [
 			case (_class isKindOf "Air"): {"plane"};
 
 			// Land
-			case ([_class, _APC_CLASSES] call ocap_fnc_isKindOf): {"apc"};
+			case (
+				_class isKindOf "Wheeled_APC_F" ||
+				{_class isKindOf "Tracked_APC"} ||
+				{_class isKindOf "APC_Wheeled_01_base_F"} ||
+				{_class isKindOf "APC_Wheeled_02_base_F"} ||
+				{_class isKindOf "APC_Wheeled_03_base_F"} ||
+				{_class isKindOf "APC_Tracked_01_base_F"} ||
+				{_class isKindOf "APC_Tracked_02_base_F"} ||
+				{_class isKindOf "APC_Tracked_03_base_F"} ||
+				{_class isKindOf "Tracked_APC"}
+			): {_APC};
 			case (_class isKindOf "Truck_F"): {"truck"}; // Should be higher than Car
 			case (_class isKindOf "Car"): {"car"};
-			//case ([_class, _TANK_CLASSES] call ocap_fnc_isKindOf): {"tank"};
 			case (_class isKindOf "Tank"): {"tank"};
 			case (_class isKindOf "StaticMortar"): {"static-mortar"};
 			case (_class isKindOf "StaticWeapon"): {"static-weapon"};
-			case (_class isKindOf "LandVehicle"): {"unknown"};
 			default {"unknown"};
 		};
-		_header set[3, _class];
+		_header set[4, _class];
 	};
 } forEach _entities;
 

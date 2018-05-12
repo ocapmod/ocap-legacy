@@ -8,27 +8,26 @@
 
 // Define global vars
 #include "\userconfig\ocap\config.hpp";
+ocap_entity_id = 0; // ID assigned to each entity (auto increments). Also acts as an index for each entity in entitiesData.
 ocap_captureFrameLimit = 5; // Number of captured frames before auto-exporting
 ocap_captureFrameNo = 0; // Frame number for current capture
 ocap_entitiesData = [];  // Data on all units + vehicles that appear throughout the mission.
 ocap_eventsData = []; // Data on all events (involving 2+ units) that occur throughout the mission.
 
 private _serverName = serverName;
-private _missionName = [briefingName, " ", "-"] call CBA_fnc_replace;
 if (!isMultiplayer) then {_serverName = "singleplayer"};
 ocap_captureId = format[
-		"%1__%2__%3", _serverName, _missionName, round (random 1000000)];
+		"%1__%2__%3", _serverName, briefingName, round (random 1000000)];
 
 
 // Add mission EHs
 addMissionEventHandler ["EntityKilled", {
-	_victim = _this select 0;
-	_killer = _this select 1;
+	params ["_victim", "_attacker"];
 
 	// Check entity is initiliased with OCAP
 	// TODO: Set ocap_exclude to true if unit is not going to respawn (e.g. AI)
 	if (_victim getVariable ["ocap_isInitialised", false]) then {
-		[_victim, _killer] call ocap_fnc_eh_killed;
+		[_victim, _attacker, "killed"] call ocap_fnc_eh_hitOrKilled;
 
 		{
 			_victim removeEventHandler _x;
@@ -55,28 +54,36 @@ addMissionEventHandler ["EntityRespawned", {
 
 addMissionEventHandler["HandleDisconnect", {
 	_unit = _this select 0;
-	_name = _this select 3;
 
 	if (_unit getVariable ["ocap_isInitialised", false]) then {
 		_unit setVariable ["ocap_exclude", true];
 	};
 
-	_name call ocap_fnc_eh_disconnected;
+	ocap_eventsData pushBack [
+		ocap_captureFrameNo,
+		"disconnected",
+		_this select 3 // Name
+	];
 }];
 
 addMissionEventHandler["PlayerConnected", {
-	_name = _this select 2;
-
-	_name call ocap_fnc_eh_connected;
+	ocap_eventsData pushBack [
+		ocap_captureFrameNo,
+		"connected",
+		_this select 2 // Name
+	];
 }];
 
-if (ocap_endCaptureOnEndMission) then {
-	// Currently broken due to Arma bug
-	// https://feedback.bistudio.com/T120253
-	addMissionEventHandler ["Ended", {
-		["Mission ended."] call ocap_fnc_log;
-		[] call ocap_fnc_exportData;
+if (ocap_debug) then {
+	player addAction ["Copy entitiesData to clipboard", {copyToClipboard str(ocap_entitiesData)}];
+	player addAction ["Write saved data", {[] call ocap_fnc_exportData}];
+	player addEventHandler ["Respawn", {
+		player addAction ["Copy entitiesData to clipboard", {copyToClipboard str(ocap_entitiesData)}];
+		player addAction ["Write saved data", {[] call ocap_fnc_exportData}];
 	}];
 };
 
-[] spawn ocap_fnc_startCaptureLoop;
+// Wait until minimum player count is reached before starting capture
+waitUntil{sleep 1; (time > 1) && (count(allPlayers) >= ocap_minPlayerCount) && (ocap_capture)};
+["Min player count reached, starting capture."] call ocap_fnc_log;
+[ocap_fnc_captureFrame, ocap_frameCaptureDelay] call CBA_fnc_addPerFrameHandler;

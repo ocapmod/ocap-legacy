@@ -24,14 +24,15 @@ private _projectile = _this select 6;
 private _unitData = (ocap_entitiesData select (_unit getVariable "ocap_id"));
 
 // Wait until bullet lands, capture position
-private _lastPos = [];
+private _finalPos = [];
 waitUntil {
 	private _pos = getPosATL _projectile;
 
 	// We exit if projectile no longer exists
 	if (((_pos select 0) == 0) || isNull _projectile) exitWith {true};
 
-	_lastPos = _pos;
+	_finalPos = _pos;
+	sleep 0.2;
 	false;
 };
 
@@ -45,16 +46,16 @@ waitUntil {
 	// We exit if projectile no longer exists or significant change in velocity (impact/ricochet)
 	if (((_pos select 0) == 0) || isNull _projectile || (_velocityChange >= 50)) exitWith {true};
 
-	_lastPos = _pos;
+	_finalPos = _pos;
 	_lastVelocity = _velocity;
 	false;
 };*/
 
 
-if ((count _lastPos) != 0) then {
+if ((count _finalPos) != 0) then {
 	// Append to existing framesFired data for this unit
 	(_unitData select 2) pushBack [
 		ocap_captureFrameNo,
-		[_lastPos select 0, _lastPos select 1]
+		[_finalPos select 0, _finalPos select 1]
 	];
 };

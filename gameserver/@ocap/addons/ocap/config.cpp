@@ -20,18 +20,15 @@ class CfgFunctions
 			class addEventHandlers {};
 			class atEndOfArray {};
 			class callExtension {};
-			class prepareEntitiesForTransit {};
+			class prepEntitiesForTransit {};
 			class exportData {};
 			class init {postInit = 1;};
 			class isKindOf {};
 			class log {};
-			class startCaptureLoop {};
+			class captureFrame {};
 
-			class eh_connected {};
-			class eh_disconnected {};
 			class eh_fired {};
-			class eh_hit {};
-			class eh_killed {};
+			class eh_hitOrKilled {};
 		};
 	};
 };

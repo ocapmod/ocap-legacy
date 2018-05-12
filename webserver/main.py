@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 
 from flask import Flask, jsonify, render_template, request
 
@@ -59,6 +60,7 @@ def import_data():
 	data = request.get_json(force=True)
 	header = data['header']
 	capture_id = header[ImportData.HeaderIndex.ID]
+	capture_id = re.sub('[^A-Za-z0-9_\-]+', '', capture_id)
 
 	logger.debug(
 			'Received import request from capture session: {}'.format(capture_id))
