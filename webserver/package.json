@@ -6,17 +6,19 @@
   "dependencies": {},
   "scripts": {
     "build:js": "webpack",
-    "build:less": "lessc ./less/base.less ./static/style/main.css --autoprefix=\"browsers\"",
+		"build:less": "lessc ./less/base.less ./static/style/main.css --autoprefix=\"browsers\"",
+		"build": "npm run build:js && npm run build:less",
     "watch:js": "watch \"npm run build:js\" ./js/ --interval=1",
     "watch:less": "watch \"npm run build:less\" ./less/ --interval=1",
     "watch": "concurrently \"npm run watch:js\" \"npm run watch:less\""
   },
   "devDependencies": {
     "concurrently": "^3.5.1",
-    "less-plugin-autoprefix": "^1.5.1",
     "less": "^3.0.1",
+    "less-plugin-autoprefix": "^1.5.1",
     "loglevel": "^1.6.0",
     "watch": "^1.0.2",
+    "webpack": "^4.8.3",
     "webpack-cli": "^2.0.15"
   }
 }
