@@ -40,8 +40,8 @@ namespace OCAPExporter
     {
         const string LOGDIR = "ocap_logs";
         const string LOGFILE = LOGDIR + "/log.txt";
-        const string LOGRAWFILE = LOGDIR + "/export_raw.txt";
-        const string LOGJSONFILE = LOGDIR + "/export.json";
+        const string LOGRAWFILE = LOGDIR + "/raw_input.txt";
+        const string LOGJSONFILE = LOGDIR + "/processed_input.json";
         static List<string> argKeys = new List<string> { "capManagerHost" };
 
         [DllExport("RVExtension", CallingConvention = System.Runtime.InteropServices.CallingConvention.Winapi)]
@@ -87,6 +87,7 @@ namespace OCAPExporter
                 Log(e.ToString());
                 return;
             }
+            json = json.Replace("\"\"", "\\\""); // Replace double quotes with escaped quotes
 
             Log(json, LOGJSONFILE, append: false, logToConsole: false, isJson: true);
 

@@ -12,8 +12,11 @@ from capture import Capture
 from constants import ImportData
 from watcher import Watcher
 
+if __name__ == '__main__':
+	logging.basicConfig(level=logging.DEBUG)
+else:
+	logging.basicConfig(filename='app.log', level=logging.DEBUG)
 
-logging.basicConfig(filename='app.log', level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/data.db'

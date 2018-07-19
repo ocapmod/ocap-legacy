@@ -15,14 +15,14 @@
 	true
 ] call ocap_fnc_log;
 
-private _startTime = diag_tickTime;
-
 private _preparationStartTime = diag_tickTime;
 private _preppedEntities = ocap_entitiesData call ocap_fnc_prepEntitiesForTransit;
 [
-	format["%1 entities prepared for transit (%2ms).", count ocap_entitiesData, (diag_tickTime - _preparationStartTime) * 1000],
-	true,
-	true
+	format[
+		"%1 entities prepared for transit (%2ms).",
+		count ocap_entitiesData,
+		(diag_tickTime - _preparationStartTime) * 1000
+	]
 ] call ocap_fnc_log;
 
 private _header = [
@@ -38,15 +38,8 @@ private _header = [
 
 
 // Reset capture data
-private _resetStartTime = diag_tickTime;
 {
 	_x set [1, []]; // Reset states
 	_x set [2, []]; // Reset frames fired
 } forEach ocap_entitiesData;
 ocap_eventsData = [];
-
-// [
-// 	format["Capture data reset (%1ms).", (diag_tickTime - _resetStartTime) * 1000],
-// 	true,
-// 	true
-// ] call ocap_fnc_log;

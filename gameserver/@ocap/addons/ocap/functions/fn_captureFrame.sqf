@@ -74,18 +74,6 @@ private _entities = allUnits + allDead + (entities "LandVehicle") + (entities "S
 	};
 } forEach _entities;
 
-// Log to rpt every 10 frames
-if ((ocap_captureFrameNo % 10) == 0) then {
-	[_string] call ocap_fnc_log;
-};
-
-// Export data if reached frame limit
-if ((ocap_captureFrameNo % ocap_captureFrameLimit) == 0 &&
-		{ocap_captureFrameNo > 0}) then {
-	[] call ocap_fnc_exportData;
-};
-
-
 private _runTime = diag_tickTime - _sT;
 private _frameCost = _runTime / _secondsPerFrame; // Number of equivalent (real) frames this took to run
 private _string = format[
@@ -95,7 +83,33 @@ private _string = format[
 	round (_runTime * 1000),
 	_frameCost toFixed 1
 ];
-[_string, false, true, false] call ocap_fnc_log;
+
+// Log export time
+if ((ocap_captureFrameNo % 10) == 0) then {
+	// Log to rpt
+	[_string] call ocap_fnc_log;
+} else {
+	// Log in-game
+	[_string, false, true, false] call ocap_fnc_log;
+};
+
+
+// Export data if reached frame limit
+if ((ocap_captureFrameNo % ocap_captureFrameLimit) == 0 &&
+		{ocap_captureFrameNo > 0}) then {
+	_sT = diag_tickTime;
+	[] call ocap_fnc_exportData;
+
+	private _runTime = diag_tickTime - _sT;
+	private _frameCost = _runTime / _secondsPerFrame;
+	[format[
+		"Exported frame %1 (%2 entities in %3ms / %4 frames).",
+		ocap_captureFrameNo,
+		count _entities,
+		round (_runTime * 1000),
+		_frameCost toFixed 1
+	], false, true] call ocap_fnc_log;
+};
 
 ocap_captureFrameNo = ocap_captureFrameNo + 1;
 //sleep ocap_frameCaptureDelay;
