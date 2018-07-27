@@ -1,4 +1,5 @@
 .vscode
+__pycache__
 
 ### GAMESERVER ###
 ## Extension ##
@@ -12,13 +13,14 @@ gameserver/extension/*/packages/*
 gameserver/extension/**/bin/*
 gameserver/extension/**/obj/*
 gameserver/extension/*/.vs/*
+gameserver/release/
+gameserver/config.py
 
 ## Addon ##
 gameserver/@ocap/addons/*.pbo
 
 
 ### WEBSERVER ###
-webserver/__pycache__
 webserver/app.log
 webserver/import.json
 webserver/node_modules/*

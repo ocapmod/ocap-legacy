@@ -1,0 +1,4 @@
+PBO_MANAGER_EXE = 'path/to/PBOConsole.exe'
+
+# Should have no trailing slash
+ARMA_ROOT_PATH = 'path/to/arma3/folder'
