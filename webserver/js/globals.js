@@ -68,7 +68,7 @@ let globals = {
 	world: null,
 	missionName: "",
 	endFrame: 0,
-	missionCurDate: new Date(0),
+	missionCurDate: new Date(Date.UTC(0)),
 };
 
 export {globals};

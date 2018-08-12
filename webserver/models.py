@@ -35,4 +35,4 @@ class Operation(db.Model, ModelMixin):
   author = db.Column(db.String, nullable=False)
   timestamp = db.Column(db.Integer)
   length = db.Column(db.Integer)
-  in_progress = db.Column(db.Boolean, default=True)
+  in_progress = db.Column(db.Boolean, default=False)

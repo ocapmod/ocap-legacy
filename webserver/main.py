@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+import time
 
 from flask import Flask, jsonify, render_template, request
 
@@ -8,9 +9,6 @@ import config
 import models
 import services
 from models import db
-from capture import Capture
-from constants import ImportData
-from watcher import Watcher
 
 if __name__ == '__main__':
 	logging.basicConfig(level=logging.DEBUG)
@@ -21,7 +19,6 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database/data.db'
 app.json_encoder = services.CustomJSONEncoder
-captures = {} # type: Dict[str, Capture]
 
 API_PREFIX = '/api/v1'
 
@@ -56,31 +53,29 @@ def api_operations():
 
 @app.route('/import', methods=['POST'])
 def import_data():
-	raw_data = request.data.decode('utf-8')
-	with open('import.json', 'w') as f:
-		f.write(raw_data)
-
 	data = request.get_json(force=True)
-	header = data['header']
-	capture_id = header[ImportData.HeaderIndex.ID]
+	capture_id = data["captureId"]
 	capture_id = re.sub('[^A-Za-z0-9_\-]+', '', capture_id)
 
-	logger.debug(
-			'Received import request from capture session: {}'.format(capture_id))
+	logger.debug('Received import request with id: {}'.format(capture_id))
 
-	if capture_id not in captures: # Create new capture
-		captures[capture_id] = Capture(capture_id, db)
+	# Create row in db
+	db.session.add(models.Operation(
+		capture_id=capture_id,
+		world=data["worldName"],
+		mission=data["missionName"],
+		author=data["author"],
+		length=data["frameCount"] * data["captureDelay"],
+		timestamp=time.time()))
+	db.session.commit()
 
-	captures[capture_id].import_data(data)
+	# Write json to file
+	with open('static/captures/{}.json'.format(capture_id), 'w') as f:
+		json.dump(data, f)
+
 	return 'Success'
 
 
-@app.route('/import/view', methods=['GET', 'POST'])
-def import_data_view():
-	return jsonify([x.to_dict() for x in captures.values()])
-
-
-Watcher(captures, db).start()
 logger.debug('Main called')
 
 

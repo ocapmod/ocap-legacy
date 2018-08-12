@@ -18,14 +18,13 @@ class CfgFunctions
 		{
 			file = "ocap\functions";
 			class addEventHandlers {};
-			class atEndOfArray {};
+			class addMissionEventHandlers {};
 			class callExtension {};
-			class prepEntitiesForTransit {};
-			class exportData {};
-			class init {postInit = 1;};
-			class isKindOf {};
-			class log {};
 			class captureFrame {};
+			class publish{};
+			class getClass {};
+			class init {postInit = 1;};
+			class log {};
 
 			class eh_fired {};
 			class eh_hitOrKilled {};

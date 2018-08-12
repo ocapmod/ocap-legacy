@@ -250,7 +250,7 @@ class UI {
 	// Set mission time based on given frame
 	// Move playback + slider to given frame in time
 	setMissionCurTime(f) {
-		globals.missionCurDate.setTime(f*globals.frameCaptureDelay);
+		globals.missionCurDate.setTime(Date.UTC(0, 0, 0, 0, 0, 0, f*globals.frameCaptureDelay));
 		this.missionCurTime.textContent = services.dateToTimeString(
 				globals.missionCurDate);
 		this.setFrameSliderVal(f);
@@ -266,7 +266,7 @@ class UI {
 
 	setMissionEndTime(f) {
 		this.missionEndTime.textContent = services.dateToTimeString(
-				new Date(f * globals.frameCaptureDelay));
+				new Date(Date.UTC(0, 0, 0, 0, 0, 0, f * globals.frameCaptureDelay)));
 		this.setFrameSliderMax(f);
 	};
 

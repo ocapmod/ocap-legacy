@@ -6,26 +6,20 @@
 
 	Parameters:
 		_string: STRING - The string to log. (Default: "")
-		_toHint: BOOLEAN - Log as hint. (Default: false)
-		_toChat: BOOLEAN - Log to system chat. (Default: false)
-		_toRpt: BOOLEAN - Log to RPT file. (Default: true)
+		_toChat: BOOLEAN - Log to system chat. (Default: true)
+		_toFile: BOOLEAN - Log to OCAP logfile. (Default: true)
 */
 
 params [
 	["_string", ""],
-	["_toHint", false],
-	["_toChat", false],
-	["_toRpt", true]
+	["_toChat", true],
+	["_toFile", true]
 ];
-
-if (_toHint) then {
-	hint _string;
-};
 
 if (_toChat) then {
 	systemChat _string;
 };
 
-if (_toRpt) then {
-	diag_log text ("OCAP: " + _string);
+if (_toFile) then {
+	["log", [_string]] call ocap_fnc_callExtension;
 };

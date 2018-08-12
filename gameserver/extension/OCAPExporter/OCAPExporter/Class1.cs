@@ -30,28 +30,40 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
+using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net;
+using Newtonsoft.Json;
 
 namespace OCAPExporter
 {
     public class Main
     {
+        static readonly string DATETIME_START = DateTime.Now.ToString("yyyy-dd-M_HH-mm-ss");
         const string LOGDIR = "ocap_logs";
-        const string LOGFILE = LOGDIR + "/log.txt";
-        const string LOGRAWFILE = LOGDIR + "/raw_input.txt";
-        const string LOGJSONFILE = LOGDIR + "/processed_input.json";
-        static List<string> argKeys = new List<string> { "capManagerHost" };
+        static readonly string LOGFILE = Path.Combine(LOGDIR, String.Format("log_{0}.txt", DATETIME_START));
+        static readonly string LOGJSONFILE = Path.Combine(LOGDIR, String.Format("publish_{0}.json", DATETIME_START));
+        static DirectoryInfo logDirInfo  = Directory.CreateDirectory(LOGDIR);
+        static Dictionary<string, object> captureData;
+        static List<object> entities;
+        static List<object> events;
+
+        // Commands
+        const string CMD_INIT = "init";
+        const string CMD_NEW_UNIT = "new_unit";
+        const string CMD_NEW_VEHICLE = "new_vehicle";
+        const string CMD_UPDATE_UNIT = "update_unit";
+        const string CMD_UPDATE_VEHICLE = "update_vehicle";
+        const string CMD_PUBLISH = "publish";
+        const string CMD_LOG = "log";
 
         [DllExport("RVExtension", CallingConvention = System.Runtime.InteropServices.CallingConvention.Winapi)]
         public static void RvExtension(StringBuilder output, int outputSize, string function)
         {
             outputSize--;
-            output.Append("callExtension syntax not supported.");
+            output.Append("Please provide args.");
         }
 
-        // To send a string back to Arma, append to the output StringBuilder. Arma outputSize limit applies!
         [DllExport("RVExtensionArgs", CallingConvention = System.Runtime.InteropServices.CallingConvention.Winapi)]
         public static int RvExtensionArgs(
             StringBuilder output,
@@ -60,9 +72,31 @@ namespace OCAPExporter
             [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr, SizeParamIndex = 4)] string[] args,
             int argsCnt)
         {
-            Thread thread = new Thread(()=>ProcessInput(function, args));
-            //thread.IsBackground = true;
-            thread.Start();
+            args = cleanArgs(args);
+
+            switch (function) {
+                case CMD_INIT:
+                    Init();
+                    break;
+                case CMD_UPDATE_UNIT:
+                    UpdateUnit(args);
+                    break;
+                case CMD_UPDATE_VEHICLE:
+                    UpdateVehicle(args);
+                    break;
+                case CMD_NEW_UNIT:
+                    NewUnit(args);
+                    break;
+                case CMD_NEW_VEHICLE:
+                    NewVehicle(args);
+                    break;
+                case CMD_PUBLISH:
+                    Publish(args);
+                    break;
+                case CMD_LOG:
+                    Log(args[0], fromGame: true);
+                    break;
+            }
 
             // Send output to Arma
             outputSize--;
@@ -71,28 +105,124 @@ namespace OCAPExporter
             return 200;
         }
 
-        public static void ProcessInput(string ocapHost, string[] input)
+        public static void Init()
         {
-            Directory.CreateDirectory(LOGDIR);
-            Log("==========");
-            Log(string.Join(" | ", input), LOGRAWFILE, append: false, logToConsole: false);
+            entities = new List<object>();
+            events = new List<object>();
+            captureData = new Dictionary<string, object>() {
+                {"captureId", "" },
+                {"worldName", "" },
+                {"missionName", "" },
+                {"author", "" },
+                {"captureDelay", 0 },
+                {"frameCount", 0 },
+                { "entities", entities },
+                { "events", events },
+           };
 
-            String json = "";
+            Log("Initialised new capture");
+        }
+
+        public static void NewUnit(string[] unitData)
+        {
+            if (!areArgsValid("NewUnit", unitData, 6)) { return; };
+            entities.Add(
+                new List<object> {
+                    new List<object> { // Header
+                        int.Parse(unitData[0]), // Start frame number
+                        1, // Is unit
+                        int.Parse(unitData[1]), // Id
+                        unitData[2], // Name
+                        unitData[3], // Group
+                        unitData[4], // Side
+                        int.Parse(unitData[5]), // Is player
+                    },
+                    new List<object> { }, // States
+                    new List<object> { }, // Frames fired
+                }
+            );
+        }
+
+        public static void NewVehicle(string[] vehicleData)
+        {
+            if (!areArgsValid("NewVehicle", vehicleData, 4)) { return; };
+            entities.Add(
+                new List<object> {
+                    new List<object> { // Header
+                        vehicleData[0], // Start frame number
+                        0, // Is unit
+                        int.Parse(vehicleData[1]), // Id
+                        vehicleData[2], // Name
+                        vehicleData[3], // Class
+                    },
+                    new List<object> { }, // States
+                }
+            );
+        }
+
+        public static void UpdateUnit(string[] unitData)
+        {
+            if (!areArgsValid("UpdateUnit", unitData, 5)) { return; };
+            int id = int.Parse(unitData[0]);
+            List<object> unit = (List<object>) entities[id];
+            List<object> states = (List<object>) unit[1];
+
+            states.Add(new List<object>
+            {
+                StringToIntArray(unitData[1]), // Position
+                int.Parse(unitData[2]), // Direction
+                int.Parse(unitData[3]), // Is alive
+                int.Parse(unitData[4]), // Is in vehicle
+            });
+        }
+
+        public static void UpdateVehicle(string[] vehicleData)
+        {
+            if (!areArgsValid("UpdateVehicle", vehicleData, 5)) { return; };
+            int id = int.Parse(vehicleData[0]);
+            List<object> vehicle = (List<object>) entities[id];
+            List<object> states = (List<object>) vehicle[1];
+
+            states.Add(new List<object>
+            {
+                StringToIntArray(vehicleData[1]), // Position
+                int.Parse(vehicleData[2]), // Direction
+                int.Parse(vehicleData[3]), // Is alive
+                StringToIntArray(vehicleData[4]), // Crew ids
+            });
+        }
+
+        // TODO: Run this in separate thread
+        public static void Publish(string[] args)
+        {
+            if (!areArgsValid("Publish", args, 6)) { return; };
+            Log("Publishing data...");
+            Log("Publish args:");
+            Log(String.Join(",", args));
+            string json = null;
+            string postUrl = FormatUrl(args[0]) + "/import";
+            string missionName = args[2];
+            string captureId = String.Format("{0}_{1}", missionName, DateTime.Now.ToString("yyyy-dd-M_HH-mm-ss"));
+
+            captureData["captureId"] = captureId;
+            captureData["worldName"] = args[1];
+            captureData["missionName"] = missionName;
+            captureData["author"] = args[3];
+            captureData["captureDelay"] = int.Parse(args[4]);
+            captureData["frameCount"] = int.Parse(args[5]);
+
             try
             {
-                json = String.Format("{{\"header\": {0},\"entities\": {1},\"events\": {2}}}", input[0], input[1], input[2]);
-            } catch (FormatException e)
-            {
-                Log("Error formatting input to json.");
-                Log(e.ToString());
-                return;
+                json = JsonConvert.SerializeObject(captureData);
             }
-            json = json.Replace("\"\"", "\\\""); // Replace double quotes with escaped quotes
+            catch (Exception e)
+            {
+                Log("Could not serialise data into json", isError: true);
+                Log(e.ToString(), isError: true);
+            }
 
-            Log(json, LOGJSONFILE, append: false, logToConsole: false, isJson: true);
-
-            ocapHost = FormatUrl(ocapHost, true);
-            string postUrl = ocapHost + "/import";
+            if (json == null) { return; };
+            LogJson(json);
 
             // POST capture data to OCAP webserver
             try
@@ -109,14 +239,60 @@ namespace OCAPExporter
             }
             catch (Exception e)
             {
-                Log("An error occurred. Possibly due to request timeout.");
-                Log(e.ToString());
+                Log("An error occurred while sending POST request. Possibly due to timeout.", isError: true);
+                Log(e.ToString(), isError: true);
             }
+
+            Log("Publish complete");
+        }
+
+        public static int[] StringToIntArray(string input)
+        {
+            input = input.Replace("[", "").Replace("]", "");
+            if (input.Length == 0) { return new int[0]; };
+
+            string[] inputArray = input.Split(',');
+            try
+            {
+                return Array.ConvertAll(inputArray, int.Parse);
+            } catch (Exception e)
+            {
+                Log("Could not convert string to int array: " + input, isError: true);
+                Log(e.ToString(), isError: true);
+            }
+
+            return null;
+        }
+
+        public static string[] cleanArgs(string[] args)
+        {
+            for (int i = 0; i < args.Length; i++)
+            {
+                string arg = args[i];
+                args[i] = arg.TrimStart('\"').TrimEnd('\"');
+            };
+
+            return args;
+        }
+
+        // Check if length of args in args array matches expected length
+        public static bool areArgsValid(string funcName, string[] args, int expectedLength)
+        {
+            int length = args.Length;
+            if (length != expectedLength)
+            {
+                Log(String.Format("{0}: {1} args provided, {2} expected.", funcName, length, expectedLength), isError: true);
+                Log(String.Format("Args provided: {0}", args), isError: true);
+                return false;
+            }
+
+            return true;
         }
 
         // Format a URL if malformed
         public static string FormatUrl(string url, bool removeTrailingSlash = true)
         {
+            // Fallback to http if protocol not defined
             if (!(url.StartsWith("http://") || url.StartsWith("https://")))
             {
                 url = "http://" + url;
@@ -124,32 +300,35 @@ namespace OCAPExporter
 
             if (url.EndsWith("/") && removeTrailingSlash)
             {
-                url = url.Remove(url.Length - 1);
+                url = url.TrimEnd('/');
             }
 
             return url;
         }
 
         // Write string to log file and console.
-        public static void Log(string str = "", string filePath = LOGFILE, bool append = true, bool logToConsole = true, bool isJson = false)
+        public static void Log(string str = "", bool isError = false, bool fromGame = false)
         {
-            if (logToConsole)
+            if (isError)
             {
-                Console.WriteLine(str);
+                str = "Error: " + str;
             }
 
-            filePath = filePath.Replace("/", "\\");
-            using (StreamWriter writer = new StreamWriter(filePath, append: append))
+            if (fromGame)
             {
-                if (isJson)
-                {
-                    writer.WriteLine(str);
-                } else
-                {
-                    writer.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss | ") + str);
-                }
-                
+                str = "Arma | " + str;
+            } else
+            {
+                str = "Ext  | " + str;
             }
+
+            Console.WriteLine(str);
+            File.AppendAllText(LOGFILE, String.Format("{0} | {1}{2}", DateTime.Now.ToString("HH:mm:ss"), str, Environment.NewLine));
+        }
+
+        public static void LogJson(string json)
+        {
+            File.WriteAllText(LOGJSONFILE, json);
         }
     }
 }
