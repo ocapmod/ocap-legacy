@@ -26,7 +26,7 @@ private _entityCount = 0;
 
 		// Add new unit
 		["new_unit", [
-			ocap_captureFrameNo, _id, name _x, groupID (group _x),
+			_id, name _x, groupID (group _x),
 			str(side _x), parseNumber (isPlayer _x)
 		]] call ocap_fnc_callExtension;
 
@@ -36,7 +36,7 @@ private _entityCount = 0;
 
 	// Update unit
 	["update_unit", [
-		_id, _pos, round(getDir _x), parseNumber _isAlive,
+		ocap_captureFrameNo, _id, _pos, round(getDir _x), parseNumber _isAlive,
 		parseNumber ((vehicle _x) != _x)
 	]] call ocap_fnc_callExtension;
 
@@ -48,18 +48,22 @@ private _entityCount = 0;
 	private _id = _x getVariable ["ocap_id", -1];
 	private _isAlive = alive _x;
 	if (_x getVariable ["ocap_exclude", false] || {((!_isAlive) && _id == -1)} || {_x isKindOf "Logic"}) exitWith {};
+	private _exclude = false;
 	private _pos = getPosATL _x;
 	_pos = [round(_pos select 0), round(_pos select 1)];
-	private _class = _x call ocap_fnc_getClass;
-	if (_class == "unknown") exitWith {_x setVariable ["ocap_exclude", true]};
 
 	if (_id == -1) then {
+		private _class = _x call ocap_fnc_getClass;
+		if (_class == "unknown") exitWith {
+			_exclude = true;
+			_x setVariable ["ocap_exclude", _exclude]
+		};
+
 		_id = ocap_entity_id;
 		_x setVariable ["ocap_id", _id];
 
 		// Add new vehicle
 		["new_vehicle", [
-			ocap_captureFrameNo,
 			_id,
 			getText (configFile >> "CfgVehicles" >> typeOf _x >> "displayName"),
 			_class
@@ -68,6 +72,8 @@ private _entityCount = 0;
 		//_x call ocap_fnc_addEventHandlers;
 		ocap_entity_id = ocap_entity_id + 1;
 	};
+
+	if (_exclude) exitWith {};
 
 	// Get ID for each crew member
 	private _crewIds = [];
@@ -80,7 +86,8 @@ private _entityCount = 0;
 
 	// Update vehicle
 	["update_vehicle", [
-		_id, _pos, round(getDir _x), parseNumber _isAlive, _crewIds
+		ocap_captureFrameNo, _id, _pos, round(getDir _x),
+		parseNumber _isAlive, _crewIds
 	]] call ocap_fnc_callExtension;
 
 	_entityCount = _entityCount + 1;

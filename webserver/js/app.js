@@ -86,22 +86,24 @@ export function processOp(filepath) {
 			const name = header[DataIn.Entity.Header.NAME];
 
 			// Process states
-			let states = [];
+			const states = entity[DataIn.Entity.STATES];
+			const newStates = {};
 			const In = DataIn.Entity.State;
-			for (const state of entity[DataIn.Entity.STATES]) {
-				let stateObj = {
+			for (const frameIndex in states) {
+				const state = states[frameIndex];
+				const newState = {
 					position: state[In.POSITION],
 					direction: state[In.DIRECTION],
 					isAlive: Boolean(state[In.IS_ALIVE]),
 				};
 
 				if (isUnit) {
-					stateObj.isInVehicle = Boolean(state[In.IS_IN_VEHICLE]);
+					newState.isInVehicle = Boolean(state[In.IS_IN_VEHICLE]);
 				} else {
-					stateObj.crewIds = state[In.CREW_IDS];
+					newState.crewIds = state[In.CREW_IDS];
 				};
 
-				states.push(stateObj);
+				newStates[frameIndex] = newState;
 			};
 
 			if (isUnit) {
@@ -125,7 +127,7 @@ export function processOp(filepath) {
 					group,
 					side,
 					Boolean(header[DataIn.Entity.Header.IS_PLAYER]),
-					states,
+					newStates,
 					framesFired
 				));
 			} else {
@@ -135,7 +137,7 @@ export function processOp(filepath) {
 					id,
 					header[DataIn.Entity.Header.CLASS],
 					name,
-					states
+					newStates
 				));
 			};
 		};

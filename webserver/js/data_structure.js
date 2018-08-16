@@ -23,14 +23,13 @@ export const DataIn = {
 		FRAMES_FIRED: 2,
 
 		Header: {
-			START_FRAME_NUM: 0,
-			IS_UNIT: 1,
-			ID: 2,
-			NAME: 3,
-			GROUP_ID: 4,
-			CLASS: 4,
-			SIDE: 5,
-			IS_PLAYER: 6,
+			IS_UNIT: 0,
+			ID: 1,
+			NAME: 2,
+			GROUP_ID: 3,
+			CLASS: 3,
+			SIDE: 4,
+			IS_PLAYER: 5,
 		},
 
 		State: {

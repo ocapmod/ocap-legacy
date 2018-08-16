@@ -55,31 +55,14 @@ class Entity {
 		this._popupClassName = "";
 	};
 
-	// Correct index by taking into account startFrameNum.
-	// e.g. If requested frame is 31, and entity startFrameNum is 30,
-	// then relative frame index is 1 (31-30).
-	// If relative index is < 0, then entity doesn't exist yet
-	getRelativeFrameIndex(f) {
-		return (f - this._startFrameNum);
-	};
-
-	getPosAtFrame(f) {
-		f = this.getRelativeFrameIndex(f);
-
-		//console.log(`${this._name}'s relative frame index: ${f}`);
-
-		var notExistYet = f<0; // Unit doesn't exist yet
-		var notExistAnymore = f > (this._states.length-1); // Unit dead/doesn't exist anymore
-		if (notExistYet || notExistAnymore) {
-			return;
-		} else {
-			return this._states[f].position;
-		};
+	getPosAtFrame(frameIndex) {
+			if (this.isFrameOutOfBounds(frameIndex)) return;
+			return this._states[frameIndex].position;
 	};
 
 	// Get LatLng at specific frame
-	getLatLngAtFrame(f) {
-		var pos = this.getPosAtFrame(f);
+	getLatLngAtFrame(frameIndex) {
+		var pos = this.getPosAtFrame(frameIndex);
 		return services.armaToLatLng(pos);
 	};
 
@@ -187,30 +170,14 @@ class Entity {
 		this._element = null;
 	};
 
-	// Does entity now exist (for the first time) at relativeFrameIndex
-	_existFirstTime(relativeFrameIndex) {
-		return (relativeFrameIndex == 0);
-	};
-
-	// Does entity exist yet (not connected/hasn't spawned) at relativeFrameIndex
-	_notExistYet(relativeFrameIndex) {
-		return (relativeFrameIndex < 0);
-	};
-
-	// Does entity exist anymore (disconnected/garbage collected) at relativeFrameIndex
-	_notExistAnymore(relativeFrameIndex) {
-		return (relativeFrameIndex >= this._states.length);
-	};
-
-	// Is relativeFrameIndex out of bounds
-	isFrameOutOfBounds(relativeFrameIndex) {
-		return ((this._notExistYet(relativeFrameIndex)) || (this._notExistAnymore(relativeFrameIndex)));
+	isFrameOutOfBounds(frameIndex) {
+		return !(frameIndex in this._states);
 	};
 
 	// Update entiy position, direction, and alive status at valid frame
-	_updateAtFrame(relativeFrameIndex) {
+	_updateAtFrame(frameIndex) {
 		// Set pos
-		let latLng = services.armaToLatLng(this._states[relativeFrameIndex].position);
+		let latLng = services.armaToLatLng(this.getPosAtFrame(frameIndex));
 		if (this._marker == null) { // First time unit has appeared on map
 			this.createMarker(latLng);
 		} else {
@@ -218,20 +185,18 @@ class Entity {
 		};
 
 		// Set direction
-		this._marker.setRotationAngle(this._states[relativeFrameIndex].direction);
+		this._marker.setRotationAngle(this._states[frameIndex].direction);
 
 		// Set alive status
-		this.setIsAlive(this._states[relativeFrameIndex].isAlive);
+		this.setIsAlive(this._states[frameIndex].isAlive);
 	};
 
 	// Manage entity at given frame
-	manageFrame(f) {
-		f = this.getRelativeFrameIndex(f);
-
-		if (this.isFrameOutOfBounds(f)) { // Entity does not exist on frame
+	manageFrame(frameIndex) {
+		if (this.isFrameOutOfBounds(frameIndex)) { // Entity does not exist on frame
 			this.removeMarker();
 		} else { // Entity does exist on frame
-			this._updateAtFrame(f);
+			this._updateAtFrame(frameIndex);
 		};
 	};
 
@@ -350,10 +315,10 @@ class Unit extends Entity {
 		};
 	};
 
-	_updateAtFrame(relativeFrameIndex) {
-		super._updateAtFrame(relativeFrameIndex);
+	_updateAtFrame(frameIndex) {
+		super._updateAtFrame(frameIndex);
 		this.hideMarkerPopup(ui.hideMarkerPopups);
-		this.setIsInVehicle(this._states[relativeFrameIndex].isInVehicle);
+		this.setIsInVehicle(this._states[frameIndex].isInVehicle);
 	};
 
 	setIsInVehicle(isInVehicle) {
@@ -370,11 +335,11 @@ class Unit extends Entity {
 
 	// Check if unit fired on given frame
 	// If true, return position of projectile impact
-	firedOnFrame(f) {
+	firedOnFrame(frameIndex) {
 		for (let i = 0; i < (this._framesFired.length - 1); i++) {
 			let frameNum = this._framesFired[i][0];
 			let projectilePos = this._framesFired[i][1];
-			if (frameNum == f) {return projectilePos};
+			if (frameNum == frameIndex) {return projectilePos};
 		};
 		return;
 	};
@@ -481,9 +446,9 @@ class Vehicle extends Entity {
 		}, 100);
 	};
 
-	_updateAtFrame(relativeFrameIndex) {
-		super._updateAtFrame(relativeFrameIndex);
-		this.setCrew(this._states[relativeFrameIndex].crewIds);
+	_updateAtFrame(frameIndex) {
+		super._updateAtFrame(frameIndex);
+		this.setCrew(this._states[frameIndex].crewIds);
 	};
 
 	setCrew(crew) {

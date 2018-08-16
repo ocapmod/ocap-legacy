@@ -79,28 +79,58 @@ namespace OCAPExporter
                     Init();
                     break;
                 case CMD_UPDATE_UNIT:
-                    UpdateUnit(args);
+										if (!areArgsValid(CMD_UPDATE_UNIT, args, 6)) { break; };
+										UpdateUnit(
+												frameNumber: int.Parse(args[0]),
+												id: int.Parse(args[1]),
+												position: StringToIntArray(args[2]),
+												direction: int.Parse(args[3]),
+												isAlive: int.Parse(args[4]),
+												isInVehicle: int.Parse(args[5])
+										);
                     break;
                 case CMD_UPDATE_VEHICLE:
-                    UpdateVehicle(args);
+										if (!areArgsValid(CMD_UPDATE_VEHICLE, args, 6)) { break; };
+										UpdateVehicle(
+												frameNumber: int.Parse(args[0]),
+												id: int.Parse(args[1]),
+												position: StringToIntArray(args[2]),
+												direction: int.Parse(args[3]),
+												isAlive: int.Parse(args[4]),
+												crewIds: StringToIntArray(args[5])
+										);
                     break;
                 case CMD_NEW_UNIT:
-                    NewUnit(args);
+										if (!areArgsValid(CMD_NEW_UNIT, args, 5)) { break; };
+										NewUnit(
+												id: int.Parse(args[0]),
+												name: args[1],
+												group: args[2],
+												side: args[3],
+												isPlayer: int.Parse(args[4])
+										);
                     break;
                 case CMD_NEW_VEHICLE:
-                    NewVehicle(args);
+										if (!areArgsValid(CMD_NEW_VEHICLE, args, 3)) { break; };
+										NewVehicle(
+												id: int.Parse(args[0]),
+												name: args[1],
+												className: args[2]
+										);
                     break;
                 case CMD_PUBLISH:
-                    Publish(args);
+										if (!areArgsValid(CMD_PUBLISH, args, 6)) { break; };
+										Publish(args);
                     break;
                 case CMD_LOG:
-                    Log(args[0], fromGame: true);
+										if (!areArgsValid(CMD_LOG, args, 1)) { break; };
+										Log(args[0], fromGame: true);
                     break;
             }
 
             // Send output to Arma
             outputSize--;
-            output.Append("Call successful");
+            output.Append("Call complete");
 
             return 200;
         }
@@ -123,79 +153,72 @@ namespace OCAPExporter
             Log("Initialised new capture");
         }
 
-        public static void NewUnit(string[] unitData)
+        public static void NewUnit(int id, string name, string group, string side, int isPlayer)
         {
-            if (!areArgsValid("NewUnit", unitData, 6)) { return; };
             entities.Add(
                 new List<object> {
                     new List<object> { // Header
-                        int.Parse(unitData[0]), // Start frame number
                         1, // Is unit
-                        int.Parse(unitData[1]), // Id
-                        unitData[2], // Name
-                        unitData[3], // Group
-                        unitData[4], // Side
-                        int.Parse(unitData[5]), // Is player
+                        id,
+                        name,
+                        group,
+                        side,
+                        isPlayer,
                     },
-                    new List<object> { }, // States
-                    new List<object> { }, // Frames fired
+                    new Dictionary<int, List<object>>(), // States
+                    new List<int>(), // Frames fired
                 }
             );
         }
 
-        public static void NewVehicle(string[] vehicleData)
+        public static void NewVehicle(int id, string name, string className)
         {
-            if (!areArgsValid("NewVehicle", vehicleData, 4)) { return; };
             entities.Add(
                 new List<object> {
                     new List<object> { // Header
-                        vehicleData[0], // Start frame number
                         0, // Is unit
-                        int.Parse(vehicleData[1]), // Id
-                        vehicleData[2], // Name
-                        vehicleData[3], // Class
+                        id,
+                        name,
+                        className,
                     },
-                    new List<object> { }, // States
+									 new Dictionary<int, List<object>>(), // States
                 }
             );
         }
 
-        public static void UpdateUnit(string[] unitData)
+        public static void UpdateUnit(int frameNumber, int id, int[] position, int direction, int isAlive, int isInVehicle)
         {
-            if (!areArgsValid("UpdateUnit", unitData, 5)) { return; };
-            int id = int.Parse(unitData[0]);
             List<object> unit = (List<object>) entities[id];
-            List<object> states = (List<object>) unit[1];
+						Dictionary<int, List<object>> states = (Dictionary<int, List<object>>) unit[1];
 
-            states.Add(new List<object>
-            {
-                StringToIntArray(unitData[1]), // Position
-                int.Parse(unitData[2]), // Direction
-                int.Parse(unitData[3]), // Is alive
-                int.Parse(unitData[4]), // Is in vehicle
-            });
+            states.Add(frameNumber,
+								new List<object> {
+										position,
+										direction,
+										isAlive,
+										isInVehicle,
+								}
+						);
         }
 
-        public static void UpdateVehicle(string[] vehicleData)
+        public static void UpdateVehicle(int frameNumber, int id, int[] position, int direction, int isAlive, int[] crewIds)
         {
-            if (!areArgsValid("UpdateVehicle", vehicleData, 5)) { return; };
-            int id = int.Parse(vehicleData[0]);
             List<object> vehicle = (List<object>) entities[id];
-            List<object> states = (List<object>) vehicle[1];
+						Dictionary<int, List<object>> states = (Dictionary<int, List<object>>) vehicle[1];
 
-            states.Add(new List<object>
-            {
-                StringToIntArray(vehicleData[1]), // Position
-                int.Parse(vehicleData[2]), // Direction
-                int.Parse(vehicleData[3]), // Is alive
-                StringToIntArray(vehicleData[4]), // Crew ids
-            });
+						states.Add(frameNumber,
+								new List<object> {
+										position,
+										direction,
+										isAlive,
+										crewIds,
+								}
+						);
         }
 
         // TODO: Run this in separate thread
         public static void Publish(string[] args)
         {
-            if (!areArgsValid("Publish", args, 6)) { return; };
             Log("Publishing data...");
             Log("Publish args:");
             Log(String.Join(",", args));
