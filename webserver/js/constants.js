@@ -1,36 +1,35 @@
-export const App = {
-	AUTHOR: 'MisterGoodson',
-	BI_THREAD_URL: 'https://forums.bohemia.net/forums/topic/194164-ocap-op-capture-and-playback-aarreplay/',
-	COMMUNITY_TITLE: '3 Commando Brigade',
-	COMMUNITY_URL: 'https://www.3commandobrigade.com',
-	GITHUB_URL: 'https://github.com/mistergoodson/OCAP',
-	TITLE_FULL: 'Operation Capture And Playback',
-	TITLE: 'OCAP',
-	VERSION: '1.0',
+export const unitSchema = {
+	HEADER: 0,
+	header: {
+		IS_UNIT: 0,
+		ID: 1,
+		NAME: 2,
+		GROUP_NAME: 3,
+		SIDE: 4,
+		IS_PLAYER: 5
+	},
+	STATES: 1,
+	state: {
+		POSITION: 0,
+		DIRECTION: 1,
+		IS_ALIVE: 2,
+		IS_IN_VEHICLE: 3,
+	},
+	FRAMES_FIRED: 2
+};
+
+export const elementId = {
+	MAP: 'map'
+};
+
+export const className = {
+	LEAFLET_MARKER_ICON: 'leaflet-marker-icon',
 }
 
-export const CharCode = {
-	SPACE: 32,
-	E: 101,
-	R: 114,
-};
+export const MAPS_PATH = 'static/images/maps';
 
-export const ElementId = {
-};
+export const MARKERS_PATH = 'static/images/markers';
 
-export const ClassName = {
-	EVENT_DETAILS: 'event-details',
-	EVENT_TIMELINE_TICK: 'tick',
-	EVENT: 'event',
-	IN_PROGRESS: 'in-progress',
-	PAUSE: 'paused',
-	PROGRESS_BAR_CONTAINER: 'progress-bar-container',
-	PROGRESS_BAR: 'progress-bar',
-	REVEAL: 'reveal',
-	SHOW: 'show',
-};
+export const MAX_NATIVE_ZOOM = 6;
 
-export const CAPTURES_PATH = '/static/captures';
-export const MAP_META_FILENAME = 'meta.json';
-export const MAPS_PATH = '/static/images/maps';
-export const MARKERS_PATH = '/static/images/markers';
+export const MAX_ZOOM = MAX_NATIVE_ZOOM + 2;

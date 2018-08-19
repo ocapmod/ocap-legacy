@@ -7,7 +7,9 @@
 	<link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<link href="{{ url_for('static', filename='style/normalize.min.css') }}" rel="stylesheet">
-	<link href="{{ url_for('static', filename='style/leaflet-1.0.0-rc1.css') }}" rel="stylesheet">
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+  integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+  crossorigin=""/>
 	<link href="{{ url_for('static', filename='style/main.css') }}" rel="stylesheet">
 	<link href="{{ url_for('static', filename='images/favicon.png') }}" rel="icon" type="img/png">
 </head>
@@ -86,9 +88,6 @@
 
 <div id="hint"></div>
 
-<script src="{{ url_for('static', filename='scripts/leaflet-1.0.0-rc1.js') }}"></script>
-<script src="{{ url_for('static', filename='scripts/leaflet.rotatedMarker.js') }}"></script>
-<script src="{{ url_for('static', filename='scripts/leaflet.svgIcon.js') }}"></script>
 <script src="{{ url_for('static', filename='scripts/ocap.js') }}"></script>
 </body>
 </html>
