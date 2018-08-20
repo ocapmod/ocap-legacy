@@ -21,10 +21,11 @@ class CfgFunctions
 			class addMissionEventHandlers {};
 			class callExtension {};
 			class captureFrame {};
-			class publish{};
 			class getClass {};
 			class init {postInit = 1;};
 			class log {};
+			class publish{};
+			class resetCapture{};
 
 			class eh_fired {};
 			class eh_hitOrKilled {};

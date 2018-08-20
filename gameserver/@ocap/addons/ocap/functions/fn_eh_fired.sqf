@@ -20,7 +20,7 @@
 
 private _unit = _this select 0;
 private _projectile = _this select 6;
-private _frame = ocap_captureFrameNo;
+private _frame = ocap_frameNum;
 
 // Wait until bullet lands, capture position
 private _lastPos = [];

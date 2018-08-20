@@ -39,7 +39,7 @@ if (!isNull _attacker) then {
 	};
 
 	_eventData = [
-		ocap_captureFrameNo,
+		ocap_frameNum,
 		_eventType,
 		_victimId,
 		_attackerInfo,
@@ -47,7 +47,7 @@ if (!isNull _attacker) then {
 	];
 } else {
 	// Victim was likely hit by fire/collision/exploding vehicle
-	_eventData = [ocap_captureFrameNo, _eventType, _victimId, ["null"], -1];
+	_eventData = [ocap_frameNum, _eventType, _victimId, ["null"], -1];
 };
 
 ocap_eventsData pushBack _eventData;

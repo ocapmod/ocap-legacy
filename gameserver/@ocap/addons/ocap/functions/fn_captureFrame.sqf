@@ -8,6 +8,26 @@
 
 if (!ocap_capture) exitWith {};
 
+private _playerCount = count (allPlayers - (entities "HeadlessClient_F"));
+private _captureTime = ocap_frameNum * ocap_frameCaptureDelay;
+private _hitMaxCaptureLength = _captureTime >= ocap_maxCaptureTime;
+
+if ((!(_playerCount >= ocap_minPlayerCount)) || {_hitMaxCaptureLength}) exitWith {
+	if (ocap_frameNum == 0) exitWith {};
+
+	// Check if capture session should be kept or discarded
+	if (_hitMaxCaptureLength || {_captureTime >= ocap_minCaptureTime}) then {
+		[] call ocap_fnc_publish;
+	} else {
+		[] call ocap_fnc_resetCapture;
+	};
+};
+
+if (ocap_frameNum == 0) then {
+	["Starting new capture session."] call ocap_fnc_log;
+	["init"] call ocap_fnc_callExtension;
+};
+
 private _startTime = diag_tickTime;
 private _entityCount = 0;
 
@@ -36,7 +56,7 @@ private _entityCount = 0;
 
 	// Update unit
 	["update_unit", [
-		ocap_captureFrameNo, _id, _pos, round(getDir _x), parseNumber _isAlive,
+		ocap_frameNum, _id, _pos, round(getDir _x), parseNumber _isAlive,
 		parseNumber ((vehicle _x) != _x)
 	]] call ocap_fnc_callExtension;
 
@@ -47,7 +67,7 @@ private _entityCount = 0;
 {
 	private _id = _x getVariable ["ocap_id", -1];
 	private _isAlive = alive _x;
-	if (_x getVariable ["ocap_exclude", false] || {((!_isAlive) && _id == -1)} || {_x isKindOf "Logic"}) exitWith {};
+	if (_x getVariable ["ocap_exclude", false] || {_x isKindOf "Logic"}) exitWith {};
 	private _exclude = false;
 	private _pos = getPosATL _x;
 	_pos = [round(_pos select 0), round(_pos select 1)];
@@ -86,20 +106,20 @@ private _entityCount = 0;
 
 	// Update vehicle
 	["update_vehicle", [
-		ocap_captureFrameNo, _id, _pos, round(getDir _x),
+		ocap_frameNum, _id, _pos, round(getDir _x),
 		parseNumber _isAlive, _crewIds
 	]] call ocap_fnc_callExtension;
 
 	_entityCount = _entityCount + 1;
 } count vehicles;
 
-ocap_captureFrameNo = ocap_captureFrameNo + 1;
-
 // Log capture time
 private _runTime = diag_tickTime - _startTime;
 [format[
 	"Captured frame %1 (%2 entities in %3ms).",
-	ocap_captureFrameNo,
+	ocap_frameNum,
 	_entityCount,
 	round (_runTime * 1000)
 ]] call ocap_fnc_log;
+
+ocap_frameNum = ocap_frameNum + 1;

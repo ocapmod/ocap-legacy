@@ -10,8 +10,13 @@ private _str = "Publishing...";
 	briefingName,
 	getMissionConfigValue ["author", ""],
 	ocap_frameCaptureDelay,
-	ocap_captureFrameNo
+	ocap_frameNum
 ]] call ocap_fnc_callExtension;
+[] call ocap_fnc_resetCapture;
+
+if (ocap_stopCaptureAfterPublish) then {
+	ocap_capture = false;
+};
 
 private _runTime = diag_tickTime - _startTime;
 _str = format["Publish complete (%1s).", _runTime toFixed 1];

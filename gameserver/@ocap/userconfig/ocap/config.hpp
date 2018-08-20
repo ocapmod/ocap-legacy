@@ -1,33 +1,31 @@
 
-
-// true: Capture will automatically begin upon mission start
-// false: Capture will not begin until set to true (e.g. in mission init.sqf) AND ocap_minPlayerCount is met.
-// Setting to false allows for mission-specific capture
+// Set whether OCAP should be enabled
+// true: Allow capture
+// false: Never capture (overrides all other options)
 ocap_capture = true;
-
 
 // URL or IP to your OCAP site
 // e.g. http://your-website.com/ocap, http://172.217.4.206:8000, etc
 ocap_host = "http://localhost:8000";
 
-
-// Delay (seconds) between each frame capture. Default: 1
+// Delay (seconds) between each frame capture.
 ocap_frameCaptureDelay = 1;
 
-
-// Minimum player count before capture begins.
-// Set this to 0 for immediate capture (assuming ocap_endCaptureOnNoPlayers = false)
+// Minimum player count required for OCAP to run.
+// Capture will start once player account is >= this value.
+// Capture will end (and publish) once player count is < this value.
+// Set to 0 to always capture, even if no players present.
 ocap_minPlayerCount = 1;
 
+// Minimum capture time (seconds) before auto-publish is allowed.
+// Set to 0 to disable.
+ocap_minCaptureTime = 10;
 
-// End (and export) capture once players are no longer present
-ocap_endCaptureOnNoPlayers = true;
+// Maximum capture time (seconds) before capture is auto-published.
+// Set to 0 for no limit.
+ocap_maxCaptureTime = 60;
 
-
-// End (and export) capture once mission ends
-// Currently non-functional due to Arma bug (https://feedback.bistudio.com/T120253)
-ocap_endCaptureOnEndMission = false;
-
-
-// Debug mode
-ocap_debug = true;
+// Whether to stop OCAP after first publish.
+// Setting to false allows for multiple capture sessions during a single
+// mission (e.g. on a public server).
+ocap_stopCaptureAfterPublish = false;

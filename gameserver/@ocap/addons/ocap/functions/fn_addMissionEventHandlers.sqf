@@ -38,7 +38,7 @@ addMissionEventHandler ["EntityRespawned", {
 addMissionEventHandler["HandleDisconnect", {
 	private _unit = _this select 0;
 	private _id = _unit getVariable ["ocap_id", -1];
-	private _frame = ocap_captureFrameNo;
+	private _frame = ocap_frameNum;
 
 	if (_id != -1) then {
 		_unit setVariable ["ocap_exclude", true];
@@ -51,7 +51,7 @@ addMissionEventHandler["HandleDisconnect", {
 }];
 
 addMissionEventHandler["PlayerConnected", {
-	private _frame = ocap_captureFrameNo;
+	private _frame = ocap_frameNum;
 
 	["event_connected", [
 		_frame,
