@@ -16,11 +16,15 @@ if (!isMultiplayer) then {_serverName = "sp"};
 [false] call ocap_fnc_resetCapture;
 [] call ocap_fnc_addMissionEventHandlers;
 
-// Begin capture loop
-[ocap_fnc_captureFrame, ocap_frameCaptureDelay] call CBA_fnc_addPerFrameHandler;
-
 // Add debug actions
 player addAction ["Publish", {[] call ocap_fnc_publish}];
 player addEventHandler ["Respawn", {
 	player addAction ["Publish", {[] call ocap_fnc_publish}];
 }];
+
+// Begin capture loop
+while {true} do {
+	private _nextFrameTime = diag_tickTime + ocap_frameCaptureDelay;
+	[] call ocap_fnc_captureFrame;
+	waitUntil {diag_tickTime >= _nextFrameTime};
+};
