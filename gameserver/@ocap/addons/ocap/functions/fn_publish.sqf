@@ -1,9 +1,3 @@
-private _startTime = diag_tickTime;
-private _str = "Publishing...";
-
-[_str] call ocap_fnc_log;
-("OCAP: " + _str) remoteExec ["systemChat", -2];
-
 ["publish", [
 	ocap_host,
 	worldName,
@@ -18,7 +12,6 @@ if (ocap_stopCaptureAfterPublish) then {
 	ocap_capture = false;
 };
 
-private _runTime = diag_tickTime - _startTime;
-_str = format["Publish complete (%1s).", _runTime toFixed 1];
+private _str = "Sent publish request in background.";
 [_str] call ocap_fnc_log;
 ("OCAP: " + _str) remoteExec ["systemChat", -2];

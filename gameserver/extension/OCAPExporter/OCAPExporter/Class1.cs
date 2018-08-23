@@ -30,7 +30,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Net.Http;
 using System.Net;
 using Newtonsoft.Json;
@@ -72,61 +72,68 @@ namespace OCAPExporter
             [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr, SizeParamIndex = 4)] string[] args,
             int argsCnt)
         {
-            args = cleanArgs(args);
-
-            switch (function) {
-                case CMD_INIT:
-                    Init();
-                    break;
-                case CMD_UPDATE_UNIT:
-										if (!areArgsValid(CMD_UPDATE_UNIT, args, 6)) { break; };
-										UpdateUnit(
-												frameNumber: int.Parse(args[0]),
-												id: int.Parse(args[1]),
-												position: StringToIntArray(args[2]),
-												direction: int.Parse(args[3]),
-												isAlive: int.Parse(args[4]),
-												isInVehicle: int.Parse(args[5])
-										);
-                    break;
-                case CMD_UPDATE_VEHICLE:
-										if (!areArgsValid(CMD_UPDATE_VEHICLE, args, 6)) { break; };
-										UpdateVehicle(
-												frameNumber: int.Parse(args[0]),
-												id: int.Parse(args[1]),
-												position: StringToIntArray(args[2]),
-												direction: int.Parse(args[3]),
-												isAlive: int.Parse(args[4]),
-												crewIds: StringToIntArray(args[5])
-										);
-                    break;
-                case CMD_NEW_UNIT:
-										if (!areArgsValid(CMD_NEW_UNIT, args, 5)) { break; };
-										NewUnit(
-												id: int.Parse(args[0]),
-												name: args[1],
-												group: args[2],
-												side: args[3],
-												isPlayer: int.Parse(args[4])
-										);
-                    break;
-                case CMD_NEW_VEHICLE:
-										if (!areArgsValid(CMD_NEW_VEHICLE, args, 3)) { break; };
-										NewVehicle(
-												id: int.Parse(args[0]),
-												name: args[1],
-												className: args[2]
-										);
-                    break;
-                case CMD_PUBLISH:
-										if (!areArgsValid(CMD_PUBLISH, args, 6)) { break; };
-										Publish(args);
-                    break;
-                case CMD_LOG:
-										if (!areArgsValid(CMD_LOG, args, 1)) { break; };
-										Log(args[0], fromGame: true);
-                    break;
-            }
+						try
+						{
+								args = CleanArgs(args);
+								switch (function)
+								{
+										case CMD_INIT:
+												Init();
+												break;
+										case CMD_UPDATE_UNIT:
+												if (!AreArgsValid(CMD_UPDATE_UNIT, args, 6)) { break; };
+												UpdateUnit(
+														frameNumber: int.Parse(args[0]),
+														id: int.Parse(args[1]),
+														position: StringToIntArray(args[2]),
+														direction: int.Parse(args[3]),
+														isAlive: int.Parse(args[4]),
+														isInVehicle: int.Parse(args[5])
+												);
+												break;
+										case CMD_UPDATE_VEHICLE:
+												if (!AreArgsValid(CMD_UPDATE_VEHICLE, args, 6)) { break; };
+												UpdateVehicle(
+														frameNumber: int.Parse(args[0]),
+														id: int.Parse(args[1]),
+														position: StringToIntArray(args[2]),
+														direction: int.Parse(args[3]),
+														isAlive: int.Parse(args[4]),
+														crewIds: StringToIntArray(args[5])
+												);
+												break;
+										case CMD_NEW_UNIT:
+												if (!AreArgsValid(CMD_NEW_UNIT, args, 5)) { break; };
+												NewUnit(
+														id: int.Parse(args[0]),
+														name: args[1],
+														group: args[2],
+														side: args[3],
+														isPlayer: int.Parse(args[4])
+												);
+												break;
+										case CMD_NEW_VEHICLE:
+												if (!AreArgsValid(CMD_NEW_VEHICLE, args, 3)) { break; };
+												NewVehicle(
+														id: int.Parse(args[0]),
+														name: args[1],
+														className: args[2]
+												);
+												break;
+										case CMD_PUBLISH:
+												if (!AreArgsValid(CMD_PUBLISH, args, 6)) { break; };
+												Publish(args);
+												break;
+										case CMD_LOG:
+												if (!AreArgsValid(CMD_LOG, args, 1)) { break; };
+												Log(args[0], fromGame: true);
+												break;
+								}
+						} catch (Exception e)
+						{
+								Log(string.Format("Args provided: {0}", string.Join(",", args)), isError: true);
+								Log(e.ToString(), isError: true);
+						}
 
             // Send output to Arma
             outputSize--;
@@ -247,27 +254,35 @@ namespace OCAPExporter
             if (json == null) { return; };
             LogJson(json);
 
-            // POST capture data to OCAP webserver
-            try
-            {
-                Log("Sending POST request to " + postUrl);
-                using (var http = new HttpClient())
-                {
-                    http.Timeout = TimeSpan.FromSeconds(10);
-                    var content = new StringContent(json, Encoding.UTF8, "application/json");
-                    var result = http.PostAsync(postUrl, content).Result;
-                    string resultContent = result.Content.ReadAsStringAsync().Result;
-                    Log("Web server responded with: " + resultContent);
-                }
-            }
-            catch (Exception e)
-            {
-                Log("An error occurred while sending POST request. Possibly due to timeout.", isError: true);
-                Log(e.ToString(), isError: true);
-            }
-
-            Log("Publish complete");
+						Thread thread = new Thread(() => PostCapture(postUrl, json));
+						thread.IsBackground = true;
+						thread.Start();
         }
+
+				public static void PostCapture(string url, string json)
+				{
+						// POST capture data to OCAP webserver
+						try
+						{
+								Log("Sending POST request to " + url);
+								using (var http = new HttpClient())
+								{
+										//http.Timeout = TimeSpan.FromSeconds(10);
+										var content = new StringContent(json, Encoding.UTF8, "application/json");
+										var result = http.PostAsync(url, content).Result;
+										string resultContent = result.Content.ReadAsStringAsync().Result;
+										Log("Web server responded with: " + resultContent);
+								}
+						}
+						catch (Exception e)
+						{
+								Log("An error occurred while sending POST request. Possibly due to timeout.", isError: true);
+								Log(e.ToString(), isError: true);
+						}
+
+						Log("Publish complete");
+				}
+
 
         public static int[] StringToIntArray(string input)
         {
@@ -287,7 +302,7 @@ namespace OCAPExporter
             return null;
         }
 
-        public static string[] cleanArgs(string[] args)
+        public static string[] CleanArgs(string[] args)
         {
             for (int i = 0; i < args.Length; i++)
             {
@@ -299,7 +314,7 @@ namespace OCAPExporter
         }
 
         // Check if length of args in args array matches expected length
-        public static bool areArgsValid(string funcName, string[] args, int expectedLength)
+        public static bool AreArgsValid(string funcName, string[] args, int expectedLength)
         {
             int length = args.Length;
             if (length != expectedLength)
