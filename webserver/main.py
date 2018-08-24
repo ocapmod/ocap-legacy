@@ -46,7 +46,6 @@ def admin_resetdb():
 def api_operations():
 	operations = (models.Operation.query
 			.order_by(models.Operation.timestamp)
-			.limit(50)
 			.all())
 	return jsonify(operations)
 
