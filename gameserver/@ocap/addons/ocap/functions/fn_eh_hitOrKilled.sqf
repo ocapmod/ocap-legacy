@@ -22,13 +22,13 @@ params ["_victim", "_attacker", "_eventType"];
 
 if (_victim getVariable ["ocap_exclude", false]) exitWith {}; // Just in case
 
-_victimId = _victim getVariable "ocap_id";
+private _victimId = _victim getVariable "ocap_id";
 
-_eventData = [];
+private _eventData = [];
 if (!isNull _attacker) then {
-	_attackerInfo = [];
+	private _attackerInfo = [];
 	if (_attacker isKindOf "CAManBase") then {
-		_weaponName = getText (configFile >> "CfgWeapons" >> currentWeapon _attacker >> "displayName");
+		private _weaponName = getText (configFile >> "CfgWeapons" >> currentWeapon _attacker >> "displayName");
 		_weaponName = [_weaponName, """", "'"] call CBA_fnc_replace;
 		_attackerInfo = [
 			_attacker getVariable "ocap_id",

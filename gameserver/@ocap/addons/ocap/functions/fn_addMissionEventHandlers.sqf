@@ -22,8 +22,7 @@ addMissionEventHandler ["EntityKilled", {
 // Transfer ID from old unit to new unit
 // Stop tracking old unit
 addMissionEventHandler ["EntityRespawned", {
-	private _newEntity = _this select 0;
-	private _oldEntity = _this select 1;
+	params ["_newEntity", "_oldEntity"];
 	private _id = _oldEntity getVariable ["ocap_id", -1];
 
 	if (_id != -1) then {

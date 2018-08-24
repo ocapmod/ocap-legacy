@@ -8,10 +8,10 @@
 	_this: OBJECT - Entity to add event handlers to.
 */
 
-_entity = _this;
+private _entity = _this;
 
-_firedEH = _entity addEventHandler ["Fired", {_this spawn ocap_fnc_eh_fired}];
-_hitEH = _entity addEventHandler ["Hit", {
+private _firedEH = _entity addEventHandler ["Fired", {_this spawn ocap_fnc_eh_fired}];
+private _hitEH = _entity addEventHandler ["Hit", {
 	[_this select 0, _this select 1, "hit"] call ocap_fnc_eh_hitOrKilled;
 }];
 
