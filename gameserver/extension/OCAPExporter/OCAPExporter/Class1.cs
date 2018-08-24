@@ -72,6 +72,7 @@ namespace OCAPExporter
             [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr, SizeParamIndex = 4)] string[] args,
             int argsCnt)
         {
+						// I know, a big try/catch like this is lazy
 						try
 						{
 								args = CleanArgs(args);
