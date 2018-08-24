@@ -10,7 +10,7 @@ if (!ocap_capture) exitWith {};
 
 private _playerCount = count (allPlayers - (entities "HeadlessClient_F"));
 private _captureTime = ocap_frameNum * ocap_frameCaptureDelay;
-private _hitMaxCaptureLength = _captureTime >= ocap_maxCaptureTime;
+private _hitMaxCaptureLength = ocap_maxCaptureTime != 0 && (_captureTime >= ocap_maxCaptureTime);
 
 if ((!(_playerCount >= ocap_minPlayerCount)) || {_hitMaxCaptureLength}) exitWith {
 	if (ocap_frameNum == 0) exitWith {};
@@ -20,6 +20,7 @@ if ((!(_playerCount >= ocap_minPlayerCount)) || {_hitMaxCaptureLength}) exitWith
 		[] call ocap_fnc_publish;
 	} else {
 		[] call ocap_fnc_resetCapture;
+		["Discarded capture session."] call ocap_fnc_log;
 	};
 };
 
@@ -65,9 +66,9 @@ private _entityCount = 0;
 
 // Capture vehicles
 {
+	if (_x getVariable ["ocap_exclude", false] || {_x isKindOf "Logic"}) exitWith {};
 	private _id = _x getVariable ["ocap_id", -1];
 	private _isAlive = alive _x;
-	if (_x getVariable ["ocap_exclude", false] || {_x isKindOf "Logic"}) exitWith {};
 	private _exclude = false;
 	private _pos = getPosATL _x;
 	_pos = [round(_pos select 0), round(_pos select 1)];
