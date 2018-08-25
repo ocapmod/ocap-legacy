@@ -33,6 +33,7 @@ using System.Text;
 using System.Threading;
 using System.Net.Http;
 using System.Net;
+using System.Diagnostics;
 using Newtonsoft.Json;
 
 namespace OCAPExporter
@@ -43,7 +44,8 @@ namespace OCAPExporter
         const string LOGDIR = "ocap_logs";
         static readonly string LOGFILE = Path.Combine(LOGDIR, String.Format("log_{0}.txt", DATETIME_START));
         static readonly string LOGJSONFILE = Path.Combine(LOGDIR, String.Format("publish_{0}.json", DATETIME_START));
-        static DirectoryInfo logDirInfo  = Directory.CreateDirectory(LOGDIR);
+				const int HTTP_TIMEOUT = 60 * 10; 
+				static DirectoryInfo logDirInfo  = Directory.CreateDirectory(LOGDIR);
         static Dictionary<string, object> captureData;
         static List<object> entities;
         static List<object> events;
@@ -266,11 +268,17 @@ namespace OCAPExporter
 						try
 						{
 								Log("Sending POST request to " + url);
-								using (var http = new HttpClient())
+								using (HttpClient http = new HttpClient())
 								{
-										//http.Timeout = TimeSpan.FromSeconds(10);
-										var content = new StringContent(json, Encoding.UTF8, "application/json");
-										var result = http.PostAsync(url, content).Result;
+										Stopwatch watch = Stopwatch.StartNew();
+
+										http.Timeout = TimeSpan.FromSeconds(HTTP_TIMEOUT);
+										StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+										HttpResponseMessage result = http.PostAsync(url, content).Result;
+
+										watch.Stop();
+										Log(string.Format("Request sent ({0}s)", watch.ElapsedMilliseconds / 1000.0));
+
 										string resultContent = result.Content.ReadAsStringAsync().Result;
 										Log("Web server responded with: " + resultContent);
 								}
