@@ -24,6 +24,7 @@ class CfgFunctions
 			class getClass {};
 			class init {postInit = 1;};
 			class log {};
+			class logAvgCaptureTime {};
 			class publish{};
 			class resetCapture{};
 

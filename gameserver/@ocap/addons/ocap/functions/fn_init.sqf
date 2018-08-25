@@ -10,6 +10,7 @@ waitUntil{time > 1};
 
 // Define global vars
 #include "\userconfig\ocap\config.hpp";
+private _runScheduled = true; // Should NEVER be false UNLESS debugging
 private _serverName = serverName;
 if (!isMultiplayer) then {_serverName = "sp"};
 
@@ -23,8 +24,15 @@ player addEventHandler ["Respawn", {
 }];
 
 // Begin capture loop
-while {true} do {
-	private _nextFrameTime = diag_tickTime + ocap_frameCaptureDelay;
-	[] call ocap_fnc_captureFrame;
-	waitUntil {diag_tickTime >= _nextFrameTime};
+if (_runScheduled) then {
+	while {true} do {
+		private _nextFrameTime = diag_tickTime + ocap_frameCaptureDelay;
+		[] call ocap_fnc_captureFrame;
+		waitUntil {diag_tickTime >= _nextFrameTime};
+	};
+} else {
+	private _str = "Running in unscheduled mode! This should only be used when debugging!";
+	[_str] call ocap_fnc_log;
+	("OCAP: " + _str) remoteExec ["systemChat", -2];
+	[ocap_fnc_captureFrame, ocap_frameCaptureDelay] call cba_fnc_addPerFrameHandler;
 };
