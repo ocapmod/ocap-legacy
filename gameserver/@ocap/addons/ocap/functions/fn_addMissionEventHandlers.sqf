@@ -13,9 +13,7 @@ addMissionEventHandler ["EntityKilled", {
 	if (_victim getVariable ["ocap_id", -1] != -1) then {
 		[_victim, _attacker, "killed"] call ocap_fnc_eh_hitOrKilled;
 
-		{
-			_victim removeEventHandler _x;
-		} forEach (_victim getVariable "ocap_eventHandlers");
+		[_victim, ["deleted"]] call ocap_fnc_removeEventHandlers;
 	};
 }];
 
@@ -26,10 +24,11 @@ addMissionEventHandler ["EntityRespawned", {
 	private _id = _oldEntity getVariable ["ocap_id", -1];
 
 	if (_id != -1) then {
+		[_oldEntity] call ocap_fnc_removeEventHandlers;
 		_oldEntity setVariable ["ocap_exclude", true];
-		_newEntity setVariable ["ocap_id", _id];
-		_newEntity setVariable ["ocap_exclude", false];
 
+		_newEntity setVariable ["ocap_id", _id];
+		_newEntity setVariable ["ocap_prevState", []];
 		_newEntity call ocap_fnc_addEventHandlers;
 	};
 }];

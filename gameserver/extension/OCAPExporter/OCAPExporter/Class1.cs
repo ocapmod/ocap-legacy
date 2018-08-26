@@ -56,6 +56,7 @@ namespace OCAPExporter
         const string CMD_NEW_VEHICLE = "new_vehicle";
         const string CMD_UPDATE_UNIT = "update_unit";
         const string CMD_UPDATE_VEHICLE = "update_vehicle";
+				const string CMD_DELETE_ENTITY = "delete_entity";
         const string CMD_PUBLISH = "publish";
         const string CMD_LOG = "log";
 
@@ -106,21 +107,31 @@ namespace OCAPExporter
 												);
 												break;
 										case CMD_NEW_UNIT:
-												if (!AreArgsValid(CMD_NEW_UNIT, args, 5)) { break; };
+												if (!AreArgsValid(CMD_NEW_UNIT, args, 6)) { break; };
 												NewUnit(
-														id: int.Parse(args[0]),
-														name: args[1],
-														group: args[2],
-														side: args[3],
-														isPlayer: int.Parse(args[4])
+														frameNumber: int.Parse(args[0]),
+														id: int.Parse(args[1]),
+														name: args[2],
+														group: args[3],
+														side: args[4],
+														isPlayer: int.Parse(args[5])
 												);
 												break;
 										case CMD_NEW_VEHICLE:
-												if (!AreArgsValid(CMD_NEW_VEHICLE, args, 3)) { break; };
+												if (!AreArgsValid(CMD_NEW_VEHICLE, args, 4)) { break; };
 												NewVehicle(
-														id: int.Parse(args[0]),
-														name: args[1],
-														className: args[2]
+														frameNumber: int.Parse(args[0]),
+														id: int.Parse(args[1]),
+														name: args[2],
+														className: args[3]
+												);
+												break;
+										case CMD_DELETE_ENTITY:
+												if (!AreArgsValid(CMD_DELETE_ENTITY, args, 3)) { break; };
+												SetEntityDeleted(
+														frameNumber: int.Parse(args[0]),
+														id: int.Parse(args[1]),
+														isUnit: args[2] == "1"
 												);
 												break;
 										case CMD_PUBLISH:
@@ -163,7 +174,7 @@ namespace OCAPExporter
             Log("Initialised new capture");
         }
 
-        public static void NewUnit(int id, string name, string group, string side, int isPlayer)
+        public static void NewUnit(int frameNumber, int id, string name, string group, string side, int isPlayer)
         {
             entities.Add(
                 new List<object> {
@@ -174,6 +185,8 @@ namespace OCAPExporter
                         group,
                         side,
                         isPlayer,
+												frameNumber, // Frame number created at
+												null // Frame number deleted at
                     },
                     new Dictionary<int, List<object>>(), // States
                     new List<int>(), // Frames fired
@@ -181,7 +194,7 @@ namespace OCAPExporter
             );
         }
 
-        public static void NewVehicle(int id, string name, string className)
+        public static void NewVehicle(int frameNumber, int id, string name, string className)
         {
             entities.Add(
                 new List<object> {
@@ -190,6 +203,8 @@ namespace OCAPExporter
                         id,
                         name,
                         className,
+												frameNumber, // Frame number created at
+												null // Frame number deleted at
                     },
 									 new Dictionary<int, List<object>>(), // States
                 }
@@ -198,7 +213,7 @@ namespace OCAPExporter
 
         public static void UpdateUnit(int frameNumber, int id, int[] position, int direction, int isAlive, int isInVehicle)
         {
-            List<object> unit = (List<object>) entities[id];
+            List<object> unit = (List<object>)entities[id];
 						Dictionary<int, List<object>> states = (Dictionary<int, List<object>>) unit[1];
 
             states.Add(frameNumber,
@@ -213,7 +228,7 @@ namespace OCAPExporter
 
         public static void UpdateVehicle(int frameNumber, int id, int[] position, int direction, int isAlive, int[] crewIds)
         {
-            List<object> vehicle = (List<object>) entities[id];
+            List<object> vehicle = (List<object>)entities[id];
 						Dictionary<int, List<object>> states = (Dictionary<int, List<object>>) vehicle[1];
 
 						states.Add(frameNumber,
@@ -225,6 +240,15 @@ namespace OCAPExporter
 								}
 						);
         }
+
+				public static void SetEntityDeleted(int frameNumber, int id, bool isUnit)
+				{
+						List<object> entity = (List<object>)entities[id];
+						List<object> header = (List<object>)entity[0];
+
+						int index = isUnit ? 7 : 5;
+						header[index] = frameNumber;
+				}
 
         // TODO: Run this in separate thread
         public static void Publish(string[] args)

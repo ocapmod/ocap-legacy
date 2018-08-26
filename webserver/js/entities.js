@@ -33,12 +33,13 @@ class Entities {
 }
 
 class Entity {
-	constructor(startFrameNum, id, name, states) {
+	constructor(startFrameNum, endFrameNum, id, name, states) {
     if (this.constructor === Entity) {
-      throw new TypeError('Abstract class "Entity" cannot be instantiated directly.'); 
+      throw new TypeError('Abstract class "Entity" cannot be instantiated directly.');
     }
 
 		this._startFrameNum = startFrameNum;
+		this._endFrameNum = endFrameNum;
 		this._id = id;
 		this._name = name;
 		this._states = states; // pos, dir, alive
@@ -56,8 +57,9 @@ class Entity {
 	};
 
 	getPosAtFrame(frameIndex) {
-			if (this.isFrameOutOfBounds(frameIndex)) return;
-			return this._states[frameIndex].position;
+		const state = this.getStateAtFrame(frameIndex);
+		if (state == null) return;
+		return state.position;
 	};
 
 	// Get LatLng at specific frame
@@ -120,6 +122,10 @@ class Entity {
 		};
 	};
 
+	remove() {
+		this.removeMarker();
+	};
+
 /*	getMarkerEditableGroup() {
 		let doc = this._marker.getElement().contentDocument;
 		return doc.getElementById("editable");
@@ -170,14 +176,41 @@ class Entity {
 		this._element = null;
 	};
 
-	isFrameOutOfBounds(frameIndex) {
-		return !(frameIndex in this._states);
+	existsAtFrame(frameIndex) {
+		return (frameIndex >= this._startFrameNum) && (this._endFrameNum == null || frameIndex <= this._endFrameNum);
+	}
+
+	hasStateAtFrame(frameIndex) {
+		return (frameIndex in this._states);
 	};
 
-	// Update entiy position, direction, and alive status at valid frame
-	_updateAtFrame(frameIndex) {
+	/**
+	 * Get state at given frame.
+	 *
+	 * If no state found, get closest previous state.
+	 *
+	 * @param {number} frameIndex
+	 */
+	getStateAtFrame(frameIndex) {
+		if (this.hasStateAtFrame(frameIndex)) {
+			return this._states[frameIndex];
+		};
+
+		for (let i = (frameIndex - 1); i >= 0; i--) {
+			if (this.hasStateAtFrame(i)) {
+				return this._states[i];
+			}
+		}
+	}
+
+	/**
+	 * Given a stat - update entiy position, direction, and alive status
+	 *
+	 * @param {Object} state
+	 */
+	_handleState(state) {
 		// Set pos
-		let latLng = services.armaToLatLng(this.getPosAtFrame(frameIndex));
+		let latLng = services.armaToLatLng(state.position);
 		if (this._marker == null) { // First time unit has appeared on map
 			this.createMarker(latLng);
 		} else {
@@ -185,19 +218,17 @@ class Entity {
 		};
 
 		// Set direction
-		this._marker.setRotationAngle(this._states[frameIndex].direction);
+		this._marker.setRotationAngle(state.direction);
 
 		// Set alive status
-		this.setIsAlive(this._states[frameIndex].isAlive);
+		this.setIsAlive(state.isAlive);
 	};
 
 	// Manage entity at given frame
 	manageFrame(frameIndex) {
-		if (this.isFrameOutOfBounds(frameIndex)) { // Entity does not exist on frame
-			this.removeMarker();
-		} else { // Entity does exist on frame
-			this._updateAtFrame(frameIndex);
-		};
+		const state = this.getStateAtFrame(frameIndex);
+		if (state == null) return;
+		this._handleState(state);
 	};
 
 	_flash(icon, framesToSpan) {
@@ -262,8 +293,8 @@ class Entity {
 };
 
 class Unit extends Entity {
-	constructor(startFrameNum, id, name, group, side, isPlayer, states, framesFired) {
-		super(startFrameNum, id, name, states);
+	constructor(startFrameNum, endFrameNum, id, name, group, side, isPlayer, states, framesFired) {
+		super(startFrameNum, endFrameNum, id, name, states);
 		this._group = group;
 		this._side = side;
 		this.isPlayer = isPlayer;
@@ -315,10 +346,10 @@ class Unit extends Entity {
 		};
 	};
 
-	_updateAtFrame(frameIndex) {
-		super._updateAtFrame(frameIndex);
+	_handleState(state) {
+		super._handleState(state);
 		this.hideMarkerPopup(ui.hideMarkerPopups);
-		this.setIsInVehicle(this._states[frameIndex].isInVehicle);
+		this.setIsInVehicle(state.isInVehicle);
 	};
 
 	setIsInVehicle(isInVehicle) {
@@ -384,8 +415,8 @@ class Unit extends Entity {
 };
 
 class Vehicle extends Entity {
-	constructor(startFrameNum, id, type, name, states) {
-		super(startFrameNum, id, name, states);
+	constructor(startFrameNum, endFrameNum, id, type, name, states) {
+		super(startFrameNum, endFrameNum, id, name, states);
 		this._popupClassName = "leaflet-popup-vehicle";
 		this._type = type;
 		this._crew = []; // Crew in order: [driver, gunner, commander, turrets, cargo]
@@ -446,9 +477,9 @@ class Vehicle extends Entity {
 		}, 100);
 	};
 
-	_updateAtFrame(frameIndex) {
-		super._updateAtFrame(frameIndex);
-		this.setCrew(this._states[frameIndex].crewIds);
+	_handleState(state) {
+		super._handleState(state);
+		this.setCrew(state.crewIds);
 	};
 
 	setCrew(crew) {

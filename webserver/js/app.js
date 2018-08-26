@@ -121,7 +121,8 @@ export function processOp(filepath) {
 
 				// Create unit and add to entities list
 				entities.add(new Unit(
-					startFrameNum,
+					header[6],
+					header[7],
 					id,
 					name,
 					group,
@@ -133,7 +134,8 @@ export function processOp(filepath) {
 			} else {
 				// Create vehicle and add to entities list
 				entities.add(new Vehicle(
-					startFrameNum,
+					header[4],
+					header[5],
 					id,
 					header[DataIn.Entity.Header.CLASS],
 					name,
@@ -302,7 +304,8 @@ function startPlaybackLoop() {
 				});
 
 				for (const entity of entities.getAll()) {
-					if (entity.isFrameOutOfBounds(globals.playbackFrame)) {
+					if (!entity.existsAtFrame(globals.playbackFrame)) {
+						entity.remove();
 						continue;
 					};
 

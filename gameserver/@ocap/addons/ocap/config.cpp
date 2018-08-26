@@ -22,12 +22,15 @@ class CfgFunctions
 			class callExtension {};
 			class captureFrame {};
 			class getClass {};
+			class getRoundedDir {};
 			class init {postInit = 1;};
 			class log {};
 			class logAvgCaptureTime {};
 			class publish{};
+			class removeEventHandlers {};
 			class resetCapture{};
 
+			class eh_deleted {};
 			class eh_fired {};
 			class eh_hitOrKilled {};
 		};
