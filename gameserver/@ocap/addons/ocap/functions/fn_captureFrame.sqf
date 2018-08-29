@@ -6,17 +6,27 @@
 	Compatible with dynamically spawned AI and JIP players.
 */
 
-if (!ocap_capture) exitWith {};
+if (!ocap_capture) exitWith {
+	["Capture is disabled. Skipping this frame."] call ocap_fnc_log;
+};
 
 private _playerCount = count (allPlayers - (entities "HeadlessClient_F"));
 private _captureTime = ocap_frameNum * ocap_frameCaptureDelay;
 private _hitMaxCaptureLength = ocap_maxCaptureTime != 0 && (_captureTime >= ocap_maxCaptureTime);
 
 if ((!(_playerCount >= ocap_minPlayerCount)) || {_hitMaxCaptureLength}) exitWith {
-	if (ocap_frameNum == 0) exitWith {};
+	[format[
+		"Capture requirements not met (frame: %1, player count: %2, capture time: %3s). Deciding what to do...",
+		ocap_frameNum, _playerCount, _captureTime
+	]] call ocap_fnc_log;
+
+	if (ocap_frameNum == 0) exitWith {
+		["No capture session currently in progress."] call ocap_fnc_log;
+	};
 
 	// Check if capture session should be kept or discarded
 	if (_hitMaxCaptureLength || {_captureTime >= ocap_minCaptureTime}) then {
+		["Publishing capture session..."] call ocap_fnc_log;
 		[] call ocap_fnc_publish;
 	} else {
 		[] call ocap_fnc_resetCapture;

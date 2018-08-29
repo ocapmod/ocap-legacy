@@ -28,7 +28,7 @@ if (_runScheduled) then {
 	while {true} do {
 		private _nextFrameTime = diag_tickTime + ocap_frameCaptureDelay;
 		[] call ocap_fnc_captureFrame;
-		waitUntil {diag_tickTime >= _nextFrameTime};
+		waitUntil {diag_tickTime >= _nextFrameTime}; // More reliable than sleep
 	};
 } else {
 	private _str = "Running in unscheduled mode! This should ONLY be used when testing!";
